@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "openapi.validation.sample-rate",
+      "type": "java.lang.Double",
+      "description": "Amount of traffic to be validated. Defaults to 0.001."
+    },
+    {
+      "name": "openapi.validation.specification-file-path",
+      "type": "java.lang.String",
+      "description": "Path to the OpenAPI specification file. If set, the system will search for this file within resources and also as a path based on the current (working) directory. The property defaults to null. If null, the program searches for either an 'openapi.yaml/json' or a 'spec.yaml/json' file under resources."
+    },
+    {
+      "name": "openapi.validation.excluded-paths",
+      "type": "java.lang.String",
+      "description": "Comma separated list of paths to be excluded from validation. Default is no excluded paths."
+    },
+    {
+      "name": "openapi.validation.validation-report-throttle-wait-seconds",
+      "type": "java.lang.Integer",
+      "description": "Number of seconds for which the validation report throttler will wait before sending the next report. The property defaults to null. If null or 0, there won't be any throttling."
+    },
+    {
+      "name": "openapi.validation.validation-report-metric-name",
+      "type": "java.lang.String",
+      "description": "Metric name to be used when reporting violations with the MetricsReporter. The property defaults to 'openapi.validation.error'."
+    },
+    {
+      "name": "openapi.validation.validation-report-metric-additional-tags",
+      "type": "java.lang.String",
+      "description": "Additional tags to be logged with metrics. They should be in the format {KEY}={VALUE},{KEY}={VALUE}. Default is no additional tags."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'org.springframework.boot' version "$springBootVersion" apply false
+}
+
+apply from: "${rootDir}/gradle/publish-module.gradle"
+
+dependencies {
+    compileOnly platform(SpringBootPlugin.BOM_COORDINATES)
+
+    api project(':openapi-validation-api')
+    implementation project(':openapi-validation-core')
+
+    compileOnly 'org.springframework.boot:spring-boot-starter'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+
+    // TODO use spotbugs instead and also apply to all modules?
+    implementation "com.google.code.findbugs:jsr305:$findBugsVersion"
+
+    testImplementation platform(SpringBootPlugin.BOM_COORDINATES)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

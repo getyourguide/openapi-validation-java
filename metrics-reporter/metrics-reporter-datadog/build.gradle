@@ -1,0 +1,7 @@
+apply from: "${rootDir}/gradle/publish-module.gradle"
+
+dependencies {
+    api project(':openapi-validation-api')
+
+    implementation "com.datadoghq:java-dogstatsd-client:$datadogStatsdVersion"
+}

@@ -1,0 +1,56 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+afterEvaluate {
+    publishing {
+        java {
+            withSourcesJar()
+            withJavadocJar()
+        }
+
+        publications {
+            maven(MavenPublication) {
+                var resolvedArtifactId = hasProperty('PUBLISH_ARTIFACT_ID') ? PUBLISH_ARTIFACT_ID : project.name
+                groupId project.group
+                artifactId resolvedArtifactId
+                version project.version
+
+                from components.java
+
+                pom {
+                    name = resolvedArtifactId
+                    description = hasProperty('PUBLISH_DESCRIPTION') ? PUBLISH_DESCRIPTION : 'OpenAPI Spec Validation'
+                    url = 'https://github.com/getyourguide/openapi-validation'
+                    licenses {
+                        license {
+                            name = 'Apache License 2.0'
+                            url = 'https://github.com/getyourguide/openapi-validation-java/blob/main/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'pboos'
+                            name = 'Patrick Boos'
+                            email = 'patrick.boos@getyourguide.com'
+                        }
+                    }
+
+                    scm {
+                        connection = 'scm:git:github.com/getyourguide/openapi-validation-java.git'
+                        developerConnection = 'scm:git:ssh://github.com/getyourguide/openapi-validation-java.git'
+                        url = 'https://github.com/getyourguide/openapi-validation-java/tree/main'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"],
+    )
+    sign publishing.publications
+}

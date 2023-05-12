@@ -1,0 +1,26 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'org.springframework.boot' version "$springBoot27Version" apply false
+}
+
+apply from: "${rootDir}/gradle/publish-module.gradle"
+
+dependencies {
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+
+    api project(':openapi-validation-api')
+    implementation project(':openapi-validation-core')
+    api project(':spring-boot-starter:spring-boot-starter-core')
+
+    compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+
+    // TODO use spotbugs instead and also apply to all modules?
+    implementation "com.google.code.findbugs:jsr305:$findBugsVersion"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework:spring-webflux'
+    testImplementation 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
+}

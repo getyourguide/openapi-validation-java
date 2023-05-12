@@ -1,0 +1,80 @@
+plugins {
+    id 'java'
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+}
+
+def javaVersion = providers.environmentVariable("JAVA_BUILD_VERSION").getOrElse("17")
+
+apply from: "${rootDir}/gradle/publish-root.gradle"
+
+allprojects {
+    group = 'com.getyourguide.openapi.validation'
+    description = 'OpenAPI Validation library'
+    version = '1.0.2'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(javaVersion)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    if(it.parent.name == 'examples') {
+        apply plugin: 'java'
+    } else {
+        apply plugin: 'java-library'
+        apply plugin: 'jacoco'
+
+        dependencies {
+            // Testing
+            testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+            testImplementation "org.mockito:mockito-core:$mockitoVersion"
+            testImplementation "org.mockito:mockito-junit-jupiter:$mockitoVersion"
+        }
+
+        jacoco {
+            toolVersion = jacocoVersion
+        }
+
+        jacocoTestReport {
+            reports {
+                xml.required = true
+                csv.required = false
+                html.required = true
+            }
+        }
+
+        test {
+            useJUnitPlatform()
+        }
+    }
+
+    apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
+
+    dependencies {
+        // Lombok annotations to reduce boilerplate code
+        compileOnly "org.projectlombok:lombok:$lombokVersion"
+        annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+        testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+        testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    }
+
+    checkstyle {
+        toolVersion = checkstyleVersion
+        configDirectory.set(file("$rootProject.projectDir/config"))
+        checkstyleMain.source = "src/main/java"
+    }
+
+    pmd {
+        consoleOutput = true
+        ruleSets = ["$rootDir/ruleset.xml"]
+        toolVersion = pmdVersion
+    }
+}

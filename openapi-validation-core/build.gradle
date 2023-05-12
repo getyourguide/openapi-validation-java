@@ -1,0 +1,17 @@
+apply from: "${rootDir}/gradle/publish-module.gradle"
+
+dependencies {
+    api project(':openapi-validation-api')
+
+    implementation 'com.atlassian.oai:swagger-request-validator-core:2.35.1'
+    constraints {
+        implementation('commons-codec:commons-codec:1.15') {
+            because 'Apache commons-codec before 1.13 is vulnerable to information exposure. See https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/'
+        }
+//        implementation('org.yaml:snakeyaml:1.33') {
+//            because 'Vulnerability in 1.33 is not yet fixed. See: https://bitbucket.org/snakeyaml/snakeyaml/issues/561/cve-2022-1471-vulnerability-in' +
+//                    'https://devhub.checkmarx.com/cve-details/CVE-2022-41854/' +
+//                    'https://devhub.checkmarx.com/cve-details/CVE-2022-1471/'
+//        }
+    }
+}

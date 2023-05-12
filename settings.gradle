@@ -1,0 +1,22 @@
+rootProject.name = 'openapi-validation'
+
+include('openapi-validation-api')
+include('openapi-validation-core')
+
+include(':spring-boot-starter:spring-boot-starter-core')
+include(':spring-boot-starter:spring-boot-starter-web')
+include(':spring-boot-starter:spring-boot-starter-webflux')
+
+include(':metrics-reporter:metrics-reporter-datadog')
+include(':metrics-reporter:metrics-reporter-datadog-spring-boot')
+
+include(':examples:examples-common')
+include(':examples:example-spring-boot-starter-web')
+include(':examples:example-spring-boot-starter-webflux')
+
+
+// Spring 2.7 support
+include(':spring-boot-starter:spring-boot-starter-web-spring2.7')
+include(':spring-boot-starter:spring-boot-starter-webflux-spring2.7')
+include(':examples:example-spring-boot-starter-web-spring2.7')
+include(':examples:example-spring-boot-starter-webflux-spring2.7')

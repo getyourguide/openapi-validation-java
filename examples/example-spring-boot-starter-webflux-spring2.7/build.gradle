@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "$springBoot27Version"
+    id 'io.spring.dependency-management' version "$springDependencyManagementVersion"
+    id 'org.openapi.generator' version "$openApiGeneratorPluginVersion"
+}
+
+dependencies {
+    implementation project(':examples:examples-common')
+    implementation project(':spring-boot-starter:spring-boot-starter-webflux-spring2.7')
+    implementation project(':metrics-reporter:metrics-reporter-datadog-spring-boot')
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "org.openapitools:jackson-databind-nullable:$openApiJacksonDatabindNullableVersion"
+//    implementation "jakarta.validation:jakarta.validation-api:2.0.2"
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def generatedSourceDirectory = "$buildDir/generated"
+sourceSets {
+    main {
+        java {
+            srcDir generatedSourceDirectory + '/src/main/java'
+        }
+    }
+}
+
+openApiValidate {
+    inputSpec = "$projectDir/src/main/resources/openapi.yaml"
+    recommend = true
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$projectDir/src/main/resources/openapi.yaml"
+    outputDir = generatedSourceDirectory
+    apiPackage = "com.getyourguide.openapi.validation.example.openapi"
+    invokerPackage = "com.getyourguide.openapi.validation.example.openapi"
+    modelPackage = "com.getyourguide.openapi.validation.example.openapi.model"
+    configOptions = [
+            useSpringBoot3         : "false",
+            reactive               : "true",
+            dateLibrary            : "java8",
+            performBeanValidation  : "true",
+            hideGenerationTimestamp: "true",
+            serializableModel      : "true",
+            interfaceOnly          : "true",
+            skipDefaultInterface   : "true",
+            useTags                : "true"
+    ]
+}
+
+tasks.openApiGenerate.dependsOn tasks.openApiValidate
+tasks.compileJava.dependsOn tasks.openApiGenerate

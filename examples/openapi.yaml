@@ -1,0 +1,100 @@
+---
+openapi: 3.0.2
+info:
+  title: GYG OpenAPI validator example
+  version: 1.0.0
+paths:
+  "/":
+    get:
+      description: Get index
+      operationId: getIndex
+      parameters:
+        - description: From date
+          example: '2022-12-24'
+          in: query
+          name: fromDate
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IndexResponse"
+        '400':
+          description: Bad request response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '500':
+          description: Internal server error
+    post:
+      description: Update index
+      operationId: postIndex
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/IndexRequest"
+      responses:
+        '200':
+          description: The resource was update successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IndexResponse"
+        '400':
+          description: Bad request response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '500':
+          description: Internal server error
+    delete:
+      description: Delete index
+      operationId: deleteIndex
+      responses:
+        '204':
+          description: The resource was deleted successfully
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    IndexRequest:
+      description: Index request
+      type: object
+      properties:
+        name:
+          description: Name
+          example: some name
+          nullable: false
+          type: string
+      required:
+        - name
+    IndexResponse:
+      description: Index response
+      type: object
+      properties:
+        name:
+          description: Name
+          example: some name
+          nullable: false
+          type: string
+      required:
+        - name
+    BadRequestResponse:
+      description: Bad request response
+      type: object
+      properties:
+        error:
+          description: Description of the error
+          example: Missing query parameter fromDate
+          nullable: false
+          type: string
+      required:
+        - error

@@ -1,0 +1,18 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'org.springframework.boot' version "$springBootVersion" apply false
+}
+
+apply from: "${rootDir}/gradle/publish-module.gradle"
+
+dependencies {
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    testImplementation 'org.springframework.boot:spring-boot-test'
+
+    api project(':metrics-reporter:metrics-reporter-datadog')
+    implementation "com.datadoghq:java-dogstatsd-client:$datadogStatsdVersion"
+
+    implementation 'org.assertj:assertj-core'
+}

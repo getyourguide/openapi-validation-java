@@ -1,0 +1,7 @@
+{
+  "plugins": [
+    "remark-lint-code-block-style",
+    "remark-lint-fenced-code-flag",
+    "remark-lint-list-item-spacing"
+  ]
+}

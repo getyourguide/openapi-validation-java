@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "openapi.validation.datadog.statsd.service.host",
+      "type": "java.lang.String",
+      "description": "The host of your DogStatsD server."
+    },
+    {
+      "name": "openapi.validation.datadog.statsd.service.port",
+      "type": "java.lang.Integer",
+      "description": "The port of your DogStatsD server."
+    },
+    {
+      "name": "openapi.validation.datadog.metric-prefix",
+      "type": "java.lang.String",
+      "description": "The prefix for your DataDog metrics."
+    }
+  ]
+}

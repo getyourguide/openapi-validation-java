@@ -1,0 +1,2 @@
+com.getyourguide.openapi.validation.metrics.datadog.autoconfigure.LibraryAutoConfiguration
+com.getyourguide.openapi.validation.metrics.datadog.autoconfigure.FallbackLibraryAutoConfiguration
