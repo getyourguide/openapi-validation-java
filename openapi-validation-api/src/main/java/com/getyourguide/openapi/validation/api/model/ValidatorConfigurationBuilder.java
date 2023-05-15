@@ -29,9 +29,9 @@ public class ValidatorConfigurationBuilder {
     }
 
     public String toString() {
-        return "ValidatorConfigurationBuilder(" +
-            "levelResolverDefaultLevel=" + this.levelResolverDefaultLevel + ", " +
-            "levelResolverLevels=" + this.levelResolverLevels
+        return "ValidatorConfigurationBuilder("
+            + "levelResolverDefaultLevel=" + this.levelResolverDefaultLevel + ", "
+            + "levelResolverLevels=" + this.levelResolverLevels
             + ")";
     }
 }
