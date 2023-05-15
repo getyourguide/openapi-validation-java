@@ -5,6 +5,8 @@ import com.atlassian.oai.validator.report.LevelResolver;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
+import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
+import com.getyourguide.openapi.validation.core.validator.SingleSpecOpenApiInteractionValidatorWrapper;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +23,7 @@ import org.apache.commons.io.FileUtils;
 @Slf4j
 public class OpenApiInteractionValidatorFactory {
     @Nullable
-    public OpenApiInteractionValidator build(String specificationFilePath, ValidatorConfiguration configuration) {
+    public OpenApiInteractionValidatorWrapper build(String specificationFilePath, ValidatorConfiguration configuration) {
         var specOptional = loadOpenAPISpec(specificationFilePath);
         if (specOptional.isEmpty()) {
             log.info("OpenAPI spec file could not be found [validation disabled]");
@@ -30,12 +32,13 @@ public class OpenApiInteractionValidatorFactory {
 
         var spec = specOptional.get();
         try {
-            return OpenApiInteractionValidator
+            var validator = OpenApiInteractionValidator
                 .createForInlineApiSpecification(spec)
                 .withResolveRefs(true)
                 .withResolveCombinators(true) // Inline to avoid problems with allOf
                 .withLevelResolver(buildLevelResolver(configuration))
                 .build();
+            return new SingleSpecOpenApiInteractionValidatorWrapper(validator);
         } catch (Throwable e) {
             log.error("Could not initialize OpenApiInteractionValidator [validation disabled]", e);
             return null;
