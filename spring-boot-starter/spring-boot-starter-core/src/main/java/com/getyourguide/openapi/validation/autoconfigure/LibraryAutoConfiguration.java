@@ -1,13 +1,14 @@
 package com.getyourguide.openapi.validation.autoconfigure;
 
 import com.getyourguide.openapi.validation.OpenApiValidationApplicationProperties;
+import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.LoggerExtension;
 import com.getyourguide.openapi.validation.api.log.NoOpLoggerExtension;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.metrics.NoOpMetricsReporter;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
-import com.getyourguide.openapi.validation.configuration.OpenApiValidationConfiguration;
+import com.getyourguide.openapi.validation.api.model.ValidatorConfigurationBuilder;
 import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.ValidationReportHandler;
@@ -69,7 +70,10 @@ public class LibraryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ValidatorConfiguration validatorConfiguration() {
-        return (new OpenApiValidationConfiguration()).buildValidatorConfiguration();
+        return new ValidatorConfigurationBuilder()
+            // .levelResolverLevel("validation.request.body.schema.additionalProperties", LogLevel.IGNORE)
+            .levelResolverDefaultLevel(LogLevel.INFO)
+            .build();
     }
 
     @Bean
