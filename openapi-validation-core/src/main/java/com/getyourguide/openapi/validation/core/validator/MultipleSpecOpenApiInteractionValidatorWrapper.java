@@ -114,5 +114,10 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
         public ValidationReport.Message withAdditionalContext(ValidationReport.MessageContext context) {
             return this;
         }
+
+        @Override
+        public String toString() {
+            return message;
+        }
     }
 }

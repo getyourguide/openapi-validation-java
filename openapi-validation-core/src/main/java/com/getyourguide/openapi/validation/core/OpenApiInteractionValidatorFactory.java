@@ -5,6 +5,7 @@ import com.atlassian.oai.validator.report.LevelResolver;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
+import com.getyourguide.openapi.validation.core.validator.MultipleSpecOpenApiInteractionValidatorWrapper;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import com.getyourguide.openapi.validation.core.validator.SingleSpecOpenApiInteractionValidatorWrapper;
 import java.io.BufferedReader;
@@ -13,30 +14,66 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 @Slf4j
 public class OpenApiInteractionValidatorFactory {
     @Nullable
-    public OpenApiInteractionValidatorWrapper build(String specificationFilePath, ValidatorConfiguration configuration) {
+    public OpenApiInteractionValidatorWrapper build(
+        String specificationFilePath,
+        ValidatorConfiguration configuration
+    ) {
+        if (configuration.getSpecificationPaths() != null && !configuration.getSpecificationPaths().isEmpty()) {
+            return buildMultipleSpecOpenApiInteractionValidatorWrapper(configuration);
+        }
+
         var specOptional = loadOpenAPISpec(specificationFilePath);
         if (specOptional.isEmpty()) {
             log.info("OpenAPI spec file could not be found [validation disabled]");
             return null;
         }
 
-        var spec = specOptional.get();
+        return buildSingleSpecOpenApiInteractionValidatorWrapper(specOptional.get(),
+            configuration.getLevelResolverLevels(), configuration.getLevelResolverDefaultLevel());
+    }
+
+    private MultipleSpecOpenApiInteractionValidatorWrapper buildMultipleSpecOpenApiInteractionValidatorWrapper(
+        ValidatorConfiguration configuration) {
+        var validators = configuration.getSpecificationPaths().stream()
+            .map(entry -> {
+                var path = entry.specificationFilePath();
+                var specOptional = loadSpecFromPath(path).or(() -> loadSpecFromResources(path));
+                if (specOptional.isEmpty()) {
+                    log.error("OpenAPI spec file {} could not be found", path);
+                    return null;
+                }
+                var validator = buildSingleSpecOpenApiInteractionValidatorWrapper(specOptional.get(),
+                    configuration.getLevelResolverLevels(), configuration.getLevelResolverDefaultLevel());
+                return Pair.of(entry.pathPattern(), (OpenApiInteractionValidatorWrapper) validator);
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        return new MultipleSpecOpenApiInteractionValidatorWrapper(validators);
+    }
+
+    private SingleSpecOpenApiInteractionValidatorWrapper buildSingleSpecOpenApiInteractionValidatorWrapper(
+        String spec,
+        Map<String, LogLevel> levelResolverLevels,
+        LogLevel levelResolverDefaultLevel
+    ) {
         try {
             var validator = OpenApiInteractionValidator
                 .createForInlineApiSpecification(spec)
                 .withResolveRefs(true)
                 .withResolveCombinators(true) // Inline to avoid problems with allOf
-                .withLevelResolver(buildLevelResolver(configuration))
+                .withLevelResolver(buildLevelResolver(levelResolverLevels, levelResolverDefaultLevel))
                 .build();
             return new SingleSpecOpenApiInteractionValidatorWrapper(validator);
         } catch (Throwable e) {
@@ -98,17 +135,22 @@ public class OpenApiInteractionValidatorFactory {
         }
     }
 
-    private LevelResolver buildLevelResolver(ValidatorConfiguration configuration) {
+    private LevelResolver buildLevelResolver(
+        Map<String, LogLevel> levelResolverLevels,
+        LogLevel levelResolverDefaultLevel
+    ) {
         var builder = LevelResolver.create();
-        if (configuration.getLevelResolverLevels() != null && !configuration.getLevelResolverLevels().isEmpty()) {
+        if (levelResolverLevels != null && !levelResolverLevels.isEmpty()) {
             builder.withLevels(
-                configuration.getLevelResolverLevels().entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> mapLevel(entry.getValue()).orElse(ValidationReport.Level.INFO)))
+                levelResolverLevels.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                        mapLevel(entry.getValue()).orElse(ValidationReport.Level.INFO))
+                    )
             );
         }
         return builder
             // this will cause all messages to be warn by default
-            .withDefaultLevel(mapLevel(configuration.getLevelResolverDefaultLevel()).orElse(ValidationReport.Level.INFO))
+            .withDefaultLevel(mapLevel(levelResolverDefaultLevel).orElse(ValidationReport.Level.INFO))
             .build();
     }
 
