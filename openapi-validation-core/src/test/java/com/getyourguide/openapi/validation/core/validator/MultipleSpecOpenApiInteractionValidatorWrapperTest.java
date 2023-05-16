@@ -29,7 +29,6 @@ public class MultipleSpecOpenApiInteractionValidatorWrapperTest {
             )
         );
 
-
         assertRequestPathHitsCorrectValidator(specificValidator.validationReport, "/test/123");
         assertRequestPathHitsCorrectValidator(catchAllValidator.validationReport, "/123");
 
