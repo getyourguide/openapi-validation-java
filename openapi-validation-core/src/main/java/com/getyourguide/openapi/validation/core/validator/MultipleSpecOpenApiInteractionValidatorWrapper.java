@@ -50,7 +50,8 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
     private static SimpleMessage buildNoValidatorFoundMessage(String path) {
         return new SimpleMessage(
             MESSAGE_KEY_VALIDATOR_FOUND,
-            "No validator found for path: " + path
+            "No validator found for path: " + path,
+            ValidationReport.Level.WARN
         );
     }
 
@@ -74,6 +75,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
     private static class SimpleMessage implements ValidationReport.Message {
         private final String key;
         private final String message;
+        private final ValidationReport.Level level;
 
         @Override
         public String getKey() {
@@ -87,7 +89,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
 
         @Override
         public ValidationReport.Level getLevel() {
-            return ValidationReport.Level.WARN;
+            return level;
         }
 
         @Override
