@@ -71,7 +71,10 @@ public class OpenApiValidationWebFilter implements WebFilter {
             });
     }
 
-    /** @return true if validation is done as part of this method */
+    /**
+     * Validate request and fail on violation if configured to do so.
+     * @return true if validation is done as part of this method
+     */
     private boolean validateRequestWithFailOnViolation(
         RequestMetaData requestMetaData,
         BodyCachingServerHttpRequestDecorator requestDecorated
@@ -98,7 +101,10 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
     }
 
-    /** @return true if validation is done as part of this method */
+    /**
+     * Validate response and fail on violation if configured to do so.
+     * @return true if validation is done as part of this method
+     */
     private boolean validateResponseWithFailOnViolation(
         RequestMetaData requestMetaData,
         BodyCachingServerHttpResponseDecorator responseDecorated
@@ -149,5 +155,5 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
     }
 
-    private enum RunType {SYNC, ASYNC}
+    private enum RunType { SYNC, ASYNC }
 }
