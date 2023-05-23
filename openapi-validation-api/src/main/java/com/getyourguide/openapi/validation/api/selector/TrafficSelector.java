@@ -13,4 +13,12 @@ public interface TrafficSelector {
     default boolean canResponseBeValidated(RequestMetaData request, ResponseMetaData response) {
         return true;
     }
+
+    default boolean shouldFailOnRequestViolation(RequestMetaData request) {
+        return false;
+    }
+
+    default boolean shouldFailOnResponseViolation(RequestMetaData request) {
+        return false;
+    }
 }

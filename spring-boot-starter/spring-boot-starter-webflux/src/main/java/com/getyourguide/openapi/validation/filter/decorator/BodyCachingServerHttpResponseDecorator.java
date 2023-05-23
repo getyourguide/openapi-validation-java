@@ -5,6 +5,7 @@ import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.factory.ReactiveMetaDataFactory;
 import java.nio.charset.StandardCharsets;
 import lombok.Getter;
+import lombok.Setter;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -17,6 +18,9 @@ public class BodyCachingServerHttpResponseDecorator extends ServerHttpResponseDe
     private final TrafficSelector trafficSelector;
     private final ReactiveMetaDataFactory metaDataFactory;
     private final RequestMetaData requestMetaData;
+
+    @Setter
+    private Runnable onBodyCachedListener;
 
     @Getter
     private String cachedBody;
@@ -41,7 +45,12 @@ public class BodyCachingServerHttpResponseDecorator extends ServerHttpResponseDe
             return super.writeWith(body);
         }
 
-        var buffer = Mono.from(body).doOnNext(dataBuffer -> cachedBody = dataBuffer.toString(StandardCharsets.UTF_8));
+        var buffer = Mono.from(body).doOnNext(dataBuffer -> {
+            cachedBody = dataBuffer.toString(StandardCharsets.UTF_8);
+            if (onBodyCachedListener != null) {
+                onBodyCachedListener.run();
+            }
+        });
         return super.writeWith(buffer);
     }
 }

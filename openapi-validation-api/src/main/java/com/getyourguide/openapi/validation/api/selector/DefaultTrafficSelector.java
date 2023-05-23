@@ -11,10 +11,24 @@ public class DefaultTrafficSelector implements TrafficSelector {
 
     private final double sampleRate;
     private final Set<String> excludedPaths;
+    private final Boolean shouldFailOnRequestViolation;
+    private final Boolean shouldFailOnResponseViolation;
 
     public DefaultTrafficSelector(Double sampleRate, Set<String> excludedPaths) {
+        this(sampleRate, excludedPaths, null, null);
+    }
+
+    public DefaultTrafficSelector(
+        Double sampleRate,
+        Set<String> excludedPaths,
+        Boolean shouldFailOnRequestViolation,
+        Boolean shouldFailOnResponseViolation
+    ) {
         this.sampleRate = sampleRate != null ? sampleRate : SAMPLE_RATE_DEFAULT;
         this.excludedPaths = excludedPaths != null ? excludedPaths : Set.of();
+        this.shouldFailOnRequestViolation = shouldFailOnRequestViolation != null ? shouldFailOnRequestViolation : false;
+        this.shouldFailOnResponseViolation =
+            shouldFailOnResponseViolation != null ? shouldFailOnResponseViolation : false;
     }
 
     @Override
@@ -38,6 +52,16 @@ public class DefaultTrafficSelector implements TrafficSelector {
     public boolean canResponseBeValidated(RequestMetaData request, ResponseMetaData response) {
         return !methodEquals(request.getMethod(), "OPTIONS")
             && isContentTypeSupported(response.getContentType());
+    }
+
+    @Override
+    public boolean shouldFailOnRequestViolation(RequestMetaData request) {
+        return shouldFailOnRequestViolation;
+    }
+
+    @Override
+    public boolean shouldFailOnResponseViolation(RequestMetaData request) {
+        return shouldFailOnResponseViolation;
     }
 
     private boolean isExcludedRequest(RequestMetaData request) {
