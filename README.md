@@ -163,6 +163,44 @@ public class SampleRateTrafficSelector implements TrafficSelector {
 }
 ```
 
+### Custom log levels
+One can customize log levels as per the following example. The default log level is `info`.
+
+The key to be used here is also printed in the violation log message.
+
+```java
+@Configuration
+public class ValidatorConfiguration {
+    @Bean
+    public ValidatorConfiguration buildValidatorConfiguration() {
+        return new ValidatorConfigurationBuilder()
+            .levelResolverLevel("validation.request.body.schema.additionalProperties", LogLevel.ERROR)
+            .levelResolverDefaultLevel(LogLevel.INFO)
+            .build();
+    }
+}
+```
+
+### Multiple spec files
+It is possible to use multiple spec files for different paths. This can be achieved as demonstrated in the following
+code snipped.
+
+It is best practice to use a catch-all spec file. If a request is not matching any of the paths defined here it will
+result in a violation error with log level `warn`. 
+
+```java
+@Configuration
+public class ValidatorConfiguration {
+    @Bean
+    public ValidatorConfiguration buildValidatorConfiguration() {
+        return new ValidatorConfigurationBuilder()
+            .specificationPath(Pattern.compile("/v1/.*"), "openapi-v1.yaml")
+            .specificationPath(Pattern.compile("/.*"), "openapi.yaml")
+            .build();
+    }
+}
+```
+
 ## Examples
 Run examples with `./gradlew :examples:example-spring-boot-starter-web:bootRun` or `./gradlew :examples:example-spring-boot-starter-webflux:bootRun`.
 

@@ -1,6 +1,5 @@
 package com.getyourguide.openapi.validation.core;
 
-import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.model.Request;
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.atlassian.oai.validator.model.SimpleResponse;
@@ -8,6 +7,7 @@ import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
+import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,7 +19,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 public class OpenApiRequestValidator {
     private final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 2, 1000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(10));
 
-    private final OpenApiInteractionValidator validator;
+    private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
 
     public OpenApiRequestValidator(ValidationReportHandler validationReportHandler, String specificationFilePath, ValidatorConfiguration configuration) {
