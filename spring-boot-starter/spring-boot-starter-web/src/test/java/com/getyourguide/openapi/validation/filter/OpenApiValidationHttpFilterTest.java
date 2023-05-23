@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -15,124 +14,118 @@ import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
-import com.getyourguide.openapi.validation.factory.ReactiveMetaDataFactory;
-import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpRequestDecorator;
-import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpResponseDecorator;
-import com.getyourguide.openapi.validation.filter.decorator.DecoratorBuilder;
-import java.util.List;
+import com.getyourguide.openapi.validation.factory.ContentCachingWrapperFactory;
+import com.getyourguide.openapi.validation.factory.ServletMetaDataFactory;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import lombok.Builder;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
-class OpenApiValidationWebFilterTest {
+class OpenApiValidationHttpFilterTest {
 
     public static final String REQUEST_BODY = "";
     public static final String RESPONSE_BODY = "";
 
     private final OpenApiRequestValidator validator = mock();
     private final TrafficSelector trafficSelector = mock();
-    private final ReactiveMetaDataFactory metaDataFactory = mock();
-    private final DecoratorBuilder decoratorBuilder = mock();
+    private final ServletMetaDataFactory metaDataFactory = mock();
+    private final ContentCachingWrapperFactory contentCachingWrapperFactory = mock();
 
-    private final OpenApiValidationWebFilter webFilter =
-        new OpenApiValidationWebFilter(validator, trafficSelector, metaDataFactory, decoratorBuilder);
+    private final OpenApiValidationHttpFilter httpFilter =
+        new OpenApiValidationHttpFilter(validator, trafficSelector, metaDataFactory, contentCachingWrapperFactory);
 
     @Test
-    public void testNormalFlowWithValidation() {
+    public void testNormalFlowWithValidation() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyChainCalled(mockData.chain, mockData.cachingRequest, mockData.cachingResponse);
         verifyRequestValidatedAsync(mockData);
         verifyResponseValidatedAsync(mockData);
     }
 
     @Test
-    public void testNoValidationIfNotReady() {
+    public void testNoValidationIfNotReady() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().isReady(false).build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.exchange);
+        verifyChainCalled(mockData.chain, mockData.request, mockData.response);
         verifyNoValidation();
     }
 
     @Test
-    public void testNoValidationIfNotShouldRequestBeValidated() {
+    public void testNoValidationIfNotShouldRequestBeValidated() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().shouldRequestBeValidated(false).build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.exchange);
+        verifyChainCalled(mockData.chain, mockData.request, mockData.response);
         verifyNoValidation();
     }
 
     @Test
-    public void testNoValidationIfNotCanRequestBeValidated() {
+    public void testNoValidationIfNotCanRequestBeValidated() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().canRequestBeValidated(false).build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyChainCalled(mockData.chain, mockData.cachingRequest, mockData.cachingResponse);
         verifyNoRequestValidation();
         verifyResponseValidatedAsync(mockData);
     }
 
     @Test
-    public void testNoValidationIfNotCanResponseBeValidated() {
+    public void testNoValidationIfNotCanResponseBeValidated() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().canResponseBeValidated(false).build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyChainCalled(mockData.chain, mockData.cachingRequest, mockData.cachingResponse);
         verifyRequestValidatedAsync(mockData);
         verifyNoResponseValidation();
     }
 
     @Test
-    public void testShouldFailOnRequestViolationWithoutViolation() {
+    public void testShouldFailOnRequestViolationWithoutViolation() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnRequestViolation(true).build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyChainCalled(mockData.chain, mockData.cachingRequest, mockData.cachingResponse);
         verifyRequestValidatedSync(mockData);
         verifyResponseValidatedAsync(mockData);
     }
 
     @Test
-    public void testShouldFailOnReResponseViolationWithoutViolation() {
+    public void testShouldFailOnReResponseViolationWithoutViolation() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnResponseViolation(true).build());
 
-        var mono = webFilter.filter(mockData.exchange, mockData.chain);
+        httpFilter.doFilter(mockData.request, mockData.response, mockData.chain);
 
-        StepVerifier.create(mono).expectComplete().verify();
-        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyChainCalled(mockData.chain, mockData.cachingRequest, mockData.cachingResponse);
         verifyRequestValidatedAsync(mockData);
         verifyResponseValidatedSync(mockData);
     }
 
     @Test
-    public void testShouldFailOnRequestViolationWithViolation() {
+    public void testShouldFailOnRequestViolationWithViolation() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnRequestViolation(true).build());
         when(validator.validateRequestObject(eq(mockData.requestMetaData), eq(REQUEST_BODY)))
             .thenReturn(ValidationResult.INVALID);
 
-        assertThrows(ResponseStatusException.class, () -> webFilter.filter(mockData.exchange, mockData.chain));
+        assertThrows(ResponseStatusException.class,
+            () -> httpFilter.doFilter(mockData.request, mockData.response, mockData.chain));
 
         verifyChainNotCalled(mockData.chain);
         verifyRequestValidatedSync(mockData);
@@ -140,7 +133,7 @@ class OpenApiValidationWebFilterTest {
     }
 
     @Test
-    public void testShouldFailOnResponseViolationWithViolation() {
+    public void testShouldFailOnResponseViolationWithViolation() throws ServletException, IOException {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnResponseViolation(true).build());
         when(
             validator.validateResponseObject(
@@ -149,10 +142,11 @@ class OpenApiValidationWebFilterTest {
             )
         ).thenReturn(ValidationResult.INVALID);
 
-        assertThrows(ResponseStatusException.class, () -> webFilter.filter(mockData.exchange, mockData.chain));
+        assertThrows(ResponseStatusException.class,
+            () -> httpFilter.doFilter(mockData.request, mockData.response, mockData.chain));
 
-        verifyChainNotCalled(mockData.chain);
-        verifyNoRequestValidation();
+        verifyChainCalled(mockData.chain, mockData.cachingRequest, mockData.cachingResponse);
+        verifyRequestValidatedAsync(mockData);
         verifyResponseValidatedSync(mockData);
     }
 
@@ -207,80 +201,46 @@ class OpenApiValidationWebFilterTest {
             configuration.shouldFailOnResponseViolation);
     }
 
-    private static WebFilterChain mockChain() {
-        var chain = mock(WebFilterChain.class);
-        Mono<Void> filterMono = Mono.just("").then();
-        when(chain.filter(any())).thenReturn(filterMono);
-        return chain;
-    }
-
-    private void mockDecoratedRequests(
-        ServerHttpRequest request,
-        ServerHttpResponse response,
-        RequestMetaData requestMetaData,
-        ResponseMetaData responseMetaData,
+    private ContentCachingResponseWrapper mockContentCachingResponse(
+        HttpServletResponse response,
         MockConfiguration configuration
     ) {
-        var decoratedRequest = mock(BodyCachingServerHttpRequestDecorator.class);
-        when(decoratorBuilder.buildBodyCachingServerHttpRequestDecorator(request, requestMetaData))
-            .thenReturn(decoratedRequest);
-        when(decoratedRequest.getHeaders()).thenReturn(buildHeadersForBody(configuration.requestBody));
-        when(decoratedRequest.getCachedBody()).thenReturn(configuration.requestBody);
-        if (configuration.requestBody != null) {
-            doAnswer(invocation -> {
-                invocation.getArgument(0, Runnable.class).run();
-                return null;
-            }).when(decoratedRequest).setOnBodyCachedListener(any());
-        }
-
-        var decoratedResponse = mock(BodyCachingServerHttpResponseDecorator.class);
-        when(decoratorBuilder.buildBodyCachingServerHttpResponseDecorator(response, requestMetaData))
-            .thenReturn(decoratedResponse);
-        when(decoratedResponse.getHeaders()).thenReturn(buildHeadersForBody(configuration.responseBody));
-        when(decoratedResponse.getCachedBody()).thenReturn(configuration.responseBody);
+        var cachingResponse = mock(ContentCachingResponseWrapper.class);
+        when(contentCachingWrapperFactory.buildContentCachingResponseWrapper(response)).thenReturn(cachingResponse);
         if (configuration.responseBody != null) {
-            doAnswer(invocation -> {
-                invocation.getArgument(0, Runnable.class).run();
-                return null;
-            }).when(decoratedResponse).setOnBodyCachedListener(any());
+            when(cachingResponse.getContentType()).thenReturn("application/json");
+            when(cachingResponse.getContentAsByteArray())
+                .thenReturn(configuration.responseBody.getBytes(StandardCharsets.UTF_8));
         }
-
-        when(metaDataFactory.buildResponseMetaData(decoratedResponse)).thenReturn(responseMetaData);
+        return cachingResponse;
     }
 
-    private static HttpHeaders buildHeadersForBody(String body) {
-        var headers = new HttpHeaders();
-        if (body != null) {
-            headers.put(HttpHeaders.CONTENT_TYPE, List.of("application/json"));
-            headers.put(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(body.length())));
+    private ContentCachingRequestWrapper mockContentCachingRequest(
+        HttpServletRequest request,
+        MockConfiguration configuration
+    ) {
+        var cachingRequest = mock(ContentCachingRequestWrapper.class);
+        when(contentCachingWrapperFactory.buildContentCachingRequestWrapper(request)).thenReturn(cachingRequest);
+        if (configuration.responseBody != null) {
+            when(cachingRequest.getContentType()).thenReturn("application/json");
+            when(cachingRequest.getContentAsByteArray())
+                .thenReturn(configuration.requestBody.getBytes(StandardCharsets.UTF_8));
         }
-        return headers;
+        return cachingRequest;
     }
 
-    private static ServerWebExchange mockExchangeMutation(ServerWebExchange exchange) {
-        var mutatedExchange = mock(ServerWebExchange.class);
-        var exchangeBuilder = mock(ServerWebExchange.Builder.class);
-        when(exchange.mutate()).thenReturn(exchangeBuilder);
-        when(exchangeBuilder.request(any(ServerHttpRequest.class))).thenReturn(exchangeBuilder);
-        when(exchangeBuilder.response(any(ServerHttpResponse.class))).thenReturn(exchangeBuilder);
-        when(exchangeBuilder.build()).thenReturn(mutatedExchange);
-        return mutatedExchange;
+    private static void verifyChainCalled(FilterChain chain, ServletRequest request, ServletResponse response)
+        throws ServletException, IOException {
+        verify(chain).doFilter(request, response);
     }
 
-    private static void verifyChainCalled(WebFilterChain chain, ServerWebExchange mutatedExchange) {
-        verify(chain).filter(mutatedExchange);
-    }
-
-    private static void verifyChainNotCalled(WebFilterChain chain) {
-        verify(chain, never()).filter(any());
+    private static void verifyChainNotCalled(FilterChain chain) throws ServletException, IOException {
+        verify(chain, never()).doFilter(any(), any());
     }
 
     private MockSetupData mockSetup(MockConfiguration configuration) {
-        var exchange = mock(ServerWebExchange.class);
-        var request = mock(ServerHttpRequest.class);
-        when(exchange.getRequest()).thenReturn(request);
-        var response = mock(ServerHttpResponse.class);
-        when(exchange.getResponse()).thenReturn(response);
+        var request = mock(HttpServletRequest.class);
+        var response = mock(HttpServletResponse.class);
 
         var requestMetaData = mock(RequestMetaData.class);
         when(metaDataFactory.buildRequestMetaData(request)).thenReturn(requestMetaData);
@@ -288,17 +248,20 @@ class OpenApiValidationWebFilterTest {
         var responseMetaData = mock(ResponseMetaData.class);
         when(metaDataFactory.buildResponseMetaData(response)).thenReturn(responseMetaData);
 
-        mockDecoratedRequests(request, response, requestMetaData, responseMetaData, configuration);
-        var mutatedExchange = mockExchangeMutation(exchange);
+        var cachingRequest = mockContentCachingRequest(request, configuration);
+        var cachingResponse = mockContentCachingResponse(response, configuration);
+        when(metaDataFactory.buildResponseMetaData(cachingResponse)).thenReturn(responseMetaData);
 
-        var chain = mockChain();
+        var chain = mock(FilterChain.class);
         when(validator.isReady()).thenReturn(configuration.isReady);
         mockTrafficSelectorMethods(requestMetaData, responseMetaData, configuration);
 
         return MockSetupData.builder()
-            .exchange(exchange)
+            .request(request)
+            .response(response)
+            .cachingRequest(cachingRequest)
+            .cachingResponse(cachingResponse)
             .chain(chain)
-            .mutatedExchange(mutatedExchange)
             .requestMetaData(requestMetaData)
             .responseMetaData(responseMetaData)
             .build();
@@ -329,9 +292,11 @@ class OpenApiValidationWebFilterTest {
 
     @Builder
     private record MockSetupData(
-        ServerWebExchange exchange,
-        WebFilterChain chain,
-        ServerWebExchange mutatedExchange,
+        ServletRequest request,
+        ServletResponse response,
+        ServletRequest cachingRequest,
+        ServletResponse cachingResponse,
+        FilterChain chain,
         RequestMetaData requestMetaData,
         ResponseMetaData responseMetaData
     ) {

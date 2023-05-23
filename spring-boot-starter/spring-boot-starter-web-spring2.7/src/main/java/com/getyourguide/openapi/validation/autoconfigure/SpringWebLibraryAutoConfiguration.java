@@ -4,6 +4,7 @@ import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebA
 
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
+import com.getyourguide.openapi.validation.factory.ContentCachingWrapperFactory;
 import com.getyourguide.openapi.validation.factory.ServletMetaDataFactory;
 import com.getyourguide.openapi.validation.filter.OpenApiValidationHttpFilter;
 import lombok.AllArgsConstructor;
@@ -23,11 +24,18 @@ public class SpringWebLibraryAutoConfiguration {
 
     @Bean
     @ConditionalOnWebApplication(type = Type.SERVLET)
+    public ContentCachingWrapperFactory contentCachingWrapperFactory() {
+        return new ContentCachingWrapperFactory();
+    }
+
+    @Bean
+    @ConditionalOnWebApplication(type = Type.SERVLET)
     public OpenApiValidationHttpFilter openApiValidationHttpFilter(
         OpenApiRequestValidator validator,
         TrafficSelector trafficSelector,
-        ServletMetaDataFactory metaDataFactory
+        ServletMetaDataFactory metaDataFactory,
+        ContentCachingWrapperFactory contentCachingWrapperFactory
     ) {
-        return new OpenApiValidationHttpFilter(validator, trafficSelector, metaDataFactory);
+        return new OpenApiValidationHttpFilter(validator, trafficSelector, metaDataFactory, contentCachingWrapperFactory);
     }
 }
