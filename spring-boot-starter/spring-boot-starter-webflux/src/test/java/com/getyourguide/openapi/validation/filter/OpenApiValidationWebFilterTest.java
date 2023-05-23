@@ -175,7 +175,6 @@ class OpenApiValidationWebFilterTest {
         verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData), eq(REQUEST_BODY));
     }
 
-
     private void verifyRequestValidatedSync(MockSetupData mockData) {
         verify(validator).validateRequestObject(eq(mockData.requestMetaData), eq(REQUEST_BODY));
     }
