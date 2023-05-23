@@ -83,6 +83,8 @@ openapi.validation.sample-rate=1.0
 
 # Custom location of specification file within resources or filesystem.
 openapi.validation.specification-file-path=/tmp/openapi-spec/openapi.json
+# If it is within src/main/resources/folder/my-spec.json use
+openapi.validation.specification-file-path=folder/my-spec.json
 
 # Comma separated list of paths to be excluded from validation. Default is no excluded paths
 openapi.validation.excluded-paths=/_readiness,/_liveness,/_metrics
@@ -98,6 +100,10 @@ openapi.validation.validation-report-metric-name=openapi.violation
 # Add additional tags to be logged with metrics. They should be in the format {KEY}={VALUE},{KEY}={VALUE}
 # Default is no additional tags.
 openapi.validation.validation-report-metric-additional-tags=service=example,team=chk
+
+# Fail requests on request/response violations. Defaults to false.
+openapi.validation.should-fail-on-request-violation=true
+openapi.validation.should-fail-on-response-violation=true
 ```
 
 ### DataDog metrics
