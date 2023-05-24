@@ -16,9 +16,7 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @AllArgsConstructor
 public class ValidationReportHandler {
     private final ValidationReportThrottler throttleHelper;
