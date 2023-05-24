@@ -9,7 +9,6 @@ import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHtt
 import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpResponseDecorator;
 import com.getyourguide.openapi.validation.filter.decorator.DecoratorBuilder;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ import reactor.core.publisher.SignalType;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @AllArgsConstructor
-@Slf4j
 public class OpenApiValidationWebFilter implements WebFilter {
 
     private final OpenApiRequestValidator validator;
