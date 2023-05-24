@@ -56,9 +56,10 @@ public class LibraryAutoConfiguration {
         Optional<MetricsReporter> metrics,
         Optional<ViolationExclusions> violationExclusions
     ) {
-        var metricName =
-            properties.getValidationReportMetricName() != null ? properties.getValidationReportMetricName() :
-                DEFAULT_METRIC_NAME;
+        var metricName = properties.getValidationReportMetricName() != null
+            ? properties.getValidationReportMetricName()
+            : DEFAULT_METRIC_NAME;
+
         return new ValidationReportHandler(
             validationReportThrottler,
             logger,
