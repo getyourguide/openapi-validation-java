@@ -1,6 +1,8 @@
 package com.getyourguide.openapi.validation.autoconfigure;
 
 import com.getyourguide.openapi.validation.OpenApiValidationApplicationProperties;
+import com.getyourguide.openapi.validation.api.exclusions.NoViolationExclusions;
+import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.LoggerExtension;
 import com.getyourguide.openapi.validation.api.log.NoOpLoggerExtension;
@@ -51,15 +53,18 @@ public class LibraryAutoConfiguration {
     public ValidationReportHandler validationReportHandler(
         ValidationReportThrottler validationReportThrottler,
         ViolationLogger logger,
-        Optional<MetricsReporter> metrics
+        Optional<MetricsReporter> metrics,
+        Optional<ViolationExclusions> violationExclusions
     ) {
-        var metricName =
-            properties.getValidationReportMetricName() != null ? properties.getValidationReportMetricName() :
-                DEFAULT_METRIC_NAME;
+        var metricName = properties.getValidationReportMetricName() != null
+            ? properties.getValidationReportMetricName()
+            : DEFAULT_METRIC_NAME;
+
         return new ValidationReportHandler(
             validationReportThrottler,
             logger,
             metrics.orElseGet(NoOpMetricsReporter::new),
+            violationExclusions.orElseGet(NoViolationExclusions::new),
             ValidationReportHandler.Configuration.builder()
                 .metricName(metricName)
                 .metricAdditionalTags(properties.getValidationReportMetricAdditionalTags())

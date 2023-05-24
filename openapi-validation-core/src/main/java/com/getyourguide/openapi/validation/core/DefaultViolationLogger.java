@@ -19,11 +19,11 @@ public class DefaultViolationLogger implements ViolationLogger {
     public void log(OpenApiViolation violation) {
         try (var ignored = loggerExtension.addToLoggingContext(buildLoggingContext(violation))) {
             switch (violation.getLevel()) {
-                case INFO -> log.info(violation.getMessage());
-                case WARN -> log.warn(violation.getMessage());
-                case ERROR -> log.error(violation.getMessage());
+                case INFO -> log.info(violation.getLogMessage());
+                case WARN -> log.warn(violation.getLogMessage());
+                case ERROR -> log.error(violation.getLogMessage());
                 // keeping ignored as debug for now
-                case IGNORE -> log.debug(violation.getMessage());
+                case IGNORE -> log.debug(violation.getLogMessage());
                 default -> { /* do nothing */ }
             }
         } catch (IOException e) {

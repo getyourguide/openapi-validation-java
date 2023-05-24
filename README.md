@@ -201,6 +201,23 @@ public class ValidatorConfiguration {
 }
 ```
 
+### Exclude certain violations
+Certain violations can get excluded from reporting. This can be achieved as demonstrated in the following snippet.
+
+**Note:** Only use this where it is really needed. It is best practice to fix the actual violations by either adjusting
+the specification, the server implementation, or the client sending wrong requests.
+
+```java
+@Component
+public class ViolationExclusionsExample implements ViolationExclusions {
+  @Override
+  public boolean isExcluded(OpenApiViolation violation) {
+    return violation.getDirection().equals(Direction.REQUEST)
+            && violation.getMessage().equals("[Path '/name'] Instance type (integer) does not match any allowed primitive type (allowed: [\"string\"])");
+  }
+}
+```
+
 ## Examples
 Run examples with `./gradlew :examples:example-spring-boot-starter-web:bootRun` or `./gradlew :examples:example-spring-boot-starter-webflux:bootRun`.
 
