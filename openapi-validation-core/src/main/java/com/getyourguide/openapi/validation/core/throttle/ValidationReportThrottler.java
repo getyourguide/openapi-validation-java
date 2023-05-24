@@ -1,9 +1,8 @@
 package com.getyourguide.openapi.validation.core.throttle;
 
-import com.atlassian.oai.validator.report.ValidationReport;
-import com.getyourguide.openapi.validation.api.model.Direction;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 
 public interface ValidationReportThrottler {
 
-    void throttle(ValidationReport.Message message, Direction direction, Runnable runnable);
+    void throttle(OpenApiViolation openApiViolation, Runnable runnable);
 }

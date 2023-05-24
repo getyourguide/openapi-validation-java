@@ -1,7 +1,6 @@
 package com.getyourguide.openapi.validation.core.throttle;
 
-import com.atlassian.oai.validator.report.ValidationReport;
-import com.getyourguide.openapi.validation.api.model.Direction;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AllArgsConstructor;
@@ -16,21 +15,21 @@ public class RequestBasedValidationReportThrottler implements ValidationReportTh
     private final Map<String, DateTime> loggedMessages = new ConcurrentHashMap<>();
 
     @Override
-    public void throttle(ValidationReport.Message message, Direction direction, Runnable runnable) {
-        if (isThrottled(message, direction)) {
+    public void throttle(OpenApiViolation openApiViolation, Runnable runnable) {
+        if (isThrottled(openApiViolation)) {
             return;
         }
 
         runnable.run();
-        registerLoggedMessage(message, direction);
+        registerLoggedMessage(openApiViolation);
     }
 
-    private void registerLoggedMessage(ValidationReport.Message message, Direction direction) {
-        loggedMessages.put(buildKey(message, direction), DateTime.now());
+    private void registerLoggedMessage(OpenApiViolation openApiViolation) {
+        loggedMessages.put(buildKey(openApiViolation), DateTime.now());
     }
 
-    private boolean isThrottled(ValidationReport.Message message, Direction direction) {
-        var key = buildKey(message, direction);
+    private boolean isThrottled(OpenApiViolation openApiViolation) {
+        var key = buildKey(openApiViolation);
         var lastLoggedTime = loggedMessages.get(key);
         if (lastLoggedTime == null) {
             return false;
@@ -39,18 +38,13 @@ public class RequestBasedValidationReportThrottler implements ValidationReportTh
     }
 
     @NonNull
-    private String buildKey(ValidationReport.Message message, Direction direction) {
-        var keyBuilder = new StringBuilder(direction.toString() + ":");
-        message.getContext().ifPresentOrElse(
-            messageContext -> {
-                var method = messageContext.getRequestMethod().map(Enum::name).orElse("N/A");
-                var apiOperationPathNormalized = messageContext.getApiOperation().map(apiOperation -> apiOperation.getApiPath().normalised()).orElse("N/A");
-                var responseStatus = messageContext.getResponseStatus().map(Object::toString).orElse("N/A");
-                var schema = messageContext.getPointers().map(ValidationReport.MessageContext.Pointers::getSchema).orElse("N/A");
-                keyBuilder.append(String.format("%s:%s:%s:%s", method, apiOperationPathNormalized, responseStatus, schema));
-            },
-            () -> keyBuilder.append("N/A")
-        );
+    private String buildKey(OpenApiViolation openApiViolation) {
+        var keyBuilder = new StringBuilder(openApiViolation.getDirection().toString() + ":");
+        var method = openApiViolation.getRequestMetaData().getMethod();
+        var apiOperationPathNormalized = openApiViolation.getNormalizedPath().orElse("N/A");
+        var responseStatus = openApiViolation.getResponseStatus().map(Object::toString).orElse("N/A");
+        var schema = openApiViolation.getSchema().orElse("N/A");
+        keyBuilder.append(String.format("%s:%s:%s:%s", method, apiOperationPathNormalized, responseStatus, schema));
         return keyBuilder.toString();
     }
 }

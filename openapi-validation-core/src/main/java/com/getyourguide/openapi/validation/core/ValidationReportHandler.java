@@ -34,19 +34,14 @@ public class ValidationReportHandler {
         if (!result.getMessages().isEmpty()) {
             result
                 .getMessages()
-                .stream().filter(message -> !isExcludedMessage(message))
-                .forEach(message -> throttleHelper.throttle(message, direction,
-                    () -> logValidationError(message, request, body, direction)));
+                .stream()
+                .map(message -> buildOpenApiViolation(message, request, body, direction))
+                .filter(violation -> !isViolationExcluded(violation))
+                .forEach(violation -> throttleHelper.throttle(violation, () -> logValidationError(violation)));
         }
     }
 
-    private void logValidationError(
-        ValidationReport.Message message,
-        RequestMetaData request,
-        String body,
-        Direction direction
-    ) {
-        var openApiViolation = buildOpenApiViolation(message, request, body, direction);
+    private void logValidationError(OpenApiViolation openApiViolation) {
         logger.log(openApiViolation);
         metrics.increment(configuration.getMetricName(), createTags(openApiViolation));
     }
@@ -78,17 +73,19 @@ public class ValidationReportHandler {
             .operationId(getOperationId(message))
             .normalizedPath(getNormalizedPath(message))
             .instance(getPointersInstance(message))
+            .schema(getPointersSchema(message))
             .responseStatus(getResponseStatus(message))
-            .message(logMessage)
+            .logMessage(logMessage)
+            .message(message.getMessage())
             .build();
     }
 
-    private boolean isExcludedMessage(ValidationReport.Message message) {
+    private boolean isViolationExcluded(OpenApiViolation openApiViolation) {
         return
             // JSON parse errors should be ignored as it can't be compared to the schema then (this also prevents logging personal data!)
-            message.getMessage().startsWith("Unable to parse JSON")
+            openApiViolation.getMessage().startsWith("Unable to parse JSON")
                 // If it matches more than 1, then we don't want to log a validation error
-                || message.getMessage().matches(
+                || openApiViolation.getMessage().matches(
                 ".*\\[Path '[^']+'] Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d\\).*");
     }
 
@@ -112,6 +109,12 @@ public class ValidationReportHandler {
         return message.getContext()
             .flatMap(ValidationReport.MessageContext::getPointers)
             .map(ValidationReport.MessageContext.Pointers::getInstance);
+    }
+
+    private static Optional<String> getPointersSchema(ValidationReport.Message message) {
+        return message.getContext()
+            .flatMap(ValidationReport.MessageContext::getPointers)
+            .map(ValidationReport.MessageContext.Pointers::getSchema);
     }
 
     private static Optional<String> getOperationId(ValidationReport.Message message) {
