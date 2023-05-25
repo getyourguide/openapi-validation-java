@@ -16,6 +16,11 @@
       "description": "Comma separated list of paths to be excluded from validation. Default is no excluded paths."
     },
     {
+      "name": "openapi.validation.excluded-headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Headers with patterns to be excluded. e.g. `User-Agent: .*(bingbot|googlebot).*`. Default is no excluded paths."
+    },
+    {
       "name": "openapi.validation.validation-report-throttle-wait-seconds",
       "type": "java.lang.Integer",
       "description": "Number of seconds for which the validation report throttler will wait before sending the next report. The property defaults to null. If null or 0, there won't be any throttling."

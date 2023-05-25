@@ -1,7 +1,10 @@
 package com.getyourguide.openapi.validation.api.selector;
 
+import com.getyourguide.openapi.validation.api.exclusions.ExcludedHeader;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -11,21 +14,24 @@ public class DefaultTrafficSelector implements TrafficSelector {
 
     private final double sampleRate;
     private final Set<String> excludedPaths;
+    private final List<ExcludedHeader> excludedHeaders;
     private final Boolean shouldFailOnRequestViolation;
     private final Boolean shouldFailOnResponseViolation;
 
-    public DefaultTrafficSelector(Double sampleRate, Set<String> excludedPaths) {
-        this(sampleRate, excludedPaths, null, null);
+    public DefaultTrafficSelector(Double sampleRate, Set<String> excludedPaths, List<ExcludedHeader> excludedHeaders) {
+        this(sampleRate, excludedPaths, excludedHeaders, null, null);
     }
 
     public DefaultTrafficSelector(
         Double sampleRate,
         Set<String> excludedPaths,
+        List<ExcludedHeader> excludedHeaders,
         Boolean shouldFailOnRequestViolation,
         Boolean shouldFailOnResponseViolation
     ) {
         this.sampleRate = sampleRate != null ? sampleRate : SAMPLE_RATE_DEFAULT;
         this.excludedPaths = excludedPaths != null ? excludedPaths : Set.of();
+        this.excludedHeaders = excludedHeaders != null ? excludedHeaders : Collections.emptyList();
         this.shouldFailOnRequestViolation = shouldFailOnRequestViolation != null ? shouldFailOnRequestViolation : false;
         this.shouldFailOnResponseViolation =
             shouldFailOnResponseViolation != null ? shouldFailOnResponseViolation : false;
@@ -65,6 +71,17 @@ public class DefaultTrafficSelector implements TrafficSelector {
     }
 
     private boolean isExcludedRequest(RequestMetaData request) {
+        return isRequestExcludedByHeader(request) || isRequestExcludedByPath(request);
+    }
+
+    private boolean isRequestExcludedByHeader(RequestMetaData request) {
+        return excludedHeaders.stream().anyMatch(excludedHeader -> {
+            var headerValue = request.getHeaders().get(excludedHeader.headerName());
+            return headerValue != null && excludedHeader.headerValuePattern().matcher(headerValue).matches();
+        });
+    }
+
+    private boolean isRequestExcludedByPath(RequestMetaData request) {
         return excludedPaths.contains(request.getUri().getPath());
     }
 
