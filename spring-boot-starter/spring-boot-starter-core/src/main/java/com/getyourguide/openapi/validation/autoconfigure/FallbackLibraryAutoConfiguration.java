@@ -21,7 +21,12 @@ public class FallbackLibraryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public TrafficSelector defaultTrafficSelector() {
-        return new DefaultTrafficSelector(properties.getSampleRate(), properties.getExcludedPathsAsSet());
+        return new DefaultTrafficSelector(
+            properties.getSampleRate(),
+            properties.getExcludedPathsAsSet(),
+            properties.getShouldFailOnRequestViolation(),
+            properties.getShouldFailOnResponseViolation()
+        );
     }
 
 }

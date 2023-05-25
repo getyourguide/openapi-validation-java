@@ -22,5 +22,6 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework:spring-webflux'
+    testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
 }

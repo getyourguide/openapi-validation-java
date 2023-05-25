@@ -27,6 +27,8 @@ public class OpenApiValidationApplicationProperties {
     private String validationReportMetricName;
     private String validationReportMetricAdditionalTags;
     private String excludedPaths;
+    private Boolean shouldFailOnRequestViolation;
+    private Boolean shouldFailOnResponseViolation;
 
     public List<MetricTag> getValidationReportMetricAdditionalTags() {
         if (validationReportMetricAdditionalTags == null) {

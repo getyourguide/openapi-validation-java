@@ -1,6 +1,8 @@
 package com.getyourguide.openapi.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.getyourguide.openapi.validation.api.metrics.MetricTag;
 import java.util.List;
@@ -24,7 +26,9 @@ class OpenApiValidationApplicationPropertiesTest {
             VALIDATION_REPORT_THROTTLE_WAIT_SECONDS,
             VALIDATION_REPORT_METRIC_NAME,
             VALIDATION_REPORT_METRIC_ADDITONAL_TAGS_STRING,
-            EXCLUDED_PATHS
+            EXCLUDED_PATHS,
+            true,
+            false
         );
 
         assertEquals(SAMPLE_RATE, loggingConfiguration.getSampleRate());
@@ -37,5 +41,7 @@ class OpenApiValidationApplicationPropertiesTest {
         );
         assertEquals(EXCLUDED_PATHS, loggingConfiguration.getExcludedPaths());
         assertEquals(Set.of("/_readiness","/_liveness","/_metrics"), loggingConfiguration.getExcludedPathsAsSet());
+        assertTrue(loggingConfiguration.getShouldFailOnRequestViolation());
+        assertFalse(loggingConfiguration.getShouldFailOnResponseViolation());
     }
 }

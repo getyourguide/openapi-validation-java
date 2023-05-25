@@ -29,6 +29,16 @@
       "name": "openapi.validation.validation-report-metric-additional-tags",
       "type": "java.lang.String",
       "description": "Additional tags to be logged with metrics. They should be in the format {KEY}={VALUE},{KEY}={VALUE}. Default is no additional tags."
+    },
+    {
+      "name": "openapi.validation.should-fail-on-request-violation",
+      "type": "java.lang.Boolean",
+      "description": "If set to true the request will fail in case a request violation occurs. Defaults to false."
+    },
+    {
+      "name": "openapi.validation.should-fail-on-response-violation",
+      "type": "java.lang.Boolean",
+      "description": "If set to true the request will fail in case a response violation occurs. Defaults to false."
     }
   ]
 }

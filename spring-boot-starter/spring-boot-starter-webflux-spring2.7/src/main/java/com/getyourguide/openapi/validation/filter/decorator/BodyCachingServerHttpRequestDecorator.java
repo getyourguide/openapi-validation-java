@@ -4,6 +4,7 @@ import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import java.nio.charset.StandardCharsets;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
@@ -13,6 +14,9 @@ import reactor.core.publisher.Flux;
 public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDecorator {
     private final TrafficSelector trafficSelector;
     private final RequestMetaData requestMetaData;
+
+    @Setter
+    private Runnable onBodyCachedListener;
 
     @Getter
     private String cachedBody;
@@ -34,6 +38,11 @@ public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDeco
             return super.getBody();
         }
 
-        return super.getBody().doOnNext(dataBuffer -> cachedBody = dataBuffer.toString(StandardCharsets.UTF_8));
+        return super.getBody().doOnNext(dataBuffer -> {
+            cachedBody = dataBuffer.toString(StandardCharsets.UTF_8);
+            if (onBodyCachedListener != null) {
+                onBodyCachedListener.run();
+            }
+        });
     }
 }
