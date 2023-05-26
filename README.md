@@ -88,6 +88,9 @@ openapi.validation.specification-file-path=folder/my-spec.json
 
 # Comma separated list of paths to be excluded from validation. Default is no excluded paths
 openapi.validation.excluded-paths=/_readiness,/_liveness,/_metrics
+# Allows to exclude requests based on headers. Default is no excluded headers.
+# Each entry is the header plus a matching regex. The regex is case insensitive.
+openapi.validation.excluded-headers[0]=User-Agent: .*(bingbot|googlebot).*
 
 # Throttle the validation reporting (logs & metrics) to a maximum of 1 log/metric per 10 seconds.
 # Default is null which results in no throttling.

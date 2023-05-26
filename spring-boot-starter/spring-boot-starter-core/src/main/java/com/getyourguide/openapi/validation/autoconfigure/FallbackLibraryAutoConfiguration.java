@@ -24,6 +24,7 @@ public class FallbackLibraryAutoConfiguration {
         return new DefaultTrafficSelector(
             properties.getSampleRate(),
             properties.getExcludedPathsAsSet(),
+            properties.getExcludedHeaders(),
             properties.getShouldFailOnRequestViolation(),
             properties.getShouldFailOnResponseViolation()
         );
