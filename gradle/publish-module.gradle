@@ -20,7 +20,7 @@ afterEvaluate {
                 pom {
                     name = resolvedArtifactId
                     description = hasProperty('PUBLISH_DESCRIPTION') ? PUBLISH_DESCRIPTION : 'OpenAPI Spec Validation'
-                    url = 'https://github.com/getyourguide/openapi-validation'
+                    url = 'https://github.com/getyourguide/openapi-validation-java'
                     licenses {
                         license {
                             name = 'Apache License 2.0'
