@@ -47,10 +47,8 @@ public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDeco
                 cachedBody += dataBuffer.toString(StandardCharsets.UTF_8);
             })
             .doFinally(signalType -> {
-                if (signalType == SignalType.ON_COMPLETE) {
-                    if (onBodyCachedListener != null) {
-                        onBodyCachedListener.run();
-                    }
+                if (signalType == SignalType.ON_COMPLETE && onBodyCachedListener != null) {
+                    onBodyCachedListener.run();
                 }
             });
     }
