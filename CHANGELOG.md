@@ -27,7 +27,7 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/1.1.1...HEAD
-[1.1.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/1.1.1
-[1.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/1.1.0
-[1.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/1.0.2
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.1
+[1.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.0
+[1.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.0.2
