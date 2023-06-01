@@ -83,8 +83,6 @@ public class ValidationReportHandler {
     private boolean isViolationExcluded(OpenApiViolation openApiViolation) {
         return
             violationExclusions.isExcluded(openApiViolation)
-                // JSON parse errors should be ignored as it can't be compared to the schema then (this also prevents logging personal data!)
-                || openApiViolation.getMessage().startsWith("Unable to parse JSON")
                 // If it matches more than 1, then we don't want to log a validation error
                 || openApiViolation.getMessage().matches(
                 ".*\\[Path '[^']+'] Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d\\).*");
