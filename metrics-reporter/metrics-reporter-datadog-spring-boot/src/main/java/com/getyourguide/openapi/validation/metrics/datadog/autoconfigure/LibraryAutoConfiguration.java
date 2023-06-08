@@ -3,9 +3,9 @@ package com.getyourguide.openapi.validation.metrics.datadog.autoconfigure;
 import static com.getyourguide.openapi.validation.metrics.datadog.OpenApiValidationDataDogMetricsApplicationProperties.PROPERTY_STATSD_SERVICE_HOST;
 import static com.getyourguide.openapi.validation.metrics.datadog.OpenApiValidationDataDogMetricsApplicationProperties.PROPERTY_STATSD_SERVICE_PORT;
 
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
 import com.getyourguide.openapi.validation.metrics.datadog.OpenApiValidationDataDogMetricsApplicationProperties;
-import com.getyourguide.openapi.validation.metrics.datadog.StatsDClientMetricsReporter;
+import com.getyourguide.openapi.validation.metrics.datadog.client.StatsDClientMetricsClient;
 import com.timgroup.statsd.NonBlockingStatsDClientBuilder;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -23,12 +23,12 @@ public class LibraryAutoConfiguration {
     @Bean
     @ConditionalOnClass(name = "com.timgroup.statsd.StatsDClient")
     @ConditionalOnProperty({PROPERTY_STATSD_SERVICE_HOST, PROPERTY_STATSD_SERVICE_PORT})
-    public MetricsReporter metricsReporterCustomStatsDClient() {
+    public MetricsClient metricsClientCustomStatsDClient() {
         var statsDClient = new NonBlockingStatsDClientBuilder()
             .prefix(properties.getMetricPrefix())
             .hostname(properties.getStatsd().getService().getHost())
             .port(properties.getStatsd().getService().getPort())
             .build();
-        return new StatsDClientMetricsReporter(statsDClient);
+        return new StatsDClientMetricsClient(statsDClient);
     }
 }

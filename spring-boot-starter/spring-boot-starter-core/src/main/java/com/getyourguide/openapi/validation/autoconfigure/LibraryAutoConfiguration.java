@@ -7,8 +7,10 @@ import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.LoggerExtension;
 import com.getyourguide.openapi.validation.api.log.NoOpLoggerExtension;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
+import com.getyourguide.openapi.validation.api.metrics.DefaultMetricsReporter;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
-import com.getyourguide.openapi.validation.api.metrics.NoOpMetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
+import com.getyourguide.openapi.validation.api.metrics.client.NoOpMetricsClient;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfigurationBuilder;
 import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
@@ -50,25 +52,32 @@ public class LibraryAutoConfiguration {
     }
 
     @Bean
-    public ValidationReportHandler validationReportHandler(
-        ValidationReportThrottler validationReportThrottler,
-        ViolationLogger logger,
-        Optional<MetricsReporter> metrics,
-        Optional<ViolationExclusions> violationExclusions
-    ) {
+    @ConditionalOnMissingBean
+    public MetricsReporter metricsReporter(Optional<MetricsClient> metricsClient) {
         var metricName = properties.getValidationReportMetricName() != null
             ? properties.getValidationReportMetricName()
             : DEFAULT_METRIC_NAME;
-
-        return new ValidationReportHandler(
-            validationReportThrottler,
-            logger,
-            metrics.orElseGet(NoOpMetricsReporter::new),
-            violationExclusions.orElseGet(NoViolationExclusions::new),
-            ValidationReportHandler.Configuration.builder()
+        return new DefaultMetricsReporter(
+            metricsClient.orElseGet(NoOpMetricsClient::new),
+            DefaultMetricsReporter.Configuration.builder()
                 .metricName(metricName)
                 .metricAdditionalTags(properties.getValidationReportMetricAdditionalTags())
                 .build()
+        );
+    }
+
+    @Bean
+    public ValidationReportHandler validationReportHandler(
+        ValidationReportThrottler validationReportThrottler,
+        ViolationLogger logger,
+        MetricsReporter metricsReporter,
+        Optional<ViolationExclusions> violationExclusions
+    ) {
+        return new ValidationReportHandler(
+            validationReportThrottler,
+            logger,
+            metricsReporter,
+            violationExclusions.orElseGet(NoViolationExclusions::new)
         );
     }
 

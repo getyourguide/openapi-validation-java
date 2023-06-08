@@ -3,8 +3,8 @@ package com.getyourguide.openapi.validation.metrics.datadog.autoconfigure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
-import com.getyourguide.openapi.validation.metrics.datadog.StatsDClientMetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
+import com.getyourguide.openapi.validation.metrics.datadog.client.StatsDClientMetricsClient;
 import com.timgroup.statsd.StatsDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class LibraryAutoConfigurationMetricsLoggerTest {
     }
 
     @Test
-    void withDataDogPropertiesShouldCreateStatsDClientMetricsReporter() {
+    void withDataDogPropertiesShouldCreateStatsDClientMetricsClient() {
         contextRunner
             .withPropertyValues(
                 "openapi.validation.datadog.statsd.service.host=localhost",
@@ -32,15 +32,15 @@ class LibraryAutoConfigurationMetricsLoggerTest {
             )
             .run(context -> {
                 assertThat(context)
-                    .hasSingleBean(MetricsReporter.class);
-                assertThat(context.getBeansOfType(MetricsReporter.class))
-                    .extractingByKey("metricsReporterCustomStatsDClient")
-                    .isInstanceOf(StatsDClientMetricsReporter.class);
+                    .hasSingleBean(MetricsClient.class);
+                assertThat(context.getBeansOfType(MetricsClient.class))
+                    .extractingByKey("metricsClientCustomStatsDClient")
+                    .isInstanceOf(StatsDClientMetricsClient.class);
             });
     }
 
     @Test
-    void withStatsDClientPropertiesAndExistingStatsDClientShouldCreateNewStatsDClientAndCreateStatsDClientMetricsReporter() {
+    void withStatsDClientPropertiesAndExistingStatsDClientShouldCreateNewStatsDClientAndCreateStatsDClientMetricsClient() {
         contextRunner
             .withPropertyValues(
                 "openapi.validation.datadog.statsd.service.host=localhost",
@@ -49,10 +49,10 @@ class LibraryAutoConfigurationMetricsLoggerTest {
             .withBean(StatsDClient.class, () -> mock(StatsDClient.class))
             .run(context -> {
                 assertThat(context)
-                    .hasSingleBean(MetricsReporter.class);
-                assertThat(context.getBeansOfType(MetricsReporter.class))
-                    .extractingByKey("metricsReporterCustomStatsDClient")
-                    .isInstanceOf(StatsDClientMetricsReporter.class);
+                    .hasSingleBean(MetricsClient.class);
+                assertThat(context.getBeansOfType(MetricsClient.class))
+                    .extractingByKey("metricsClientCustomStatsDClient")
+                    .isInstanceOf(StatsDClientMetricsClient.class);
             });
     }
 
@@ -63,10 +63,10 @@ class LibraryAutoConfigurationMetricsLoggerTest {
             .withBean(StatsDClient.class, () -> mock(StatsDClient.class))
             .run(context -> {
                 assertThat(context)
-                    .hasSingleBean(MetricsReporter.class);
-                assertThat(context.getBeansOfType(MetricsReporter.class))
-                    .extractingByKey("metricsReporterStatsDClient")
-                    .isInstanceOf(StatsDClientMetricsReporter.class);
+                    .hasSingleBean(MetricsClient.class);
+                assertThat(context.getBeansOfType(MetricsClient.class))
+                    .extractingByKey("metricsClientStatsDClient")
+                    .isInstanceOf(StatsDClientMetricsClient.class);
             });
     }
 
@@ -75,7 +75,7 @@ class LibraryAutoConfigurationMetricsLoggerTest {
         contextRunner
             .run(context -> {
                 assertThat(context)
-                    .doesNotHaveBean(MetricsReporter.class);
+                    .doesNotHaveBean(MetricsClient.class);
             });
     }
 }
