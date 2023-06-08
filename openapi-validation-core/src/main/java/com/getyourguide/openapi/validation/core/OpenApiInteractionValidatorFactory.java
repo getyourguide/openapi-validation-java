@@ -60,6 +60,12 @@ public class OpenApiInteractionValidatorFactory {
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
+
+        if (validators.isEmpty()) {
+            log.info("OpenAPI spec file(s) could not be found [validation disabled]");
+            return null;
+        }
+
         return new MultipleSpecOpenApiInteractionValidatorWrapper(validators);
     }
 
