@@ -199,7 +199,7 @@ result in a violation error with log level `warn`.
 
 ```java
 @Configuration
-public class ValidatorConfiguration {
+public class OpenApiValidatorConfiguration {
     @Bean
     public ValidatorConfiguration buildValidatorConfiguration() {
         return new ValidatorConfigurationBuilder()
