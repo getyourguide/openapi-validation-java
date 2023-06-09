@@ -28,7 +28,7 @@
     {
       "name": "openapi.validation.validation-report-metric-name",
       "type": "java.lang.String",
-      "description": "Metric name to be used when reporting violations with the MetricsReporter. The property defaults to 'openapi.validation.error'."
+      "description": "Metric name to be used when reporting violations with the MetricsReporter. The property defaults to 'openapi.validation'."
     },
     {
       "name": "openapi.validation.validation-report-metric-additional-tags",

@@ -15,7 +15,7 @@ class OpenApiValidationApplicationPropertiesTest {
     private static final Double SAMPLE_RATE = 0.001;
     private static final String SPECIFICATION_FILE_PATH = "/tmp/openapi.yaml";
     private static final Integer VALIDATION_REPORT_THROTTLE_WAIT_SECONDS = 10;
-    private static final String VALIDATION_REPORT_METRIC_NAME = "openapi_validation_error";
+    private static final String VALIDATION_REPORT_METRIC_NAME = "openapi_validation";
     private static final String VALIDATION_REPORT_METRIC_ADDITONAL_TAGS_STRING = "service=payment,team=chk";
     private static final String EXCLUDED_PATHS = "/_readiness,/_liveness,/_metrics";
     private static final List<String> EXCLUDED_HEADERS = List.of("User-Agent: .*(bingbot|googlebot).*", "x-is-bot: true");

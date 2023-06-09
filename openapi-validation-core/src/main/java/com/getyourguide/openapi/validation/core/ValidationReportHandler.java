@@ -4,18 +4,13 @@ import com.atlassian.oai.validator.report.ValidationReport;
 import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
-import com.getyourguide.openapi.validation.api.metrics.MetricTag;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
 
 @AllArgsConstructor
 public class ValidationReportHandler {
@@ -23,7 +18,6 @@ public class ValidationReportHandler {
     private final ViolationLogger logger;
     private final MetricsReporter metrics;
     private final ViolationExclusions violationExclusions;
-    private final Configuration configuration;
 
     public void handleValidationReport(
         RequestMetaData request,
@@ -43,7 +37,7 @@ public class ValidationReportHandler {
 
     private void logValidationError(OpenApiViolation openApiViolation) {
         logger.log(openApiViolation);
-        metrics.increment(configuration.getMetricName(), createTags(openApiViolation));
+        metrics.reportViolation(openApiViolation);
     }
 
     private OpenApiViolation buildOpenApiViolation(
@@ -88,22 +82,6 @@ public class ValidationReportHandler {
                 ".*\\[Path '[^']+'] Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d\\).*");
     }
 
-    private MetricTag[] createTags(OpenApiViolation openApiViolation) {
-        var tags = new ArrayList<MetricTag>();
-
-        tags.add(new MetricTag("type", openApiViolation.getDirection().toString().toLowerCase()));
-        tags.add(new MetricTag("method", openApiViolation.getRequestMetaData().getMethod().toLowerCase()));
-        openApiViolation.getNormalizedPath().ifPresent(path -> tags.add(new MetricTag("path", path)));
-        openApiViolation.getResponseStatus()
-            .ifPresent(responseStatus -> tags.add(new MetricTag("status", responseStatus.toString())));
-
-        if (configuration.getMetricAdditionalTags() != null) {
-            tags.addAll(configuration.getMetricAdditionalTags());
-        }
-
-        return tags.toArray(MetricTag[]::new);
-    }
-
     private static Optional<String> getPointersInstance(ValidationReport.Message message) {
         return message.getContext()
             .flatMap(ValidationReport.MessageContext::getPointers)
@@ -143,12 +121,5 @@ public class ValidationReportHandler {
             case INFO -> LogLevel.INFO;
             case IGNORE -> LogLevel.IGNORE;
         };
-    }
-
-    @Builder
-    @Getter
-    public static class Configuration {
-        private final String metricName;
-        private final List<MetricTag> metricAdditionalTags;
     }
 }

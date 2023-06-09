@@ -1,11 +1,11 @@
-package com.getyourguide.openapi.validation.metrics;
+package com.getyourguide.openapi.validation.metrics.client;
 
 import com.getyourguide.openapi.validation.api.metrics.MetricTag;
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LoggingMetricsReporter implements MetricsReporter {
+public class LoggingMetricsClient implements MetricsClient {
 
     @Override
     public void increment(String aspect, MetricTag... tags) {

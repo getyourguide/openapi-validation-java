@@ -1,7 +1,7 @@
 package com.getyourguide.openapi.validation.metrics.datadog.autoconfigure;
 
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
-import com.getyourguide.openapi.validation.metrics.datadog.StatsDClientMetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
+import com.getyourguide.openapi.validation.metrics.datadog.client.StatsDClientMetricsClient;
 import com.timgroup.statsd.StatsDClient;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,8 +18,8 @@ public class FallbackLibraryAutoConfiguration {
     @Bean
     @ConditionalOnBean(StatsDClient.class)
     @ConditionalOnMissingBean
-    public MetricsReporter metricsReporterStatsDClient(StatsDClient statsDClient) {
-        return new StatsDClientMetricsReporter(statsDClient);
+    public MetricsClient metricsClientStatsDClient(StatsDClient statsDClient) {
+        return new StatsDClientMetricsClient(statsDClient);
     }
 
 }
