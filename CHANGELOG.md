@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.1.2] - 2023-06-09
+
+### Fixed
+
+- Disable validation instead of failing (multiple spec files) ([#9](https://github.com/getyourguide/openapi-validation-java/pull/9))
+
 ## [1.1.1] - 2023-06-01
 
 ### Fixed
@@ -27,7 +33,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.1.1...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.2
 [1.1.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.1
 [1.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.0
 [1.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.0.2
