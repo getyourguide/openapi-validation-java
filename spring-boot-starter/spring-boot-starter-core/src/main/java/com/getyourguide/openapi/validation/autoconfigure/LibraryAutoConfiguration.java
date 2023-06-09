@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class LibraryAutoConfiguration {
 
-    public static final String DEFAULT_METRIC_NAME = "openapi.validation.error";
+    public static final String DEFAULT_METRIC_NAME = "openapi.validation";
 
     private final OpenApiValidationApplicationProperties properties;
 

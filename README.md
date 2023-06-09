@@ -97,8 +97,8 @@ openapi.validation.excluded-headers[0]=User-Agent: .*(bingbot|googlebot).*
 openapi.validation.validation-report-throttle-wait-seconds=10
 
 # Throttle the validation reporting (logs & metrics) to a maximum of 1 log/metric per 10 seconds.
-# Default is "openapi.validation.error".
-openapi.validation.validation-report-metric-name=openapi.violation
+# Default is "openapi.validation".
+openapi.validation.validation-report-metric-name=validation.openapi
 
 # Add additional tags to be logged with metrics. They should be in the format {KEY}={VALUE},{KEY}={VALUE}
 # Default is no additional tags.

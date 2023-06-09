@@ -16,10 +16,11 @@ public class DefaultMetricsReporter implements MetricsReporter {
 
     @Override
     public void reportViolation(OpenApiViolation violation) {
-        metricsClient.increment(configuration.getMetricName(), createTags(violation));
+        var violationMetricName = configuration.getMetricName() + ".error";
+        metricsClient.increment(violationMetricName, createTagsForViolation(violation));
     }
 
-    private MetricTag[] createTags(OpenApiViolation violation) {
+    private MetricTag[] createTagsForViolation(OpenApiViolation violation) {
         var tags = new ArrayList<MetricTag>();
 
         tags.add(new MetricTag("type", violation.getDirection().toString().toLowerCase()));
