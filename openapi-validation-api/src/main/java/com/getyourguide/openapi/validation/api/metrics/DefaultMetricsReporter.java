@@ -44,7 +44,6 @@ public class DefaultMetricsReporter implements MetricsReporter {
         return tags.toArray(MetricTag[]::new);
     }
 
-
     private MetricTag[] createTagsForStartup(boolean isValidationEnabled) {
         var tags = new ArrayList<MetricTag>();
 

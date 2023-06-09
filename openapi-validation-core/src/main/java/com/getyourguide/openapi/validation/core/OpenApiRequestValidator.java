@@ -25,7 +25,12 @@ public class OpenApiRequestValidator {
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
 
-    public OpenApiRequestValidator(ValidationReportHandler validationReportHandler, MetricsReporter metricsReporter, String specificationFilePath, ValidatorConfiguration configuration) {
+    public OpenApiRequestValidator(
+        ValidationReportHandler validationReportHandler,
+        MetricsReporter metricsReporter,
+        String specificationFilePath,
+        ValidatorConfiguration configuration
+    ) {
         this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
         this.validationReportHandler = validationReportHandler;
 
