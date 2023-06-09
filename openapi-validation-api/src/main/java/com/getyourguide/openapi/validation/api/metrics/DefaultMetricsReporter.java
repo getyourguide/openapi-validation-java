@@ -16,8 +16,18 @@ public class DefaultMetricsReporter implements MetricsReporter {
 
     @Override
     public void reportViolation(OpenApiViolation violation) {
-        var violationMetricName = configuration.getMetricName() + ".error";
+        String violationMetricName = buildMetricName(".error");
         metricsClient.increment(violationMetricName, createTagsForViolation(violation));
+    }
+
+    @Override
+    public void reportStartup(boolean isValidationEnabled) {
+        String startupMetricName = buildMetricName(".startup");
+        metricsClient.increment(startupMetricName, createTagsForStartup(isValidationEnabled));
+    }
+
+    private String buildMetricName(String suffix) {
+        return configuration.getMetricName() + suffix;
     }
 
     private MetricTag[] createTagsForViolation(OpenApiViolation violation) {
@@ -29,11 +39,24 @@ public class DefaultMetricsReporter implements MetricsReporter {
         violation.getResponseStatus()
             .ifPresent(responseStatus -> tags.add(new MetricTag("status", responseStatus.toString())));
 
+        addAdditionalTags(tags);
+
+        return tags.toArray(MetricTag[]::new);
+    }
+
+    private MetricTag[] createTagsForStartup(boolean isValidationEnabled) {
+        var tags = new ArrayList<MetricTag>();
+
+        tags.add(new MetricTag("validation_enabled", String.valueOf(isValidationEnabled)));
+        addAdditionalTags(tags);
+
+        return tags.toArray(MetricTag[]::new);
+    }
+
+    private void addAdditionalTags(ArrayList<MetricTag> tags) {
         if (configuration.getMetricAdditionalTags() != null) {
             tags.addAll(configuration.getMetricAdditionalTags());
         }
-
-        return tags.toArray(MetricTag[]::new);
     }
 
     @Builder

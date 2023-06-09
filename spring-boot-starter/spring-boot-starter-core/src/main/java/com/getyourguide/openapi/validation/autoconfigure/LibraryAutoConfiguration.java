@@ -93,9 +93,14 @@ public class LibraryAutoConfiguration {
     @Bean
     public OpenApiRequestValidator openApiRequestValidator(
         ValidationReportHandler validationReportHandler,
+        MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {
-        return new OpenApiRequestValidator(validationReportHandler, properties.getSpecificationFilePath(),
-            validatorConfiguration);
+        return new OpenApiRequestValidator(
+            validationReportHandler,
+            metricsReporter,
+            properties.getSpecificationFilePath(),
+            validatorConfiguration
+        );
     }
 }
