@@ -4,6 +4,7 @@ import com.atlassian.oai.validator.model.Request;
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.atlassian.oai.validator.model.SimpleResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
+import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
@@ -24,9 +25,11 @@ public class OpenApiRequestValidator {
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
 
-    public OpenApiRequestValidator(ValidationReportHandler validationReportHandler, String specificationFilePath, ValidatorConfiguration configuration) {
+    public OpenApiRequestValidator(ValidationReportHandler validationReportHandler, MetricsReporter metricsReporter, String specificationFilePath, ValidatorConfiguration configuration) {
         this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
         this.validationReportHandler = validationReportHandler;
+
+        metricsReporter.reportStartup(validator != null);
     }
 
     public boolean isReady() {
