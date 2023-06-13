@@ -13,16 +13,14 @@ import org.mockito.Mockito;
 public class OpenApiRequestValidatorTest {
 
     private ThreadPoolExecutor threadPoolExecutor;
-    private ValidationReportHandler validationReportHandler;
-    private MetricsReporter metricsReporter;
 
     private OpenApiRequestValidator openApiRequestValidator;
 
     @BeforeEach
     public void setup() {
         threadPoolExecutor = mock();
-        validationReportHandler = mock();
-        metricsReporter = mock();
+        ValidationReportHandler validationReportHandler = mock();
+        MetricsReporter metricsReporter = mock();
 
         openApiRequestValidator = new OpenApiRequestValidator(
             threadPoolExecutor,
