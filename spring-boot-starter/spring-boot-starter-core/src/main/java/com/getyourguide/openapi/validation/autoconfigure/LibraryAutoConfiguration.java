@@ -20,6 +20,9 @@ import com.getyourguide.openapi.validation.core.throttle.RequestBasedValidationR
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottlerNone;
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -96,7 +99,17 @@ public class LibraryAutoConfiguration {
         MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {
+        var threadPoolExecutor = new ThreadPoolExecutor(
+            2,
+            2,
+            1000L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(10),
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
+
         return new OpenApiRequestValidator(
+            threadPoolExecutor,
             validationReportHandler,
             metricsReporter,
             properties.getSpecificationFilePath(),

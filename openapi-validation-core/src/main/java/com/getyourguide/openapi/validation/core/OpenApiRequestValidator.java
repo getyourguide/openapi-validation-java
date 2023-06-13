@@ -12,25 +12,25 @@ import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 @Slf4j
 public class OpenApiRequestValidator {
-    private final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 2, 1000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(10));
-
+    private final ThreadPoolExecutor threadPoolExecutor;
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
 
     public OpenApiRequestValidator(
+        ThreadPoolExecutor threadPoolExecutor,
         ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
         String specificationFilePath,
         ValidatorConfiguration configuration
     ) {
+        this.threadPoolExecutor = threadPoolExecutor;
         this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
         this.validationReportHandler = validationReportHandler;
 
@@ -42,11 +42,19 @@ public class OpenApiRequestValidator {
     }
 
     public void validateRequestObjectAsync(final RequestMetaData request, String requestBody) {
-        threadPool.execute(() -> validateRequestObject(request, requestBody));
+        executeAsync(() -> validateRequestObject(request, requestBody));
     }
 
     public void validateResponseObjectAsync(final RequestMetaData request, ResponseMetaData response, final String responseBody) {
-        threadPool.execute(() -> validateResponseObject(request, response, responseBody));
+        executeAsync(() -> validateResponseObject(request, response, responseBody));
+    }
+
+    private void executeAsync(Runnable command) {
+        try {
+            threadPoolExecutor.execute(command);
+        } catch (RejectedExecutionException ignored) {
+            // ignored
+        }
     }
 
     public ValidationResult validateRequestObject(final RequestMetaData request, String requestBody) {
