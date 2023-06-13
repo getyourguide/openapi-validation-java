@@ -21,17 +21,18 @@ import org.apache.http.client.utils.URLEncodedUtils;
 
 @Slf4j
 public class OpenApiRequestValidator {
-    private final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2, 2, 1000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(10));
-
+    private final ThreadPoolExecutor threadPool;
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
 
     public OpenApiRequestValidator(
+        ThreadPoolExecutor threadPool,
         ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
         String specificationFilePath,
         ValidatorConfiguration configuration
     ) {
+        this.threadPool = threadPool;
         this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
         this.validationReportHandler = validationReportHandler;
 
