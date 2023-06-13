@@ -99,8 +99,17 @@ public class LibraryAutoConfiguration {
         MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {
+        var threadPoolExecutor = new ThreadPoolExecutor(
+            2,
+            2,
+            1000L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(10),
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
+
         return new OpenApiRequestValidator(
-            new ThreadPoolExecutor(2, 2, 1000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(10)),
+            threadPoolExecutor,
             validationReportHandler,
             metricsReporter,
             properties.getSpecificationFilePath(),
