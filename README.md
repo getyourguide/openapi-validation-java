@@ -5,6 +5,8 @@
 Build trust in your spec by validating live requests and responses against your OpenAPI spec.
 Get informed through logs or metrics when violations occur.
 
+Uses the following library for the validation: https://bitbucket.org/atlassian/swagger-request-validator
+
 ## Installation
 
 1. [Add dependency in gradle](#gradle)
