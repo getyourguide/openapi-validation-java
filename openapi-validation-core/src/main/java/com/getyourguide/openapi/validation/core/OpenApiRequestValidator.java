@@ -12,27 +12,25 @@ import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 @Slf4j
 public class OpenApiRequestValidator {
-    private final ThreadPoolExecutor threadPool;
+    private final ThreadPoolExecutor threadPoolExecutor;
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
 
     public OpenApiRequestValidator(
-        ThreadPoolExecutor threadPool,
+        ThreadPoolExecutor threadPoolExecutor,
         ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
         String specificationFilePath,
         ValidatorConfiguration configuration
     ) {
-        this.threadPool = threadPool;
+        this.threadPoolExecutor = threadPoolExecutor;
         this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
         this.validationReportHandler = validationReportHandler;
 
@@ -53,8 +51,9 @@ public class OpenApiRequestValidator {
 
     private void executeAsync(Runnable command) {
         try {
-            threadPool.execute(command);
+            threadPoolExecutor.execute(command);
         } catch (RejectedExecutionException ignored) {
+            // ignored
         }
     }
 
