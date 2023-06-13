@@ -54,7 +54,7 @@ public class OpenApiRequestValidator {
     private void executeAsync(Runnable command) {
         try {
             threadPool.execute(command);
-        } catch(RejectedExecutionException ignored) {
+        } catch (RejectedExecutionException ignored) {
         }
     }
 
