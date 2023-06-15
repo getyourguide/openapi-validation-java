@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-06-15
+
+### Added
+
+- Send metric on startup with info if validation is enabled ([#12](https://github.com/getyourguide/openapi-validation-java/pull/12))
+
+### Fixed
+
+- Catch RejectedExecutionException and skip validation ([#13](https://github.com/getyourguide/openapi-validation-java/pull/13))
+
 ## [1.1.2] - 2023-06-09
 
 ### Fixed
@@ -33,7 +43,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.1.2...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.2
 [1.1.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.2
 [1.1.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.1
 [1.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.0
