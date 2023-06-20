@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2023-06-20
+
+### Added
+
+- Send hourly heartbeat (as metric) when validation is happening ([#15](https://github.com/getyourguide/openapi-validation-java/pull/15))
+
 ## [1.2.0] - 2023-06-15
 
 ### Added
@@ -43,8 +49,9 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.2
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.1
+[1.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.0
 [1.1.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.2
 [1.1.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.1
 [1.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.0
