@@ -19,9 +19,14 @@ import org.apache.http.client.utils.URLEncodedUtils;
 
 @Slf4j
 public class OpenApiRequestValidator {
+    public static final int METRIC_REPORT_VALIDATION_HEARTBEAT_FREQUENCY_MILLIS = 60 * 60 * 1000; // 1h
+
     private final ThreadPoolExecutor threadPoolExecutor;
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
+    private final MetricsReporter metricsReporter;
+
+    private long lastReportValidationDateTime = 0;
 
     public OpenApiRequestValidator(
         ThreadPoolExecutor threadPoolExecutor,
@@ -33,6 +38,7 @@ public class OpenApiRequestValidator {
         this.threadPoolExecutor = threadPoolExecutor;
         this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
         this.validationReportHandler = validationReportHandler;
+        this.metricsReporter = metricsReporter;
 
         metricsReporter.reportStartup(validator != null);
     }
@@ -62,6 +68,7 @@ public class OpenApiRequestValidator {
             var simpleRequest = buildSimpleRequest(request, requestBody);
             var result = validator.validateRequest(simpleRequest);
             validationReportHandler.handleValidationReport(request, Direction.REQUEST, requestBody, result);
+            reportValidationHeartbeat();
             return buildValidationResult(result);
         } catch (Exception e) {
             log.error("Could not validate request", e);
@@ -99,6 +106,7 @@ public class OpenApiRequestValidator {
                 responseBuilder.build()
             );
             validationReportHandler.handleValidationReport(request, Direction.RESPONSE, responseBody, result);
+            reportValidationHeartbeat();
             return buildValidationResult(result);
         } catch (Exception e) {
             log.error("Could not validate response", e);
@@ -116,5 +124,13 @@ public class OpenApiRequestValidator {
         }
 
         return ValidationResult.INVALID;
+    }
+
+    private synchronized void reportValidationHeartbeat() {
+        var currentTimeMillis = System.currentTimeMillis();
+        if (lastReportValidationDateTime + METRIC_REPORT_VALIDATION_HEARTBEAT_FREQUENCY_MILLIS < currentTimeMillis) {
+            lastReportValidationDateTime = currentTimeMillis;
+            metricsReporter.reportValidationHeartbeat();
+        }
     }
 }

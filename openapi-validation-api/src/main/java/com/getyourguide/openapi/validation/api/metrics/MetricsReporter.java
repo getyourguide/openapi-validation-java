@@ -6,4 +6,6 @@ public interface MetricsReporter {
     void reportViolation(OpenApiViolation violation);
 
     void reportStartup(boolean isValidationEnabled);
+
+    void reportValidationHeartbeat();
 }
