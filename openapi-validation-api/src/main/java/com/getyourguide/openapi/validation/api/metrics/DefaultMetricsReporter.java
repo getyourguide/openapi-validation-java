@@ -16,14 +16,17 @@ public class DefaultMetricsReporter implements MetricsReporter {
 
     @Override
     public void reportViolation(OpenApiViolation violation) {
-        String violationMetricName = buildMetricName(".error");
-        metricsClient.increment(violationMetricName, createTagsForViolation(violation));
+        metricsClient.increment(buildMetricName(".error"), createTagsForViolation(violation));
     }
 
     @Override
     public void reportStartup(boolean isValidationEnabled) {
-        String startupMetricName = buildMetricName(".startup");
-        metricsClient.increment(startupMetricName, createTagsForStartup(isValidationEnabled));
+        metricsClient.increment(buildMetricName(".startup"), createTagsForStartup(isValidationEnabled));
+    }
+
+    @Override
+    public void reportValidationHeartbeat() {
+        metricsClient.increment(buildMetricName(".validation_heartbeat"), createTagsForValidation());
     }
 
     private String buildMetricName(String suffix) {
@@ -50,6 +53,12 @@ public class DefaultMetricsReporter implements MetricsReporter {
         tags.add(new MetricTag("validation_enabled", String.valueOf(isValidationEnabled)));
         addAdditionalTags(tags);
 
+        return tags.toArray(MetricTag[]::new);
+    }
+
+    private MetricTag[] createTagsForValidation() {
+        var tags = new ArrayList<MetricTag>();
+        addAdditionalTags(tags);
         return tags.toArray(MetricTag[]::new);
     }
 
