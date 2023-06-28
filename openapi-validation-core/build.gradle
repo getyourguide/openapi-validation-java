@@ -5,7 +5,7 @@ dependencies {
 
     implementation 'com.atlassian.oai:swagger-request-validator-core:2.35.1'
     constraints {
-        implementation('commons-codec:commons-codec:1.15') {
+        implementation('commons-codec:commons-codec:1.16.0') {
             because 'Apache commons-codec before 1.13 is vulnerable to information exposure. See https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/'
         }
 //        implementation('org.yaml:snakeyaml:1.33') {
