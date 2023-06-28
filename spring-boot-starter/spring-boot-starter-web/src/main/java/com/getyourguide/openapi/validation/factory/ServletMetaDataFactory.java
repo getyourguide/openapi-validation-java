@@ -4,7 +4,6 @@ import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
 import java.util.TreeMap;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -13,7 +12,14 @@ public class ServletMetaDataFactory {
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
 
     public RequestMetaData buildRequestMetaData(HttpServletRequest request) {
-        var uri = ServletUriComponentsBuilder.fromRequest(request).build(Map.of());
+        // Params needed to avoid problem here: https://github.com/spring-projects/spring-framework/issues/24043#issuecomment-556024162
+//        var params = new LinkedMultiValueMap<String, String>();
+//        for (Map.Entry<String, String[]> e : request.getParameterMap().entrySet()) {
+//            params.addAll(e.getKey(), Arrays.asList(e.getValue()));
+//        }
+//        var uri = ServletUriComponentsBuilder.fromRequest(request).replaceQueryParams(params).build(Map.of());
+
+        var uri = ServletUriComponentsBuilder.fromRequest(request).build(true).toUri();
         return new RequestMetaData(request.getMethod(), uri, getHeaders(request));
     }
 
