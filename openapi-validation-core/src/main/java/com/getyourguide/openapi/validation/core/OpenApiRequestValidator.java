@@ -11,10 +11,12 @@ import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 @Slf4j
@@ -79,12 +81,20 @@ public class OpenApiRequestValidator {
     private static SimpleRequest buildSimpleRequest(RequestMetaData request, String requestBody) {
         var requestBuilder = new SimpleRequest.Builder(request.getMethod(), request.getUri().getPath());
         URLEncodedUtils.parse(request.getUri(), StandardCharsets.UTF_8)
-            .forEach(p -> requestBuilder.withQueryParam(p.getName(), p.getValue()));
+            .forEach(p -> requestBuilder.withQueryParam(p.getName(), getQueryParameterValueWithOptionalDecode(p)));
         if (requestBody != null) {
             requestBuilder.withBody(requestBody);
         }
         request.getHeaders().forEach(requestBuilder::withHeader);
         return requestBuilder.build();
+    }
+
+    private static String getQueryParameterValueWithOptionalDecode(NameValuePair p) {
+        if (p.getValue() == null) {
+            return null;
+        }
+
+        return URLDecoder.decode(p.getValue(), StandardCharsets.UTF_8);
     }
 
     public ValidationResult validateResponseObject(
