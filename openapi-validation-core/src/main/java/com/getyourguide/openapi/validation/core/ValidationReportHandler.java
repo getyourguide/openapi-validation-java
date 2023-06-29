@@ -9,6 +9,7 @@ import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 
@@ -48,13 +49,18 @@ public class ValidationReportHandler {
     ) {
         var requestUri = request.getUri().toString();
         var requestString = String.format("%s %s", request.getMethod(), requestUri);
-        var instance = getPointersInstance(message).map(i -> String.format("Instance: %s\n", i)).orElse("");
+        var pointersInstance = getPointersInstance(message);
+        var instance = pointersInstance.map(i -> String.format("Instance: %s\n", i)).orElse("");
+        var parameterName = getParameterName(message);
+        var parameter = parameterName.map(i -> String.format("Parameter: %s\n", i)).orElse("");
+
         var logMessage = String.format(
-            "OpenAPI spec validation error [%s]\n%s\nUser Agent: %s\n%s\n%s",
+            "OpenAPI spec validation error [%s]\n%s\nUser Agent: %s\n%s%s\n%s",
             message.getKey(),
             requestString,
             request.getHeaders().get("User-Agent"),
             instance,
+            parameter,
             message
         );
 
@@ -66,7 +72,8 @@ public class ValidationReportHandler {
             .rule(message.getKey())
             .operationId(getOperationId(message))
             .normalizedPath(getNormalizedPath(message))
-            .instance(getPointersInstance(message))
+            .instance(pointersInstance)
+            .parameter(parameterName)
             .schema(getPointersSchema(message))
             .responseStatus(getResponseStatus(message))
             .logMessage(logMessage)
@@ -92,6 +99,12 @@ public class ValidationReportHandler {
         return message.getContext()
             .flatMap(ValidationReport.MessageContext::getPointers)
             .map(ValidationReport.MessageContext.Pointers::getSchema);
+    }
+
+    private static Optional<String> getParameterName(ValidationReport.Message message) {
+        return message.getContext()
+            .flatMap(ValidationReport.MessageContext::getParameter)
+            .map(Parameter::getName);
     }
 
     private static Optional<String> getOperationId(ValidationReport.Message message) {

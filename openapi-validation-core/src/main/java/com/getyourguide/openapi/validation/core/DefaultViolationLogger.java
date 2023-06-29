@@ -37,6 +37,7 @@ public class DefaultViolationLogger implements ViolationLogger {
         violation.getNormalizedPath().ifPresent(normalizedPath -> context.put("validation.api.path", normalizedPath));
         violation.getOperationId().ifPresent(operationId -> context.put("validation.api.operation_id", operationId));
         violation.getInstance().ifPresent(instance -> context.put("validation.instance", instance));
+        violation.getParameter().ifPresent(instance -> context.put("validation.parameter", instance));
         return context;
     }
 }

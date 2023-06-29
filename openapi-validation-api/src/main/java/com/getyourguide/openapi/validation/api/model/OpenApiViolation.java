@@ -16,6 +16,7 @@ public class OpenApiViolation {
     private final Optional<String> operationId;
     private final Optional<String> normalizedPath;
     private final Optional<String> instance;
+    private final Optional<String> parameter;
     private final Optional<String> schema;
     private final Optional<Integer> responseStatus;
     private final String message;
