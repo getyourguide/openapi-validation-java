@@ -4,7 +4,6 @@ import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
 import java.util.TreeMap;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -13,7 +12,7 @@ public class ServletMetaDataFactory {
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
 
     public RequestMetaData buildRequestMetaData(HttpServletRequest request) {
-        var uri = ServletUriComponentsBuilder.fromRequest(request).build(Map.of());
+        var uri = ServletUriComponentsBuilder.fromRequest(request).build().toUri();
         return new RequestMetaData(request.getMethod(), uri, getHeaders(request));
     }
 

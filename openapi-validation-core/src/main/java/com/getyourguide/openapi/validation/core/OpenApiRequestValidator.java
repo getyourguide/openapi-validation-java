@@ -9,8 +9,8 @@ import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidationResult;
-import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,11 +32,10 @@ public class OpenApiRequestValidator {
         ThreadPoolExecutor threadPoolExecutor,
         ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
-        String specificationFilePath,
-        ValidatorConfiguration configuration
+        OpenApiInteractionValidatorWrapper validator
     ) {
         this.threadPoolExecutor = threadPoolExecutor;
-        this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
+        this.validator = validator;
         this.validationReportHandler = validationReportHandler;
         this.metricsReporter = metricsReporter;
 
@@ -79,12 +78,20 @@ public class OpenApiRequestValidator {
     private static SimpleRequest buildSimpleRequest(RequestMetaData request, String requestBody) {
         var requestBuilder = new SimpleRequest.Builder(request.getMethod(), request.getUri().getPath());
         URLEncodedUtils.parse(request.getUri(), StandardCharsets.UTF_8)
-            .forEach(p -> requestBuilder.withQueryParam(p.getName(), p.getValue()));
+            .forEach(p -> requestBuilder.withQueryParam(p.getName(), nullSafeUrlDecode(p.getValue())));
         if (requestBody != null) {
             requestBuilder.withBody(requestBody);
         }
         request.getHeaders().forEach(requestBuilder::withHeader);
         return requestBuilder.build();
+    }
+
+    private static String nullSafeUrlDecode(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 
     public ValidationResult validateResponseObject(
