@@ -9,7 +9,6 @@ import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidationResult;
-import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
