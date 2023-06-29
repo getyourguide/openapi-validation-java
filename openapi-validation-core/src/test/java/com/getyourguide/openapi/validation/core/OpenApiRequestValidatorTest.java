@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
