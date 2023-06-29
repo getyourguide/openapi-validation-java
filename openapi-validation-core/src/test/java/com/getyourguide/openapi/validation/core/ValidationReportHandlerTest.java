@@ -27,8 +27,6 @@ import org.mockito.ArgumentCaptor;
 class ValidationReportHandlerTest {
     private ValidationReportThrottler throttleHelper;
     private ViolationLogger logger;
-    private MetricsReporter metrics;
-    private ViolationExclusions violationExclusions;
 
     private ValidationReportHandler validationReportHandler;
 
@@ -36,8 +34,8 @@ class ValidationReportHandlerTest {
     public void setUp() {
         throttleHelper = mock();
         logger = mock();
-        metrics = mock();
-        violationExclusions = mock();
+        MetricsReporter metrics = mock();
+        ViolationExclusions violationExclusions = mock();
 
         validationReportHandler = new ValidationReportHandler(throttleHelper, logger, metrics, violationExclusions);
     }
