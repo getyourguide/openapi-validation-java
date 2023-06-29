@@ -49,14 +49,24 @@ public class OpenApiRequestValidatorTest {
 
     @Test
     public void testWhenEncodedQueryParamIsPassedThenValidationShouldHappenWithQueryParamDecoded() {
-        var uri = URI.create("https://api.example.com?ids=1%2C2%2C3");
+        var uri = URI.create("https://api.example.com?ids=1%2C2%2C3&text=e%3Dmc2%20%26%20more&spaces=this+is+a+sparta");
         var request = new RequestMetaData("GET", uri, new HashMap<>());
 
         openApiRequestValidator.validateRequestObject(request, null);
 
         var simpleRequestArgumentCaptor = ArgumentCaptor.forClass(SimpleRequest.class);
         verify(validator).validateRequest(simpleRequestArgumentCaptor.capture());
-        var ids = simpleRequestArgumentCaptor.getValue().getQueryParameterValues("ids").iterator().next();
-        assertEquals("1,2,3", ids);
+        verifyQueryParamValueEquals(simpleRequestArgumentCaptor, "ids", "1,2,3");
+        verifyQueryParamValueEquals(simpleRequestArgumentCaptor, "text", "e=mc2 & more");
+        verifyQueryParamValueEquals(simpleRequestArgumentCaptor, "spaces", "this is a sparta");
+    }
+
+    private void verifyQueryParamValueEquals(
+        ArgumentCaptor<SimpleRequest> simpleRequestArgumentCaptor,
+        String name,
+        String expected
+    ) {
+        var ids = simpleRequestArgumentCaptor.getValue().getQueryParameterValues(name).iterator().next();
+        assertEquals(expected, ids);
     }
 }
