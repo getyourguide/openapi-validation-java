@@ -14,6 +14,7 @@ import com.getyourguide.openapi.validation.api.metrics.client.NoOpMetricsClient;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfigurationBuilder;
 import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
+import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFactory;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.ValidationReportHandler;
 import com.getyourguide.openapi.validation.core.throttle.RequestBasedValidationReportThrottler;
@@ -112,8 +113,8 @@ public class LibraryAutoConfiguration {
             threadPoolExecutor,
             validationReportHandler,
             metricsReporter,
-            properties.getSpecificationFilePath(),
-            validatorConfiguration
+            new OpenApiInteractionValidatorFactory()
+                .build(properties.getSpecificationFilePath(), validatorConfiguration)
         );
     }
 }

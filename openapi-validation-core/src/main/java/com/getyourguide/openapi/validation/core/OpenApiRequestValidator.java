@@ -34,11 +34,10 @@ public class OpenApiRequestValidator {
         ThreadPoolExecutor threadPoolExecutor,
         ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
-        String specificationFilePath,
-        ValidatorConfiguration configuration
+        OpenApiInteractionValidatorWrapper validator
     ) {
         this.threadPoolExecutor = threadPoolExecutor;
-        this.validator = new OpenApiInteractionValidatorFactory().build(specificationFilePath, configuration);
+        this.validator = validator;
         this.validationReportHandler = validationReportHandler;
         this.metricsReporter = metricsReporter;
 
