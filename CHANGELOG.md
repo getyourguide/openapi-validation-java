@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+## [1.2.2] - 2023-06-30
+
+### Added
+
+- Show parameter name in violation log ([#19](https://github.com/getyourguide/openapi-validation-java/pull/159))
+
+### Fixed
+
+- Decode query parameters before validation to avoid problems with comma separated lists ([#18](https://github.com/getyourguide/openapi-validation-java/pull/18))
+
 ## [1.2.1] - 2023-06-20
 
 ### Added
@@ -49,7 +59,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.1...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.2
 [1.2.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.1
 [1.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.0
 [1.1.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.1.2
