@@ -4,11 +4,19 @@
 
 ## [Unreleased]
 
+## [1.2.3] - 2023-07-17
+
+### Fixed
+
+- Update `swagger-request-validator-core` to `2.35.2` for bug fixes ([#21](https://github.com/getyourguide/openapi-validation-java/pull/21))
+  - [bugfix: not required and exploded query parameters handling](https://bitbucket.org/atlassian/swagger-request-validator/pull-requests/391/bugfix-not-required-and-exploded-query)
+  - [bugfix: Fix path double-normalized if same prefix as base path](https://bitbucket.org/atlassian/swagger-request-validator/pull-requests/390/bugfix-fix-path-double-normalized-if-same) 
+
 ## [1.2.2] - 2023-06-30
 
 ### Added
 
-- Show parameter name in violation log ([#19](https://github.com/getyourguide/openapi-validation-java/pull/159))
+- Show parameter name in violation log ([#19](https://github.com/getyourguide/openapi-validation-java/pull/19))
 
 ### Fixed
 
@@ -59,7 +67,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.2...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.3...HEAD
+[1.2.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.3
 [1.2.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.2
 [1.2.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.1
 [1.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.0
