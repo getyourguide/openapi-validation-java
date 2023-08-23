@@ -42,8 +42,7 @@ public class LibraryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ValidationReportThrottler requestBasedThrottleHelper() {
-        if (properties.getValidationReportThrottleWaitSeconds() == null
-            || properties.getValidationReportThrottleWaitSeconds() == 0) {
+        if (properties.getValidationReportThrottleWaitSeconds() == 0) {
             return new ValidationReportThrottlerNone();
         }
         return new RequestBasedValidationReportThrottler(properties.getValidationReportThrottleWaitSeconds());
@@ -114,7 +113,8 @@ public class LibraryAutoConfiguration {
             validationReportHandler,
             metricsReporter,
             new OpenApiInteractionValidatorFactory()
-                .build(properties.getSpecificationFilePath(), validatorConfiguration)
+                .build(properties.getSpecificationFilePath(), validatorConfiguration),
+            properties.toOpenApiRequestValidationConfiguration()
         );
     }
 }

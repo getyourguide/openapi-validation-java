@@ -4,6 +4,7 @@ import static com.getyourguide.openapi.validation.OpenApiValidationApplicationPr
 
 import com.getyourguide.openapi.validation.api.exclusions.ExcludedHeader;
 import com.getyourguide.openapi.validation.api.metrics.MetricTag;
+import com.getyourguide.openapi.validation.core.OpenApiRequestValidationConfiguration;
 import com.getyourguide.openapi.validation.util.CommaSeparatedStringsUtil;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class OpenApiValidationApplicationProperties {
     public static final String PROPERTY_PREFIX = "openapi.validation";
+    private static final double SAMPLE_RATE_DEFAULT = 0.001; // 1.0 = 100%
 
     private Double sampleRate;
     private String specificationFilePath;
@@ -34,6 +36,14 @@ public class OpenApiValidationApplicationProperties {
     private List<String> excludedHeaders;
     private Boolean shouldFailOnRequestViolation;
     private Boolean shouldFailOnResponseViolation;
+
+    public double getSampleRate() {
+        return sampleRate != null ? sampleRate : SAMPLE_RATE_DEFAULT;
+    }
+
+    public int getValidationReportThrottleWaitSeconds() {
+        return validationReportThrottleWaitSeconds != null ? validationReportThrottleWaitSeconds : 0;
+    }
 
     public List<MetricTag> getValidationReportMetricAdditionalTags() {
         if (validationReportMetricAdditionalTags == null) {
@@ -70,5 +80,12 @@ public class OpenApiValidationApplicationProperties {
             })
             .filter(Objects::nonNull)
             .toList();
+    }
+
+    public OpenApiRequestValidationConfiguration toOpenApiRequestValidationConfiguration() {
+        return OpenApiRequestValidationConfiguration.builder()
+            .sampleRate(getSampleRate())
+            .validationReportThrottleWaitSeconds(getValidationReportThrottleWaitSeconds())
+            .build();
     }
 }

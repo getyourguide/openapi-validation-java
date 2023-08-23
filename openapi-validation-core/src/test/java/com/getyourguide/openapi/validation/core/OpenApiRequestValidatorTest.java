@@ -36,7 +36,8 @@ public class OpenApiRequestValidatorTest {
             threadPoolExecutor,
             validationReportHandler,
             metricsReporter,
-            validator
+            validator,
+            mock()
         );
     }
 

@@ -20,8 +20,15 @@ public class DefaultMetricsReporter implements MetricsReporter {
     }
 
     @Override
-    public void reportStartup(boolean isValidationEnabled) {
-        metricsClient.increment(buildMetricName(".startup"), createTagsForStartup(isValidationEnabled));
+    public void reportStartup(
+        boolean isValidationEnabled,
+        double sampleRate,
+        int validationReportThrottleWaitSeconds
+    ) {
+        metricsClient.increment(
+            buildMetricName(".startup"),
+            createTagsForStartup(isValidationEnabled, sampleRate, validationReportThrottleWaitSeconds)
+        );
     }
 
     @Override
@@ -47,10 +54,16 @@ public class DefaultMetricsReporter implements MetricsReporter {
         return tags.toArray(MetricTag[]::new);
     }
 
-    private MetricTag[] createTagsForStartup(boolean isValidationEnabled) {
+    private MetricTag[] createTagsForStartup(
+        boolean isValidationEnabled,
+        double sampleRate,
+        int validationReportThrottleWaitSeconds
+    ) {
         var tags = new ArrayList<MetricTag>();
 
         tags.add(new MetricTag("validation_enabled", String.valueOf(isValidationEnabled)));
+        tags.add(new MetricTag("sample_rate", String.valueOf(sampleRate)));
+        tags.add(new MetricTag("throttling", String.valueOf(validationReportThrottleWaitSeconds)));
         addAdditionalTags(tags);
 
         return tags.toArray(MetricTag[]::new);
