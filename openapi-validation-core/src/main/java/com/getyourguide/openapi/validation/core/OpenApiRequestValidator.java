@@ -14,6 +14,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import javax.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URLEncodedUtils;
 
@@ -46,8 +47,8 @@ public class OpenApiRequestValidator {
         return validator != null;
     }
 
-    public void validateRequestObjectAsync(final RequestMetaData request, String requestBody) {
-        executeAsync(() -> validateRequestObject(request, requestBody));
+    public void validateRequestObjectAsync(final RequestMetaData request, @Nullable ResponseMetaData response, String requestBody) {
+        executeAsync(() -> validateRequestObject(request, response, requestBody));
     }
 
     public void validateResponseObjectAsync(final RequestMetaData request, ResponseMetaData response, final String responseBody) {
@@ -63,10 +64,18 @@ public class OpenApiRequestValidator {
     }
 
     public ValidationResult validateRequestObject(final RequestMetaData request, String requestBody) {
+        return validateRequestObject(request, null, requestBody);
+    }
+
+    public ValidationResult validateRequestObject(
+        final RequestMetaData request,
+        @Nullable final ResponseMetaData response,
+        String requestBody
+    ) {
         try {
             var simpleRequest = buildSimpleRequest(request, requestBody);
             var result = validator.validateRequest(simpleRequest);
-            validationReportHandler.handleValidationReport(request, Direction.REQUEST, requestBody, result);
+            validationReportHandler.handleValidationReport(request, response, Direction.REQUEST, requestBody, result);
             reportValidationHeartbeat();
             return buildValidationResult(result);
         } catch (Exception e) {
@@ -96,7 +105,7 @@ public class OpenApiRequestValidator {
 
     public ValidationResult validateResponseObject(
         final RequestMetaData request,
-        ResponseMetaData response,
+        final ResponseMetaData response,
         final String responseBody
     ) {
         try {
@@ -112,7 +121,7 @@ public class OpenApiRequestValidator {
                 Request.Method.valueOf(request.getMethod().toUpperCase()),
                 responseBuilder.build()
             );
-            validationReportHandler.handleValidationReport(request, Direction.RESPONSE, responseBody, result);
+            validationReportHandler.handleValidationReport(request, response, Direction.RESPONSE, responseBody, result);
             reportValidationHeartbeat();
             return buildValidationResult(result);
         } catch (Exception e) {

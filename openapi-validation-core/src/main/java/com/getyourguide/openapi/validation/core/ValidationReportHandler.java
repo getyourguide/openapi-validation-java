@@ -7,10 +7,12 @@ import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class ValidationReportHandler {
 
     public void handleValidationReport(
         RequestMetaData request,
+        @Nullable ResponseMetaData response,
         Direction direction,
         String body,
         ValidationReport result
@@ -30,7 +33,7 @@ public class ValidationReportHandler {
             result
                 .getMessages()
                 .stream()
-                .map(message -> buildOpenApiViolation(message, request, body, direction))
+                .map(message -> buildOpenApiViolation(message, request, response, body, direction))
                 .filter(violation -> !violationExclusions.isExcluded(violation))
                 .forEach(violation -> throttleHelper.throttle(violation, () -> logValidationError(violation)));
         }
@@ -44,6 +47,7 @@ public class ValidationReportHandler {
     private OpenApiViolation buildOpenApiViolation(
         ValidationReport.Message message,
         RequestMetaData request,
+        @Nullable ResponseMetaData response,
         String body,
         Direction direction
     ) {

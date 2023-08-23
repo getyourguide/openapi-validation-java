@@ -46,7 +46,7 @@ class ValidationReportHandlerTest {
         var request = mockRequestMetaData();
         var validationReport = mockValidationReport("parameterName");
 
-        validationReportHandler.handleValidationReport(request, Direction.REQUEST, null, validationReport);
+        validationReportHandler.handleValidationReport(request, null, Direction.REQUEST, null, validationReport);
 
         var argumentCaptor = ArgumentCaptor.forClass(OpenApiViolation.class);
         verify(logger).log(argumentCaptor.capture());

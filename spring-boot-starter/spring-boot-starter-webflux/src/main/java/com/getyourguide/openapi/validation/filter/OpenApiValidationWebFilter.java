@@ -1,6 +1,7 @@
 package com.getyourguide.openapi.validation.filter;
 
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
@@ -8,10 +9,11 @@ import com.getyourguide.openapi.validation.factory.ReactiveMetaDataFactory;
 import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpRequestDecorator;
 import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpResponseDecorator;
 import com.getyourguide.openapi.validation.filter.decorator.DecoratorBuilder;
+import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -59,11 +61,13 @@ public class OpenApiValidationWebFilter implements WebFilter {
                 // Note: Errors are not handled here. They could be handled with SignalType.ON_ERROR, but then the response body can't be accessed.
                 //       Reason seems to be that those don't use the decorated response that is set here, but use the previous response object.
                 if (signalType == SignalType.ON_COMPLETE) {
+                    var responseMetaData = metaDataFactory.buildResponseMetaData(responseDecorated);
                     if (!alreadyDidRequestValidation) {
-                        validateRequest(requestDecorated, requestMetaData, RunType.ASYNC);
+                        validateRequest(requestDecorated, requestMetaData, responseMetaData, RunType.ASYNC);
                     }
                     if (!alreadyDidResponseValidation) {
-                        validateResponse(responseDecorated, requestMetaData, RunType.ASYNC);
+                        validateResponse(
+                            requestMetaData, responseMetaData, responseDecorated.getCachedBody(), RunType.ASYNC);
                     }
                 }
             });
@@ -71,6 +75,7 @@ public class OpenApiValidationWebFilter implements WebFilter {
 
     /**
      * Validate request and fail on violation if configured to do so.
+     *
      * @return true if validation is done as part of this method
      */
     private boolean validateRequestWithFailOnViolation(
@@ -83,11 +88,11 @@ public class OpenApiValidationWebFilter implements WebFilter {
 
         if (requestDecorated.getHeaders().containsKey("Content-Type") && requestDecorated.getHeaders().containsKey("Content-Length")) {
             requestDecorated.setOnBodyCachedListener(() -> {
-                var validateRequestResult = validateRequest(requestDecorated, requestMetaData, RunType.SYNC);
+                var validateRequestResult = validateRequest(requestDecorated, requestMetaData, null, RunType.SYNC);
                 throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
             });
         } else {
-            var validateRequestResult = validateRequest(requestDecorated, requestMetaData, RunType.SYNC);
+            var validateRequestResult = validateRequest(requestDecorated, requestMetaData, null, RunType.SYNC);
             throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
         }
         return true;
@@ -95,12 +100,13 @@ public class OpenApiValidationWebFilter implements WebFilter {
 
     private static void throwStatusExceptionOnViolation(ValidationResult validateRequestResult, String message) {
         if (validateRequestResult == ValidationResult.INVALID) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(400), message);
+            throw new ResponseStatusException(HttpStatus.valueOf(400), message);
         }
     }
 
     /**
      * Validate response and fail on violation if configured to do so.
+     *
      * @return true if validation is done as part of this method
      */
     private boolean validateResponseWithFailOnViolation(
@@ -112,7 +118,12 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
 
         responseDecorated.setOnBodyCachedListener(() -> {
-            var validateResponseResult = validateResponse(responseDecorated, requestMetaData, RunType.SYNC);
+            var validateResponseResult = validateResponse(
+                requestMetaData,
+                metaDataFactory.buildResponseMetaData(responseDecorated),
+                responseDecorated.getCachedBody(),
+                RunType.SYNC
+            );
             throwStatusExceptionOnViolation(validateResponseResult, "Response validation failed");
         });
         return true;
@@ -121,6 +132,7 @@ public class OpenApiValidationWebFilter implements WebFilter {
     private ValidationResult validateRequest(
         BodyCachingServerHttpRequestDecorator request,
         RequestMetaData requestMetaData,
+        @Nullable ResponseMetaData responseMetaData,
         RunType runType
     ) {
         if (!trafficSelector.canRequestBeValidated(requestMetaData)) {
@@ -128,30 +140,30 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
 
         if (runType == RunType.SYNC) {
-            return validator.validateRequestObject(requestMetaData, request.getCachedBody());
+            return validator.validateRequestObject(requestMetaData, responseMetaData, request.getCachedBody());
         } else {
-            validator.validateRequestObjectAsync(requestMetaData, request.getCachedBody());
+            validator.validateRequestObjectAsync(requestMetaData, responseMetaData, request.getCachedBody());
             return ValidationResult.NOT_APPLICABLE;
         }
     }
 
     private ValidationResult validateResponse(
-        BodyCachingServerHttpResponseDecorator response,
         RequestMetaData requestMetaData,
+        @Nullable ResponseMetaData responseMetaData,
+        @Nullable String responseBody,
         RunType runType
     ) {
-        var responseMetaData = metaDataFactory.buildResponseMetaData(response);
         if (!trafficSelector.canResponseBeValidated(requestMetaData, responseMetaData)) {
             return ValidationResult.NOT_APPLICABLE;
         }
 
         if (runType == RunType.SYNC) {
-            return validator.validateResponseObject(requestMetaData, responseMetaData, response.getCachedBody());
+            return validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
         } else {
-            validator.validateResponseObjectAsync(requestMetaData, responseMetaData, response.getCachedBody());
+            validator.validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody);
             return ValidationResult.NOT_APPLICABLE;
         }
     }
 
-    private enum RunType { SYNC, ASYNC }
+    private enum RunType {SYNC, ASYNC}
 }
