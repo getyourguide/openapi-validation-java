@@ -1,13 +1,13 @@
 package com.getyourguide.openapi.validation.core;
 
 import com.atlassian.oai.validator.report.ValidationReport;
-import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.Optional;
@@ -18,7 +18,7 @@ public class ValidationReportHandler {
     private final ValidationReportThrottler throttleHelper;
     private final ViolationLogger logger;
     private final MetricsReporter metrics;
-    private final ViolationExclusions violationExclusions;
+    private final InternalViolationExclusions violationExclusions;
 
     public void handleValidationReport(
         RequestMetaData request,
@@ -31,7 +31,7 @@ public class ValidationReportHandler {
                 .getMessages()
                 .stream()
                 .map(message -> buildOpenApiViolation(message, request, body, direction))
-                .filter(violation -> !isViolationExcluded(violation))
+                .filter(violation -> !violationExclusions.isExcluded(violation))
                 .forEach(violation -> throttleHelper.throttle(violation, () -> logValidationError(violation)));
         }
     }
@@ -79,14 +79,6 @@ public class ValidationReportHandler {
             .logMessage(logMessage)
             .message(message.getMessage())
             .build();
-    }
-
-    private boolean isViolationExcluded(OpenApiViolation openApiViolation) {
-        return
-            violationExclusions.isExcluded(openApiViolation)
-                // If it matches more than 1, then we don't want to log a validation error
-                || openApiViolation.getMessage().matches(
-                ".*\\[Path '[^']+'] Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d\\).*");
     }
 
     private static Optional<String> getPointersInstance(ValidationReport.Message message) {
