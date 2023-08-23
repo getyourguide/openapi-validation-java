@@ -165,5 +165,5 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
     }
 
-    private enum RunType {SYNC, ASYNC}
+    private enum RunType { SYNC, ASYNC }
 }

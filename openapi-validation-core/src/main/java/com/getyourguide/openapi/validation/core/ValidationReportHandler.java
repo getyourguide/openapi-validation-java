@@ -79,7 +79,7 @@ public class ValidationReportHandler {
             .instance(pointersInstance)
             .parameter(parameterName)
             .schema(getPointersSchema(message))
-            .responseStatus(getResponseStatus(message))
+            .responseStatus(getResponseStatus(response, message))
             .logMessage(logMessage)
             .message(message.getMessage())
             .build();
@@ -115,7 +115,14 @@ public class ValidationReportHandler {
             .map(apiOperation -> apiOperation.getApiPath().normalised());
     }
 
-    private static Optional<Integer> getResponseStatus(ValidationReport.Message message) {
+    private static Optional<Integer> getResponseStatus(
+        @Nullable ResponseMetaData response,
+        ValidationReport.Message message
+    ) {
+        if (response != null && response.getStatusCode() != null) {
+            return Optional.of(response.getStatusCode());
+        }
+
         return message.getContext().flatMap(ValidationReport.MessageContext::getResponseStatus);
     }
 
