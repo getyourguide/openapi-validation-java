@@ -1,7 +1,5 @@
 package com.getyourguide.openapi.validation.core;
 
-import static com.atlassian.oai.validator.report.ValidationReport.Level.IGNORE;
-
 import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.report.LevelResolver;
 import com.atlassian.oai.validator.report.ValidationReport;
@@ -149,7 +147,7 @@ public class OpenApiInteractionValidatorFactory {
     ) {
         var builder = LevelResolver.create()
             // This is needed if your spec uses composition via allOf, anyOf or oneOf.
-            .withLevel("validation.schema.additionalProperties", IGNORE);
+            .withLevel("validation.schema.additionalProperties", ValidationReport.Level.IGNORE);
         if (levelResolverLevels != null && !levelResolverLevels.isEmpty()) {
             builder.withLevels(
                 levelResolverLevels.entrySet().stream()
