@@ -1,5 +1,6 @@
 package com.getyourguide.openapi.validation.api.metrics;
 
+import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ public class DefaultMetricsReporter implements MetricsReporter {
 
     @Override
     public void reportViolation(OpenApiViolation violation) {
+        if (violation.getLevel() == LogLevel.IGNORE) {
+            return;
+        }
+
         metricsClient.increment(buildMetricName(".error"), createTagsForViolation(violation));
     }
 
