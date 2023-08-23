@@ -37,12 +37,11 @@ public class InternalViolationExclusionsTest {
     private static OpenApiViolation buildSimpleViolation(Direction direction, Integer responseStatus) {
         return OpenApiViolation.builder()
             .direction(direction)
-            .rule("validation." + (direction == Direction.REQUEST ? "request" : "response") +".something")
+            .rule("validation." + (direction == Direction.REQUEST ? "request" : "response") + ".something")
             .responseStatus(responseStatus != null ? Optional.of(responseStatus) : Optional.empty())
             .message("Some violation message")
             .build();
     }
-
 
     @Test
     public void testWhenCustomViolationExclusionThenViolationExcluded() {
