@@ -11,6 +11,11 @@
       "description": "Path to the OpenAPI specification file. If set, the system will search for this file within resources and also as a path based on the current (working) directory. The property defaults to null. If null, the program searches for either an 'openapi.yaml/json' or a 'spec.yaml/json' file under resources."
     },
     {
+      "name": "openapi.validation.violation-log-level",
+      "type": "com.getyourguide.openapi.validation.api.log.LogLevel",
+      "description": "Log level to be used for all violations. Default: info\nNote: This has no effect if a custom ValidatorConfiguration is provided, then it needs to be configured there."
+    },
+    {
       "name": "openapi.validation.excluded-paths",
       "type": "java.lang.String",
       "description": "Comma separated list of paths to be excluded from validation. Default is no excluded paths."
