@@ -11,6 +11,7 @@ public class InternalViolationExclusions {
 
     public boolean isExcluded(OpenApiViolation violation) {
         return falsePositive404(violation)
+            || falsePositive400(violation)
             || customViolationExclusions.isExcluded(violation)
             // If it matches more than 1, then we don't want to log a validation error
             || violation.getMessage().matches(
@@ -23,5 +24,9 @@ public class InternalViolationExclusions {
                 violation.getDirection() == Direction.REQUEST
                 || (violation.getDirection() == Direction.RESPONSE && violation.getResponseStatus().orElse(0) == 404)
             );
+    }
+
+    private boolean falsePositive400(OpenApiViolation violation) {
+        return violation.getDirection() == Direction.REQUEST && violation.getResponseStatus().orElse(0) == 400;
     }
 }

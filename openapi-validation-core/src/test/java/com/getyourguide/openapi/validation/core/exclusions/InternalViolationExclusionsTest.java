@@ -24,61 +24,84 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhenViolationThenReturnFalse() {
+    public void testWhenViolationThenViolationNotExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
-        var isExcluded = violationExclusions.isExcluded(OpenApiViolation.builder()
-            .direction(Direction.REQUEST)
-            .rule("validation.request.something")
-            .responseStatus(Optional.of(404))
-            .message("Some violation message")
-            .build());
-
-        assertFalse(isExcluded);
+        checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 404));
+        checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 400));
+        checkViolationNotExcluded(buildSimpleViolation(Direction.REQUEST, 200));
+        checkViolationNotExcluded(buildSimpleViolation(Direction.REQUEST, null));
+        checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 200));
     }
 
+    private static OpenApiViolation buildSimpleViolation(Direction direction, Integer responseStatus) {
+        return OpenApiViolation.builder()
+            .direction(direction)
+            .rule("validation." + (direction == Direction.REQUEST ? "request" : "response") +".something")
+            .responseStatus(responseStatus != null ? Optional.of(responseStatus) : Optional.empty())
+            .message("Some violation message")
+            .build();
+    }
+
+
     @Test
-    public void testWhenCustomViolationExclusionThenReturnTrue() {
+    public void testWhenCustomViolationExclusionThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(true);
 
-        var isExcluded = violationExclusions.isExcluded(OpenApiViolation.builder().build());
-
-        assertTrue(isExcluded);
+        checkViolationExcluded(OpenApiViolation.builder().build());
     }
 
     @Test
-    public void testWhenInstanceFailedToMatchExactlyOneThenReturnTrue() {
+    public void testWhenInstanceFailedToMatchExactlyOneThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
-        var isExcluded = violationExclusions.isExcluded(OpenApiViolation.builder().message("[Path '/v1/endpoint'] Instance failed to match exactly one schema (matched 2 out of 4)").build());
-
-        assertTrue(isExcluded);
+        checkViolationExcluded(OpenApiViolation.builder()
+            .message("[Path '/v1/endpoint'] Instance failed to match exactly one schema (matched 2 out of 4)").build());
     }
 
     @Test
-    public void testWhen404ResponseWithApiPathNotSpecifiedThenReturnTrue() {
+    public void testWhen404ResponseWithApiPathNotSpecifiedThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
-        var isExcluded = violationExclusions.isExcluded(OpenApiViolation.builder()
+        checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.RESPONSE)
             .rule("validation.request.path.missing")
             .responseStatus(Optional.of(404))
             .message("No API path found that matches request '/nothing'")
             .build());
-
-        assertTrue(isExcluded);
     }
 
     @Test
-    public void testWhenRequestWithApiPathNotSpecifiedThenReturnTrue() {
+    public void testWhenRequestWithApiPathNotSpecifiedThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
-        var isExcluded = violationExclusions.isExcluded(OpenApiViolation.builder()
+        checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.REQUEST)
             .rule("validation.request.path.missing")
             .responseStatus(Optional.empty())
             .message("No API path found that matches request '/nothing'")
             .build());
+    }
+
+    @Test
+    public void testWhenRequestViolationsAnd400ThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.REQUEST)
+            .responseStatus(Optional.of(400))
+            .message("")
+            .build());
+    }
+
+    private void checkViolationNotExcluded(OpenApiViolation violation) {
+        var isExcluded = violationExclusions.isExcluded(violation);
+
+        assertFalse(isExcluded);
+    }
+
+    private void checkViolationExcluded(OpenApiViolation violation) {
+        var isExcluded = violationExclusions.isExcluded(violation);
 
         assertTrue(isExcluded);
     }
