@@ -28,13 +28,18 @@ public class OpenApiRequestValidator {
         ThreadPoolExecutor threadPoolExecutor,
         ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
-        OpenApiInteractionValidatorWrapper validator
+        OpenApiInteractionValidatorWrapper validator,
+        OpenApiRequestValidationConfiguration configuration
     ) {
         this.threadPoolExecutor = threadPoolExecutor;
         this.validator = validator;
         this.validationReportHandler = validationReportHandler;
 
-        metricsReporter.reportStartup(validator != null);
+        metricsReporter.reportStartup(
+            validator != null,
+            configuration.getSampleRate(),
+            configuration.getValidationReportThrottleWaitSeconds()
+        );
     }
 
     public boolean isReady() {

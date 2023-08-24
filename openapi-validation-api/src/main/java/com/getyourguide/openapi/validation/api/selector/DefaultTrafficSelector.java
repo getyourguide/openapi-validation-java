@@ -10,8 +10,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class DefaultTrafficSelector implements TrafficSelector {
 
-    private static final double SAMPLE_RATE_DEFAULT = 0.001; // 1.0 = 100%
-
     private final double sampleRate;
     private final Set<String> excludedPaths;
     private final List<ExcludedHeader> excludedHeaders;
@@ -23,13 +21,13 @@ public class DefaultTrafficSelector implements TrafficSelector {
     }
 
     public DefaultTrafficSelector(
-        Double sampleRate,
+        double sampleRate,
         Set<String> excludedPaths,
         List<ExcludedHeader> excludedHeaders,
         Boolean shouldFailOnRequestViolation,
         Boolean shouldFailOnResponseViolation
     ) {
-        this.sampleRate = sampleRate != null ? sampleRate : SAMPLE_RATE_DEFAULT;
+        this.sampleRate = sampleRate;
         this.excludedPaths = excludedPaths != null ? excludedPaths : Set.of();
         this.excludedHeaders = excludedHeaders != null ? excludedHeaders : Collections.emptyList();
         this.shouldFailOnRequestViolation = shouldFailOnRequestViolation != null ? shouldFailOnRequestViolation : false;
