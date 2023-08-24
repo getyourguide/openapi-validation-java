@@ -1,5 +1,6 @@
 package com.getyourguide.openapi.validation.api.metrics;
 
+import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ public class DefaultMetricsReporter implements MetricsReporter {
 
     @Override
     public void reportViolation(OpenApiViolation violation) {
+        if (violation.getLevel() == LogLevel.IGNORE) {
+            return;
+        }
+
         metricsClient.increment(buildMetricName(".error"), createTagsForViolation(violation));
     }
 
@@ -29,11 +34,6 @@ public class DefaultMetricsReporter implements MetricsReporter {
             buildMetricName(".startup"),
             createTagsForStartup(isValidationEnabled, sampleRate, validationReportThrottleWaitSeconds)
         );
-    }
-
-    @Override
-    public void reportValidationHeartbeat() {
-        metricsClient.increment(buildMetricName(".validation_heartbeat"), createTagsForValidation());
     }
 
     private String buildMetricName(String suffix) {
@@ -66,12 +66,6 @@ public class DefaultMetricsReporter implements MetricsReporter {
         tags.add(new MetricTag("throttling", String.valueOf(validationReportThrottleWaitSeconds)));
         addAdditionalTags(tags);
 
-        return tags.toArray(MetricTag[]::new);
-    }
-
-    private MetricTag[] createTagsForValidation() {
-        var tags = new ArrayList<MetricTag>();
-        addAdditionalTags(tags);
         return tags.toArray(MetricTag[]::new);
     }
 

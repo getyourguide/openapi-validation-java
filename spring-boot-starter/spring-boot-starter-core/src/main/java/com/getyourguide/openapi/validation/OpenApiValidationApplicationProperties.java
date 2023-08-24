@@ -3,6 +3,7 @@ package com.getyourguide.openapi.validation;
 import static com.getyourguide.openapi.validation.OpenApiValidationApplicationProperties.PROPERTY_PREFIX;
 
 import com.getyourguide.openapi.validation.api.exclusions.ExcludedHeader;
+import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.metrics.MetricTag;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidationConfiguration;
 import com.getyourguide.openapi.validation.util.CommaSeparatedStringsUtil;
@@ -29,6 +30,7 @@ public class OpenApiValidationApplicationProperties {
 
     private Double sampleRate;
     private String specificationFilePath;
+    private LogLevel violationLogLevel;
     private Integer validationReportThrottleWaitSeconds;
     private String validationReportMetricName;
     private String validationReportMetricAdditionalTags;

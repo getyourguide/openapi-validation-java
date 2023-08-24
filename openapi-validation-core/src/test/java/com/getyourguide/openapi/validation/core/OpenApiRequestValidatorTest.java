@@ -45,7 +45,7 @@ public class OpenApiRequestValidatorTest {
     public void testWhenThreadPoolExecutorRejectsExecutionThenItShouldNotThrow() {
         Mockito.doThrow(new RejectedExecutionException()).when(threadPoolExecutor).execute(any());
 
-        openApiRequestValidator.validateRequestObjectAsync(mock(), null);
+        openApiRequestValidator.validateRequestObjectAsync(mock(), null, null);
     }
 
     @Test

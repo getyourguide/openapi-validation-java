@@ -49,12 +49,14 @@ public class DefaultTrafficSelector implements TrafficSelector {
     @Override
     public boolean canRequestBeValidated(RequestMetaData request) {
         return !methodEquals(request.getMethod(), "OPTIONS")
+            && !methodEquals(request.getMethod(), "HEAD")
             && isContentTypeSupported(request.getContentType());
     }
 
     @Override
     public boolean canResponseBeValidated(RequestMetaData request, ResponseMetaData response) {
         return !methodEquals(request.getMethod(), "OPTIONS")
+            && !methodEquals(request.getMethod(), "HEAD")
             && isContentTypeSupported(response.getContentType());
     }
 
