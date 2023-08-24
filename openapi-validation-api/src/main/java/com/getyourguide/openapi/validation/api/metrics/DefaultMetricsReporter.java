@@ -24,11 +24,6 @@ public class DefaultMetricsReporter implements MetricsReporter {
         metricsClient.increment(buildMetricName(".startup"), createTagsForStartup(isValidationEnabled));
     }
 
-    @Override
-    public void reportValidationHeartbeat() {
-        metricsClient.increment(buildMetricName(".validation_heartbeat"), createTagsForValidation());
-    }
-
     private String buildMetricName(String suffix) {
         return configuration.getMetricName() + suffix;
     }
@@ -53,12 +48,6 @@ public class DefaultMetricsReporter implements MetricsReporter {
         tags.add(new MetricTag("validation_enabled", String.valueOf(isValidationEnabled)));
         addAdditionalTags(tags);
 
-        return tags.toArray(MetricTag[]::new);
-    }
-
-    private MetricTag[] createTagsForValidation() {
-        var tags = new ArrayList<MetricTag>();
-        addAdditionalTags(tags);
         return tags.toArray(MetricTag[]::new);
     }
 
