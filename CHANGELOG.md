@@ -4,6 +4,22 @@
 
 ## [Unreleased]
 
+## [1.2.4] - 2023-08-24
+
+### Added
+
+- Send sample-rate and throttling information with startup metric ([#28](https://github.com/getyourguide/openapi-validation-java/pull/28))
+- Allow configuring log level ([#26](https://github.com/getyourguide/openapi-validation-java/pull/26))
+
+### Fixed
+
+- Exclude false positive violations ([#24](https://github.com/getyourguide/openapi-validation-java/pull/24)) 
+- Do not validate HEAD requests ([#27](https://github.com/getyourguide/openapi-validation-java/pull/27))
+
+### Removed
+
+- Remove heartbeat metric ([#25](https://github.com/getyourguide/openapi-validation-java/pull/25))
+
 ## [1.2.3] - 2023-07-17
 
 ### Fixed
@@ -67,7 +83,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.3...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.4
 [1.2.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.3
 [1.2.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.2
 [1.2.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.1
