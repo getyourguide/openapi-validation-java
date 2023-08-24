@@ -91,7 +91,9 @@ public class LibraryAutoConfiguration {
     public ValidatorConfiguration validatorConfiguration() {
         return new ValidatorConfigurationBuilder()
             // .levelResolverLevel("validation.request.body.schema.additionalProperties", LogLevel.IGNORE)
-            .levelResolverDefaultLevel(LogLevel.INFO)
+            .levelResolverDefaultLevel(
+                properties.getViolationLogLevel() != null ? properties.getViolationLogLevel() : LogLevel.INFO
+            )
             .build();
     }
 

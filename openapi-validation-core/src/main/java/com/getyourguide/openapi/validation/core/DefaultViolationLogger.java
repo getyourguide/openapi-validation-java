@@ -22,8 +22,6 @@ public class DefaultViolationLogger implements ViolationLogger {
                 case INFO -> log.info(violation.getLogMessage());
                 case WARN -> log.warn(violation.getLogMessage());
                 case ERROR -> log.error(violation.getLogMessage());
-                // keeping ignored as debug for now
-                case IGNORE -> log.debug(violation.getLogMessage());
                 default -> { /* do nothing */ }
             }
         } catch (IOException e) {

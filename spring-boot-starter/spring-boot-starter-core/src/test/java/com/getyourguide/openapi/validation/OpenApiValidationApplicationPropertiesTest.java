@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.getyourguide.openapi.validation.api.exclusions.ExcludedHeader;
+import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.metrics.MetricTag;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ class OpenApiValidationApplicationPropertiesTest {
 
     private static final Double SAMPLE_RATE = 0.001;
     private static final String SPECIFICATION_FILE_PATH = "/tmp/openapi.yaml";
+    private static final LogLevel LOG_LEVEL = LogLevel.ERROR;
     private static final Integer VALIDATION_REPORT_THROTTLE_WAIT_SECONDS = 10;
     private static final String VALIDATION_REPORT_METRIC_NAME = "openapi_validation";
     private static final String VALIDATION_REPORT_METRIC_ADDITONAL_TAGS_STRING = "service=payment,team=chk";
@@ -25,6 +27,7 @@ class OpenApiValidationApplicationPropertiesTest {
         var loggingConfiguration = new OpenApiValidationApplicationProperties(
             SAMPLE_RATE,
             SPECIFICATION_FILE_PATH,
+            LOG_LEVEL,
             VALIDATION_REPORT_THROTTLE_WAIT_SECONDS,
             VALIDATION_REPORT_METRIC_NAME,
             VALIDATION_REPORT_METRIC_ADDITONAL_TAGS_STRING,
@@ -36,6 +39,7 @@ class OpenApiValidationApplicationPropertiesTest {
 
         assertEquals(SAMPLE_RATE, loggingConfiguration.getSampleRate());
         assertEquals(SPECIFICATION_FILE_PATH, loggingConfiguration.getSpecificationFilePath());
+        assertEquals(LOG_LEVEL, loggingConfiguration.getViolationLogLevel());
         assertEquals(VALIDATION_REPORT_THROTTLE_WAIT_SECONDS,
             loggingConfiguration.getValidationReportThrottleWaitSeconds());
         assertEquals(VALIDATION_REPORT_METRIC_NAME, loggingConfiguration.getValidationReportMetricName());

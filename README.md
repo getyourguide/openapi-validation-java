@@ -88,6 +88,10 @@ openapi.validation.specification-file-path=/tmp/openapi-spec/openapi.json
 # If it is within src/main/resources/folder/my-spec.json use
 openapi.validation.specification-file-path=folder/my-spec.json
 
+# Custom log level for violations (ignore, info, warn, error)
+# Default: info
+openapi.validation.violation-log-level=error
+
 # Comma separated list of paths to be excluded from validation. Default is no excluded paths
 openapi.validation.excluded-paths=/_readiness,/_liveness,/_metrics
 # Allows to exclude requests based on headers. Default is no excluded headers.

@@ -145,7 +145,9 @@ public class OpenApiInteractionValidatorFactory {
         Map<String, LogLevel> levelResolverLevels,
         LogLevel levelResolverDefaultLevel
     ) {
-        var builder = LevelResolver.create();
+        var builder = LevelResolver.create()
+            // This is needed if your spec uses composition via allOf, anyOf or oneOf.
+            .withLevel("validation.schema.additionalProperties", ValidationReport.Level.IGNORE);
         if (levelResolverLevels != null && !levelResolverLevels.isEmpty()) {
             builder.withLevels(
                 levelResolverLevels.entrySet().stream()
@@ -154,10 +156,10 @@ public class OpenApiInteractionValidatorFactory {
                     )
             );
         }
-        return builder
-            // this will cause all messages to be warn by default
-            .withDefaultLevel(mapLevel(levelResolverDefaultLevel).orElse(ValidationReport.Level.INFO))
-            .build();
+
+        mapLevel(levelResolverDefaultLevel).ifPresent(builder::withDefaultLevel);
+
+        return builder.build();
     }
 
     private Optional<ValidationReport.Level> mapLevel(LogLevel level) {
