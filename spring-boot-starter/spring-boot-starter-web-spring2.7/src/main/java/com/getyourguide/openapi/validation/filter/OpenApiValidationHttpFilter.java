@@ -1,6 +1,7 @@
 package com.getyourguide.openapi.validation.filter;
 
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
@@ -8,6 +9,7 @@ import com.getyourguide.openapi.validation.factory.ContentCachingWrapperFactory;
 import com.getyourguide.openapi.validation.factory.ServletMetaDataFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -59,12 +61,17 @@ public class OpenApiValidationHttpFilter extends HttpFilter {
         try {
             super.doFilter(requestWrapper, responseWrapper, chain);
         } finally {
+            var responseMetaData = metaDataFactory.buildResponseMetaData(responseWrapper);
             if (!alreadyDidRequestValidation) {
-                validateRequest(requestWrapper, requestMetaData, RunType.ASYNC);
+                validateRequest(requestWrapper, requestMetaData, responseMetaData, RunType.ASYNC);
             }
 
-            var validateResponseResult =
-                validateResponse(responseWrapper, requestMetaData, getRunTypeForResponseValidation(requestMetaData));
+            var validateResponseResult = validateResponse(
+                responseWrapper,
+                requestMetaData,
+                responseMetaData,
+                getRunTypeForResponseValidation(requestMetaData)
+            );
             throwStatusExceptionOnViolation(validateResponseResult, "Response validation failed");
 
             responseWrapper.copyBodyToResponse(); // Needs to be done on every call, otherwise there won't be a response body
@@ -87,7 +94,7 @@ public class OpenApiValidationHttpFilter extends HttpFilter {
             return false;
         }
 
-        var validateRequestResult = validateRequest(request, requestMetaData, RunType.SYNC);
+        var validateRequestResult = validateRequest(request, requestMetaData, null, RunType.SYNC);
         throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
         return true;
     }
@@ -95,6 +102,7 @@ public class OpenApiValidationHttpFilter extends HttpFilter {
     private ValidationResult validateRequest(
         ContentCachingRequestWrapper request,
         RequestMetaData requestMetaData,
+        @Nullable ResponseMetaData responseMetaData,
         RunType runType
     ) {
         if (!trafficSelector.canRequestBeValidated(requestMetaData)) {
@@ -106,7 +114,7 @@ public class OpenApiValidationHttpFilter extends HttpFilter {
             : null;
 
         if (runType == RunType.ASYNC) {
-            validator.validateRequestObjectAsync(requestMetaData, requestBody);
+            validator.validateRequestObjectAsync(requestMetaData, responseMetaData, requestBody);
             return ValidationResult.NOT_APPLICABLE;
         } else {
             return validator.validateRequestObject(requestMetaData, requestBody);
@@ -116,9 +124,9 @@ public class OpenApiValidationHttpFilter extends HttpFilter {
     private ValidationResult validateResponse(
         ContentCachingResponseWrapper response,
         RequestMetaData requestMetaData,
+        ResponseMetaData responseMetaData,
         RunType runType
     ) {
-        var responseMetaData = metaDataFactory.buildResponseMetaData(response);
         if (!trafficSelector.canResponseBeValidated(requestMetaData, responseMetaData)) {
             return ValidationResult.NOT_APPLICABLE;
         }

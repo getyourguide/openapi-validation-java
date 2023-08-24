@@ -8,12 +8,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.atlassian.oai.validator.report.ValidationReport;
-import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.net.URI;
@@ -35,7 +35,7 @@ class ValidationReportHandlerTest {
         throttleHelper = mock();
         logger = mock();
         MetricsReporter metrics = mock();
-        ViolationExclusions violationExclusions = mock();
+        InternalViolationExclusions violationExclusions = mock();
 
         validationReportHandler = new ValidationReportHandler(throttleHelper, logger, metrics, violationExclusions);
     }
@@ -46,7 +46,7 @@ class ValidationReportHandlerTest {
         var request = mockRequestMetaData();
         var validationReport = mockValidationReport("parameterName");
 
-        validationReportHandler.handleValidationReport(request, Direction.REQUEST, null, validationReport);
+        validationReportHandler.handleValidationReport(request, null, Direction.REQUEST, null, validationReport);
 
         var argumentCaptor = ArgumentCaptor.forClass(OpenApiViolation.class);
         verify(logger).log(argumentCaptor.capture());

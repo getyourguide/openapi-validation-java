@@ -156,7 +156,7 @@ class OpenApiValidationHttpFilterTest {
     }
 
     private void verifyNoRequestValidation() {
-        verify(validator, never()).validateRequestObjectAsync(any(), anyString());
+        verify(validator, never()).validateRequestObjectAsync(any(), any(), anyString());
         verify(validator, never()).validateRequestObject(any(), anyString());
     }
 
@@ -166,7 +166,7 @@ class OpenApiValidationHttpFilterTest {
     }
 
     private void verifyRequestValidatedAsync(MockSetupData mockData) {
-        verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData), eq(REQUEST_BODY));
+        verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData), eq(mockData.responseMetaData), eq(REQUEST_BODY));
     }
 
     private void verifyRequestValidatedSync(MockSetupData mockData) {

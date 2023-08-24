@@ -129,7 +129,7 @@ class OpenApiValidationWebFilterTest {
     @Test
     public void testShouldFailOnRequestViolationWithViolation() {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnRequestViolation(true).build());
-        when(validator.validateRequestObject(eq(mockData.requestMetaData), eq(REQUEST_BODY)))
+        when(validator.validateRequestObject(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY)))
             .thenReturn(ValidationResult.INVALID);
 
         assertThrows(ResponseStatusException.class, () -> webFilter.filter(mockData.exchange, mockData.chain));
@@ -162,7 +162,7 @@ class OpenApiValidationWebFilterTest {
     }
 
     private void verifyNoRequestValidation() {
-        verify(validator, never()).validateRequestObjectAsync(any(), anyString());
+        verify(validator, never()).validateRequestObjectAsync(any(), any(), anyString());
         verify(validator, never()).validateRequestObject(any(), anyString());
     }
 
@@ -172,11 +172,11 @@ class OpenApiValidationWebFilterTest {
     }
 
     private void verifyRequestValidatedAsync(MockSetupData mockData) {
-        verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData), eq(REQUEST_BODY));
+        verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY));
     }
 
     private void verifyRequestValidatedSync(MockSetupData mockData) {
-        verify(validator).validateRequestObject(eq(mockData.requestMetaData), eq(REQUEST_BODY));
+        verify(validator).validateRequestObject(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY));
     }
 
     private void verifyResponseValidatedAsync(MockSetupData mockData) {

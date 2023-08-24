@@ -17,6 +17,7 @@ import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
 import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFactory;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.ValidationReportHandler;
+import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.throttle.RequestBasedValidationReportThrottler;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottlerNone;
@@ -81,7 +82,7 @@ public class LibraryAutoConfiguration {
             validationReportThrottler,
             logger,
             metricsReporter,
-            violationExclusions.orElseGet(NoViolationExclusions::new)
+            new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new))
         );
     }
 
