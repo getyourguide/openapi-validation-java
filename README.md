@@ -88,7 +88,7 @@ openapi.validation.specification-file-path=/tmp/openapi-spec/openapi.json
 # If it is within src/main/resources/folder/my-spec.json use
 openapi.validation.specification-file-path=folder/my-spec.json
 
-# Custom log level for violations
+# Custom log level for violations (ignore, info, warn, error)
 # Default: info
 openapi.validation.violation-log-level=error
 
