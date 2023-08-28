@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.2.5] - 2023-08-28
+
+### Changed
+
+- Ignore unexpected query parameter violation ([#31](https://github.com/getyourguide/openapi-validation-java/pull/31))
+
 ## [1.2.4] - 2023-08-24
 
 ### Added
@@ -83,7 +89,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.4...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.5...HEAD
+[1.2.5]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.5
 [1.2.4]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.4
 [1.2.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.3
 [1.2.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.2
