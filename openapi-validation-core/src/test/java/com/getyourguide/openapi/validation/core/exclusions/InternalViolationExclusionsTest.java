@@ -60,6 +60,16 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
+    public void testWhenInstanceFailedToMatchExactlyOneWithOneOf24ThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .rule("validation.response.body.schema.oneOf")
+            .message("[Path '/v1/endpoint'] Instance failed to match exactly one schema (matched 2 out of 24)")
+            .build());
+    }
+
+    @Test
     public void testWhen404ResponseWithApiPathNotSpecifiedThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
