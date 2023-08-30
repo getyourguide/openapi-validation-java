@@ -13,9 +13,16 @@ public class InternalViolationExclusions {
         return falsePositive404(violation)
             || falsePositive400(violation)
             || customViolationExclusions.isExcluded(violation)
-            // If it matches more than 1, then we don't want to log a validation error
-            || violation.getMessage().matches(
-            ".*\\[Path '[^']+'] Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d\\).*");
+            || oneOfMatchesMoreThanOneSchema(violation);
+    }
+
+    private static boolean oneOfMatchesMoreThanOneSchema(OpenApiViolation violation) {
+        return (
+            "validation.response.body.schema.oneOf".equals(violation.getRule())
+                || "validation.request.body.schema.oneOf".equals(violation.getRule())
+            )
+            && violation.getMessage()
+            .matches(".*Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d+\\).*");
     }
 
     private boolean falsePositive404(OpenApiViolation violation) {
