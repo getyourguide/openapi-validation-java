@@ -55,6 +55,7 @@ public class InternalViolationExclusionsTest {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationExcluded(OpenApiViolation.builder()
+            .rule("validation.response.body.schema.oneOf")
             .message("[Path '/v1/endpoint'] Instance failed to match exactly one schema (matched 2 out of 4)").build());
     }
 
