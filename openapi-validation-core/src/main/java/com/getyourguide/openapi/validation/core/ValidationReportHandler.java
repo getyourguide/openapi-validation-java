@@ -57,12 +57,16 @@ public class ValidationReportHandler {
         var instance = pointersInstance.map(i -> String.format("Instance: %s\n", i)).orElse("");
         var parameterName = getParameterName(message);
         var parameter = parameterName.map(i -> String.format("Parameter: %s\n", i)).orElse("");
+        var responseStatusCode = response != null
+            ? String.format("Response Status Code: %s\n", response.getStatusCode())
+            : "";
 
         var logMessage = String.format(
-            "OpenAPI spec validation error [%s]\n%s\nUser Agent: %s\n%s%s\n%s",
+            "OpenAPI spec validation error [%s]\n%s\nUser Agent: %s\n%s%s%s\n%s",
             message.getKey(),
             requestString,
             request.getHeaders().get("User-Agent"),
+            responseStatusCode,
             instance,
             parameter,
             message
