@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+## [1.2.6] - 2023-08-30
+
+### Changed
+
+- Add response status code to violation log message ([#35](https://github.com/getyourguide/openapi-validation-java/pull/35))
+- Bump com.atlassian.oai:swagger-request-validator-core ([#34](https://github.com/getyourguide/openapi-validation-java/pull/34))
+
+### Fixed
+
+- Exclude "matched 2 out of 25" in the oneOf rule ([#36](https://github.com/getyourguide/openapi-validation-java/pull/36))
+
 ## [1.2.5] - 2023-08-28
 
 ### Changed
@@ -89,7 +100,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.5...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.6...HEAD
+[1.2.6]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.6
 [1.2.5]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.5
 [1.2.4]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.4
 [1.2.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.3
