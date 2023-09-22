@@ -1,6 +1,6 @@
 package com.getyourguide.openapi.validation.core.validator;
 
-import static com.getyourguide.openapi.validation.core.validator.MultipleSpecOpenApiInteractionValidatorWrapper.MESSAGE_KEY_VALIDATOR_FOUND;
+import static com.getyourguide.openapi.validation.core.validator.MultipleSpecOpenApiInteractionValidatorWrapper.MESSAGE_KEY_NO_VALIDATOR_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -52,7 +52,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapperTest {
         var messages = report.getMessages();
         assertEquals(1, messages.size());
         var message = messages.get(0);
-        assertEquals(MESSAGE_KEY_VALIDATOR_FOUND, message.getKey());
+        assertEquals(MESSAGE_KEY_NO_VALIDATOR_FOUND, message.getKey());
         assertEquals("No validator found for path: /123", message.getMessage());
     }
 
