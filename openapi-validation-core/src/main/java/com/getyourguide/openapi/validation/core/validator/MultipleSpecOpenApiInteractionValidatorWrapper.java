@@ -50,7 +50,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
     private static SimpleMessage buildNoValidatorFoundMessage(String path) {
         return new SimpleMessage(
             MESSAGE_KEY_NO_VALIDATOR_FOUND,
-            "No validator found in ValidatorConfiguration for path: " + path,
+            "ValidatorConfiguration has no spec file matching path: " + path,
             ValidationReport.Level.WARN
         );
     }
