@@ -53,7 +53,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapperTest {
         assertEquals(1, messages.size());
         var message = messages.get(0);
         assertEquals(MESSAGE_KEY_NO_VALIDATOR_FOUND, message.getKey());
-        assertEquals("No validator found for path: /123", message.getMessage());
+        assertEquals("No validator found in ValidatorConfiguration for path: /123", message.getMessage());
     }
 
     private static MockValidatorResult mockValidator() {
