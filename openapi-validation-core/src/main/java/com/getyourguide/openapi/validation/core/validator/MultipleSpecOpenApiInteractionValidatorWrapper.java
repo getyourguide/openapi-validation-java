@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiInteractionValidatorWrapper {
-    public static final String MESSAGE_KEY_VALIDATOR_FOUND = "zopenapi-validator-java.noValidatorFound";
+    public static final String MESSAGE_KEY_NO_VALIDATOR_FOUND = "openapi-validator-java.noValidatorFound";
     private final List<Pair<Pattern, OpenApiInteractionValidatorWrapper>> validators;
 
     public MultipleSpecOpenApiInteractionValidatorWrapper(
@@ -49,8 +49,8 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
 
     private static SimpleMessage buildNoValidatorFoundMessage(String path) {
         return new SimpleMessage(
-            MESSAGE_KEY_VALIDATOR_FOUND,
-            "No validator found for path: " + path,
+            MESSAGE_KEY_NO_VALIDATOR_FOUND,
+            "ValidatorConfiguration has no spec file matching path: " + path,
             ValidationReport.Level.WARN
         );
     }
