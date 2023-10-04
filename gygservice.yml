@@ -3,5 +3,5 @@ service:
   name: openapi-validation-java
   type: Library
   main_language: Java
-  owner: checkout
+  owner: chk
   level: best effort
