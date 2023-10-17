@@ -12,6 +12,7 @@ public class InternalViolationExclusions {
     public boolean isExcluded(OpenApiViolation violation) {
         return falsePositive404(violation)
             || falsePositive400(violation)
+            || falsePositive405(violation)
             || customViolationExclusions.isExcluded(violation)
             || oneOfMatchesMoreThanOneSchema(violation);
     }
@@ -35,5 +36,10 @@ public class InternalViolationExclusions {
 
     private boolean falsePositive400(OpenApiViolation violation) {
         return violation.getDirection() == Direction.REQUEST && violation.getResponseStatus().orElse(0) == 400;
+    }
+
+    private boolean falsePositive405(OpenApiViolation violation) {
+        return violation.getResponseStatus().orElse(0) == 405
+            && "validation.request.operation.notAllowed".equals(violation.getRule());
     }
 }
