@@ -23,26 +23,26 @@ public class OpenApiViolation {
     private final String logMessage;
 
     public Optional<String> getOperationId() {
-        return Optional.ofNullable(operationId) ;
+        return Optional.ofNullable(operationId);
     }
 
     public Optional<String> getNormalizedPath() {
-        return Optional.ofNullable(normalizedPath) ;
+        return Optional.ofNullable(normalizedPath);
     }
 
     public Optional<String> getInstance() {
-        return Optional.ofNullable(instance) ;
+        return Optional.ofNullable(instance);
     }
 
     public Optional<String> getParameter() {
-        return Optional.ofNullable(parameter) ;
+        return Optional.ofNullable(parameter);
     }
 
     public Optional<String> getSchema() {
-        return Optional.ofNullable(schema) ;
+        return Optional.ofNullable(schema);
     }
 
     public Optional<Integer> getResponseStatus() {
-        return Optional.ofNullable(responseStatus) ;
+        return Optional.ofNullable(responseStatus);
     }
 }
