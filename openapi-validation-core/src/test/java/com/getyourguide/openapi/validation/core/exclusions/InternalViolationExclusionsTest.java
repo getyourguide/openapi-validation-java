@@ -24,7 +24,7 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhenViolationThenViolationNotExcluded() {
+    public void whenViolation_thenViolationNotExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 404));
@@ -44,14 +44,14 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhenCustomViolationExclusionThenViolationExcluded() {
+    public void whenCustomViolationExclusion_thenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(true);
 
         checkViolationExcluded(OpenApiViolation.builder().build());
     }
 
     @Test
-    public void testWhenInstanceFailedToMatchExactlyOneThenViolationExcluded() {
+    public void whenInstanceFailedToMatchExactlyOne_thenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationExcluded(OpenApiViolation.builder()
@@ -60,7 +60,7 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhenInstanceFailedToMatchExactlyOneWithOneOf24ThenViolationExcluded() {
+    public void whenInstanceFailedToMatchExactlyOneWithOneOf24_thenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationExcluded(OpenApiViolation.builder()
@@ -70,7 +70,7 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhen404ResponseWithApiPathNotSpecifiedThenViolationExcluded() {
+    public void when404ResponseWithApiPathNotSpecified_ThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationExcluded(OpenApiViolation.builder()
@@ -82,7 +82,7 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhenRequestWithApiPathNotSpecifiedThenViolationExcluded() {
+    public void whenRequestWithApiPathNotSpecified_thenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationExcluded(OpenApiViolation.builder()
@@ -94,12 +94,31 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void testWhenRequestViolationsAnd400ThenViolationExcluded() {
+    public void whenRequestViolationsAnd400_thenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
         checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.REQUEST)
             .responseStatus(Optional.of(400))
+            .message("")
+            .build());
+    }
+
+    @Test
+    public void when405ResponseCodeWithOperationNotAllowedViolation_thenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.REQUEST)
+            .rule("validation.request.operation.notAllowed")
+            .responseStatus(Optional.of(405))
+            .message("")
+            .build());
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.RESPONSE)
+            .rule("validation.request.operation.notAllowed")
+            .responseStatus(Optional.of(405))
             .message("")
             .build());
     }
