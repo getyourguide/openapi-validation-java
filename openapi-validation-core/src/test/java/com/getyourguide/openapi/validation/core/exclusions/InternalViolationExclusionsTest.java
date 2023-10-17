@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +37,7 @@ public class InternalViolationExclusionsTest {
         return OpenApiViolation.builder()
             .direction(direction)
             .rule("validation." + (direction == Direction.REQUEST ? "request" : "response") + ".something")
-            .responseStatus(responseStatus != null ? Optional.of(responseStatus) : Optional.empty())
+            .responseStatus(responseStatus)
             .message("Some violation message")
             .build();
     }
@@ -76,7 +75,7 @@ public class InternalViolationExclusionsTest {
         checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.RESPONSE)
             .rule("validation.request.path.missing")
-            .responseStatus(Optional.of(404))
+            .responseStatus(404)
             .message("No API path found that matches request '/nothing'")
             .build());
     }
@@ -88,7 +87,7 @@ public class InternalViolationExclusionsTest {
         checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.REQUEST)
             .rule("validation.request.path.missing")
-            .responseStatus(Optional.empty())
+            .responseStatus(null)
             .message("No API path found that matches request '/nothing'")
             .build());
     }
@@ -99,7 +98,7 @@ public class InternalViolationExclusionsTest {
 
         checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.REQUEST)
-            .responseStatus(Optional.of(400))
+            .responseStatus(400)
             .message("")
             .build());
     }
@@ -111,14 +110,14 @@ public class InternalViolationExclusionsTest {
         checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.REQUEST)
             .rule("validation.request.operation.notAllowed")
-            .responseStatus(Optional.of(405))
+            .responseStatus(405)
             .message("")
             .build());
 
         checkViolationExcluded(OpenApiViolation.builder()
             .direction(Direction.RESPONSE)
             .rule("validation.request.operation.notAllowed")
-            .responseStatus(Optional.of(405))
+            .responseStatus(405)
             .message("")
             .build());
     }
