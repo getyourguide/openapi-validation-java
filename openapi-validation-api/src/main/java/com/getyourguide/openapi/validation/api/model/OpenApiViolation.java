@@ -21,4 +21,34 @@ public class OpenApiViolation {
     private final Optional<Integer> responseStatus;
     private final String message;
     private final String logMessage;
+
+    public Optional<String> getOperationId() {
+        return getOptional(operationId);
+    }
+
+    public Optional<String> getNormalizedPath() {
+        return getOptional(normalizedPath);
+    }
+
+    public Optional<String> getInstance() {
+        return getOptional(instance);
+    }
+
+    public Optional<String> getParameter() {
+        return getOptional(parameter);
+    }
+
+    public Optional<String> getSchema() {
+        return getOptional(schema);
+    }
+
+    public Optional<Integer> getResponseStatus() {
+        return getOptional(responseStatus);
+    }
+
+    private <T> Optional<T> getOptional(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<T> field) {
+        //noinspection OptionalAssignedToNull
+        return field != null ? field : Optional.empty();
+    }
+
 }
