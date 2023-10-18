@@ -8,7 +8,6 @@ import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import java.net.URI;
 import java.util.Collections;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -89,10 +88,10 @@ public class RequestBasedValidationReportThrottlerTest {
             .requestMetaData(
                 new RequestMetaData(method.toString(), URI.create("https://example.com" + path), Collections.emptyMap())
             )
-            .responseStatus(Optional.of(status))
-            .normalizedPath(Optional.of(path))
-            .instance(Optional.of(instance))
-            .schema(Optional.of(schema))
+            .responseStatus(status)
+            .normalizedPath(path)
+            .instance(instance)
+            .schema(schema)
             .build();
     }
 }
