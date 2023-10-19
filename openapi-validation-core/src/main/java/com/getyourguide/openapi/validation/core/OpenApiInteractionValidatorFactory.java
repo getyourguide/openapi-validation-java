@@ -36,7 +36,7 @@ public class OpenApiInteractionValidatorFactory {
 
         var specOptional = loadOpenAPISpec(specificationFilePath);
         if (specOptional.isEmpty()) {
-            log.info("OpenAPI spec file could not be found [validation disabled]");
+            log.info("OpenAPI spec file `{}` could not be found [validation disabled]", specificationFilePath);
             return null;
         }
 
