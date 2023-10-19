@@ -34,8 +34,8 @@ public class InternalViolationExclusions {
                 Rules.Request.PATH_MISSING.equals(violation.getRule())
                 || Rules.Request.OPERATION_NOT_ALLOWED.equals(violation.getRule())
             ) && (
-                violation.getDirection() == Direction.REQUEST
-                || (violation.getDirection() == Direction.RESPONSE && violation.getResponseStatus().orElse(0) == 404)
+                (violation.getDirection() == Direction.REQUEST && violation.getResponseStatus().isEmpty())
+                || violation.getResponseStatus().orElse(0) == 404
             );
     }
 
