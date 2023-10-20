@@ -29,10 +29,13 @@ public class InternalViolationExclusions {
     }
 
     private boolean falsePositive404(OpenApiViolation violation) {
-        return Rules.Request.PATH_MISSING.equals(violation.getRule())
-            && (
-                violation.getDirection() == Direction.REQUEST
-                || (violation.getDirection() == Direction.RESPONSE && violation.getResponseStatus().orElse(0) == 404)
+        return
+            (
+                Rules.Request.PATH_MISSING.equals(violation.getRule())
+                || Rules.Request.OPERATION_NOT_ALLOWED.equals(violation.getRule())
+            ) && (
+                (violation.getDirection() == Direction.REQUEST && violation.getResponseStatus().isEmpty())
+                || violation.getResponseStatus().orElse(0) == 404
             );
     }
 

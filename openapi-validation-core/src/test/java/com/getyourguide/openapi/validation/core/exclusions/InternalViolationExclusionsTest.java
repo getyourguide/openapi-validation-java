@@ -81,6 +81,29 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
+    public void when404ResponseWithOperationNotAllowedThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.RESPONSE)
+            .rule("validation.request.operation.notAllowed")
+            .responseStatus(404)
+            .message("GET operation not allowed on path '/users'")
+            .build());
+    }
+
+    @Test
+    public void when404RequestWithOperationNotAllowedThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.REQUEST)
+            .rule("validation.request.operation.notAllowed")
+            .message("GET operation not allowed on path '/users'")
+            .build());
+    }
+
+    @Test
     public void whenRequestWithApiPathNotSpecifiedThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
