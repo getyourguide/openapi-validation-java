@@ -4,6 +4,20 @@
 
 ## [Unreleased]
 
+## [1.2.7] - 2023-10-23
+
+### Changed
+
+- Log spec file that was not found ([#44](https://github.com/getyourguide/openapi-validation-java/pull/44))
+- Bump com.atlassian.oai:swagger-request-validator-core ([#42](https://github.com/getyourguide/openapi-validation-java/pull/42))
+- Improve logging when there is no validator found for a path ([#40](https://github.com/getyourguide/openapi-validation-java/pull/40))
+
+### Fixed
+
+- Ignore violation `operation.notAllowed` with status code 404 ([#45](https://github.com/getyourguide/openapi-validation-java/pull/45))
+- Ignore violation `operation.notAllowed` with status code 405 ([#43](https://github.com/getyourguide/openapi-validation-java/pull/43))
+
+
 ## [1.2.6] - 2023-08-30
 
 ### Changed
@@ -100,7 +114,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.6...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.7...HEAD
+[1.2.7]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.7
 [1.2.6]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.6
 [1.2.5]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.5
 [1.2.4]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.4
