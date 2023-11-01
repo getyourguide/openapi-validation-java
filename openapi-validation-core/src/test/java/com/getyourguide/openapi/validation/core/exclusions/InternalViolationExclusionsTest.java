@@ -145,6 +145,18 @@ public class InternalViolationExclusionsTest {
             .build());
     }
 
+    @Test
+    public void when406ResponseCodeWithStatusUnknownViolationThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.RESPONSE)
+            .rule("validation.response.status.unknown")
+            .responseStatus(406)
+            .message("")
+            .build());
+    }
+
     private void checkViolationNotExcluded(OpenApiViolation violation) {
         var isExcluded = violationExclusions.isExcluded(violation);
 

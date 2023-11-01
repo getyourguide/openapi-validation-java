@@ -9,5 +9,6 @@ public class Rules {
 
     public static class Response {
         public static final String BODY_SCHEMA_ONE_OF = "validation.response.body.schema.oneOf";
+        public static final String STATUS_UNKNOWN = "validation.response.status.unknown";
     }
 }
