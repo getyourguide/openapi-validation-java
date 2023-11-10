@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/check.yml
   publish:
     needs: check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, small]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -37,7 +37,7 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
   github-release:
     needs: publish
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, small]
     steps:
       - uses: actions/checkout@v3
       - name: Extract release notes
