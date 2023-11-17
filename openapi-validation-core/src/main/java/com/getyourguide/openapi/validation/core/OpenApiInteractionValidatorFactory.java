@@ -80,6 +80,7 @@ public class OpenApiInteractionValidatorFactory {
                 .withResolveRefs(true)
                 .withResolveCombinators(true) // Inline to avoid problems with allOf
                 .withLevelResolver(buildLevelResolver(levelResolverLevels, levelResolverDefaultLevel))
+                .withStrictOperationPathMatching()
                 .build();
             return new SingleSpecOpenApiInteractionValidatorWrapper(validator);
         } catch (Throwable e) {
