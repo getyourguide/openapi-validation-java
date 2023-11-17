@@ -30,17 +30,6 @@ dependencies {
 }
 ```
 
-#### Spring 2.7
-Spring 2.7.x is also supported but requires to add `-spring2.7` to the `spring-boot-starter-web`
-or `spring-boot-starter-webflux` artifact name.
-
-Following is an example for `spring-boot-starter-web`:
-```groovy
-dependencies {
-    implementation "com.getyourguide.openapi.validation:spring-boot-starter-web-spring2.7:{latest-version}"
-}
-```
-
 ### Provide OpenAPI specification file
 The library will require a valid OpenAPI specification file to be present in the classpath.
 
