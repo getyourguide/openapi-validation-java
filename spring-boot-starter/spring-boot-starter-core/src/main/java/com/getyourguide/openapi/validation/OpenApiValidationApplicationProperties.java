@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class OpenApiValidationApplicationProperties {
     public static final String PROPERTY_PREFIX = "openapi.validation";
-    private static final double SAMPLE_RATE_DEFAULT = 0.001; // 1.0 = 100%
+    private static final double SAMPLE_RATE_DEFAULT = 1; // 1.0 = 100%
 
     private Double sampleRate;
     private String specificationFilePath;
