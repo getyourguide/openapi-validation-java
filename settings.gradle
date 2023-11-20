@@ -13,10 +13,3 @@ include(':metrics-reporter:metrics-reporter-datadog-spring-boot')
 include(':examples:examples-common')
 include(':examples:example-spring-boot-starter-web')
 include(':examples:example-spring-boot-starter-webflux')
-
-
-// Spring 2.7 support
-include(':spring-boot-starter:spring-boot-starter-web-spring2.7')
-include(':spring-boot-starter:spring-boot-starter-webflux-spring2.7')
-include(':examples:example-spring-boot-starter-web-spring2.7')
-include(':examples:example-spring-boot-starter-webflux-spring2.7')

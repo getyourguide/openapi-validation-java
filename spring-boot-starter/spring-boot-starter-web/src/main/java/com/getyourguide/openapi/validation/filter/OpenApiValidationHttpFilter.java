@@ -61,6 +61,11 @@ public class OpenApiValidationHttpFilter extends HttpFilter {
         try {
             super.doFilter(requestWrapper, responseWrapper, chain);
         } finally {
+            // TODO problem here is that if there is something thrown that is not handled in an ErrorHandler,
+            //  the request/response object that gets updated by the general handler is not the same object,
+            //  therefore the actual response is not visible here.
+            //  - Maybe we just need to remove the finally. But then we won't validate anymore on exceptions thrown.
+            //  - Or we say optionally here that it should ignore `validation.response.body.missing`
             var responseMetaData = metaDataFactory.buildResponseMetaData(responseWrapper);
             if (!alreadyDidRequestValidation) {
                 validateRequest(requestWrapper, requestMetaData, responseMetaData, RunType.ASYNC);
