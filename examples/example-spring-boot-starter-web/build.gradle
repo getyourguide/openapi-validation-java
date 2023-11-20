@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version "$springBootVersion"
-    id 'io.spring.dependency-management' version "$springDependencyManagementVersion"
-    id 'org.openapi.generator' version "$openApiGeneratorPluginVersion"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.openapi.generator)
 }
 
 
@@ -12,9 +12,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation "org.openapitools:jackson-databind-nullable:$openApiJacksonDatabindNullableVersion"
-    implementation "jakarta.validation:jakarta.validation-api:$jakartaValidationApiVersion"
-    implementation "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
+    implementation(libs.openapi.tools.jacksonDatabindNullable)
+    implementation(libs.jakarta.validation.api)
+    implementation(libs.swagger.annotations)
 }
 
 test {

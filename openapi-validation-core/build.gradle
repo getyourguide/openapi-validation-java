@@ -3,9 +3,9 @@ apply from: "${rootDir}/gradle/publish-module.gradle"
 dependencies {
     api project(':openapi-validation-api')
 
-    implementation 'com.atlassian.oai:swagger-request-validator-core:2.39.0'
+    implementation(libs.swagger.request.validator.core)
     constraints {
-        implementation('commons-codec:commons-codec:1.16.0') {
+        implementation(libs.commons.codec) {
             because 'Apache commons-codec before 1.13 is vulnerable to information exposure. See https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/'
         }
 //        implementation('org.yaml:snakeyaml:1.33') {

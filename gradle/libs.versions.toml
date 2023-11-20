@@ -1,0 +1,42 @@
+[versions]
+spring-boot = "3.0.2"
+spring-dependency-management = "1.1.0"
+openapi-generator = "6.2.1"
+openapi-tools = "0.2.4"
+swagger = "2.2.8"
+swagger-request-validator = "2.39.0"
+jakarta-validation = "3.0.2"
+lombok = "1.18.24"
+commons-codec = "1.16.0"
+find-bugs = "3.0.2"
+gradle-nexus-publish-plugin = "1.3.0"
+datadog-statsd = "2.13.0"
+# Verify
+checkstyle = "8.44"
+pmd = "6.55.0"
+jacoco = "0.8.7"
+# Testing
+mockito = "4.11.0"
+junit-jupiter = "5.9.1"
+
+[libraries]
+openapi-tools-jacksonDatabindNullable = { group = "org.openapitools", name = "jackson-databind-nullable", version.ref = "openapi-tools" }
+swagger-annotations = { group = "io.swagger.core.v3", name = "swagger-annotations", version.ref = "swagger" }
+swagger-request-validator-core = { group = "com.atlassian.oai", name = "swagger-request-validator-core", version.ref = "swagger-request-validator" }
+jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validation-api", version.ref = "jakarta-validation" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+datadog-statsdclient = { group = "com.datadoghq", name = "java-dogstatsd-client", version.ref = "datadog-statsd" }
+commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
+find-bugs = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "find-bugs" }
+# Testing
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
+
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradle-nexus-publish-plugin" }

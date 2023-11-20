@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id 'org.springframework.boot' version "$springBootVersion" apply false
+    alias(libs.plugins.spring.boot) apply false
 }
 
 apply from: "${rootDir}/gradle/publish-module.gradle"
@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
 
     // TODO use spotbugs instead and also apply to all modules?
-    implementation "com.google.code.findbugs:jsr305:$findBugsVersion"
+    implementation(libs.find.bugs)
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework:spring-webflux'
