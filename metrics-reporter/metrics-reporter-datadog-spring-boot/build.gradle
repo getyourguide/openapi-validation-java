@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id 'org.springframework.boot' version "$springBootVersion" apply false
+    alias(libs.plugins.spring.boot) apply false
 }
 
 apply from: "${rootDir}/gradle/publish-module.gradle"
@@ -12,7 +12,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-test'
 
     api project(':metrics-reporter:metrics-reporter-datadog')
-    implementation "com.datadoghq:java-dogstatsd-client:$datadogStatsdVersion"
+    implementation(libs.datadog.statsdclient)
 
     implementation 'org.assertj:assertj-core'
 }

@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'java-library'
-    id 'org.springframework.boot' version "$springBootVersion"
+    alias(libs.plugins.spring.boot)
 }
 
 dependencies {
