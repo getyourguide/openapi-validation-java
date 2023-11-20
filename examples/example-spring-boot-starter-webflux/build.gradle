@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     alias(libs.plugins.spring.boot)
-    alias(libs.plugins.spring.dependencyManagement)
+    alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.openapi.generator)
 }
 

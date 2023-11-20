@@ -39,7 +39,7 @@ subprojects {
         }
 
         jacoco {
-            toolVersion = "0.8.7"
+            toolVersion = libs.versions.jacoco.get()
         }
 
         jacocoTestReport {
@@ -67,13 +67,13 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = "8.44"
+        toolVersion = libs.versions.checkstyle.get()
         configDirectory.set(file("$rootProject.projectDir/config"))
         checkstyleMain.source = "src/main/java"
     }
 
     pmd {
-        toolVersion = "6.55.0"
+        toolVersion = libs.versions.pmd.get()
         consoleOutput = true
         ruleSets = ["$rootDir/ruleset.xml"]
     }
