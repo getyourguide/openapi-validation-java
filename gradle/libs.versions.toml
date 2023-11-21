@@ -2,7 +2,7 @@
 spring-boot = "3.0.2"
 spring-dependency-management = "1.1.4"
 openapi-generator = "6.2.1"
-openapi-tools = "0.2.4"
+openapi-tools = "0.2.6"
 swagger = "2.2.8"
 swagger-request-validator = "2.39.0"
 jakarta-validation = "3.0.2"
