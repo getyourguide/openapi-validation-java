@@ -61,8 +61,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapperTest {
         var catchAllValidationReport = mock(ValidationReport.class);
         when(catchAllValidator.validateRequest(any())).thenReturn(catchAllValidationReport);
         when(catchAllValidator.validateResponse(any(), any(), any())).thenReturn(catchAllValidationReport);
-        MockValidatorResult result = new MockValidatorResult(catchAllValidator, catchAllValidationReport);
-        return result;
+        return new MockValidatorResult(catchAllValidator, catchAllValidationReport);
     }
 
     private record MockValidatorResult(
