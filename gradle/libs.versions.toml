@@ -1,5 +1,5 @@
 [versions]
-spring-boot = "3.0.2"
+spring-boot = "3.1.5"
 spring-dependency-management = "1.1.4"
 openapi-generator = "6.2.1"
 openapi-tools = "0.2.6"
