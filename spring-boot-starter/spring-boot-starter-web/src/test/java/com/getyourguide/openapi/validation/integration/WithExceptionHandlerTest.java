@@ -2,7 +2,6 @@ package com.getyourguide.openapi.validation.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.getyourguide.openapi.validation.example.openapi.model.BadRequestResponse;
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.integration.openapi.TestViolationLogger;
-import java.util.Optional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +44,6 @@ public class WithExceptionHandlerTest {
     @Test
     public void whenTestSuccessfulResponseThenReturns200() throws Exception {
         mockMvc.perform(get("/test").accept("application/json"))
-            .andDo(print())
             .andExpectAll(
                 status().isOk(),
                 jsonPath("$.value").value("test")
@@ -59,7 +56,6 @@ public class WithExceptionHandlerTest {
     @Test
     public void whenTestInvalidQueryParamThenReturns400WithoutViolationLogged() throws Exception {
         mockMvc.perform(get("/test").queryParam("date", "not-a-date").contentType(MediaType.APPLICATION_JSON))
-            .andDo(print())
             .andExpectAll(
                 status().is4xxClientError(),
                 jsonPath("$.error").value("Invalid parameter")
@@ -79,7 +75,6 @@ public class WithExceptionHandlerTest {
                 get("/test").queryParam("testCase", "throwExceptionWithResponseStatus")
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andDo(print())
             .andExpectAll(
                 status().is4xxClientError(),
                 jsonPath("$.error").value("Unhandled exception")
@@ -102,7 +97,6 @@ public class WithExceptionHandlerTest {
                 get("/test").queryParam("testCase", "throwExceptionWithoutResponseStatus")
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andDo(print())
             .andExpectAll(
                 status().is5xxServerError(),
                 content().string(Matchers.blankOrNullString())

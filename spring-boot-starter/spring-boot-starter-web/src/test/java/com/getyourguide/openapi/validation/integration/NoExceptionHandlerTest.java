@@ -3,12 +3,10 @@ package com.getyourguide.openapi.validation.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.integration.exception.WithoutResponseStatusException;
 import com.getyourguide.openapi.validation.integration.openapi.TestViolationLogger;
@@ -44,7 +42,6 @@ public class NoExceptionHandlerTest {
     @Test
     public void whenTestSuccessfulResponseThenReturns200() throws Exception {
         mockMvc.perform(get("/test").accept("application/json"))
-            .andDo(print())
             .andExpectAll(
                 status().isOk(),
                 jsonPath("$.value").value("test")
@@ -56,7 +53,6 @@ public class NoExceptionHandlerTest {
     @Test
     public void whenTestInvalidQueryParamThenReturns400WithoutViolationLogged() throws Exception {
         mockMvc.perform(get("/test").queryParam("date", "not-a-date").contentType(MediaType.APPLICATION_JSON))
-            .andDo(print())
             .andExpectAll(
                 status().is4xxClientError(),
                 content().string(Matchers.blankOrNullString())
@@ -79,7 +75,6 @@ public class NoExceptionHandlerTest {
                 get("/test").queryParam("testCase", "throwExceptionWithResponseStatus")
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andDo(print())
             .andExpectAll(
                 status().is4xxClientError(),
                 content().string(Matchers.blankOrNullString()),
@@ -87,7 +82,6 @@ public class NoExceptionHandlerTest {
             );
         Thread.sleep(100);
 
-        openApiViolationLogger.getViolations().stream().map(OpenApiViolation::getLogMessage).forEach(System.out::println);
         // TODO check there is no reported violation if spec has correct response in there
         assertEquals(1, openApiViolationLogger.getViolations().size());
         var violation = openApiViolationLogger.getViolations().get(0);
@@ -109,7 +103,6 @@ public class NoExceptionHandlerTest {
                     get("/test").queryParam("testCase", "throwExceptionWithoutResponseStatus")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andDo(print())
                 .andExpect(status().is5xxServerError());
         });
         Thread.sleep(100);
