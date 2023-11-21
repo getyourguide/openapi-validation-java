@@ -1,11 +1,18 @@
 package com.getyourguide.openapi.validation.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.getyourguide.openapi.validation.example.openapi.model.BadRequestResponse;
+import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
+import com.getyourguide.openapi.validation.integration.openapi.TestViolationLogger;
+import java.util.Optional;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,31 +35,42 @@ public class WithExceptionHandlerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private TestViolationLogger openApiViolationLogger;
+
+    @BeforeEach
+    public void setup() {
+        openApiViolationLogger.clearViolations();
+    }
+
     @Test
-    void whenTestSuccessfulResponseThenReturns200() throws Exception {
+    public void whenTestSuccessfulResponseThenReturns200() throws Exception {
         mockMvc.perform(get("/test").accept("application/json"))
             .andDo(print())
             .andExpectAll(
                 status().isOk(),
                 jsonPath("$.value").value("test")
             );
+
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
     @Test
-    void whenTestInvalidQueryParamThenReturns400WithoutViolationLogged() throws Exception {
+    public void whenTestInvalidQueryParamThenReturns400WithoutViolationLogged() throws Exception {
         mockMvc.perform(get("/test").queryParam("date", "not-a-date").contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpectAll(
                 status().is4xxClientError(),
                 jsonPath("$.error").value("Invalid parameter")
             );
-        Thread.sleep(10);
+        Thread.sleep(100);
 
-        // TODO check there is no reported violation if spec has correct response in there
+        assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
     @Test
-    void whenTestThrowExceptionWithResponseStatusThenReturns500WithoutViolationLogged()
+    public void whenTestThrowExceptionWithResponseStatusThenReturns400WithoutViolationLogged()
         throws Exception {
         // Note: This case tests that an endpoint that throws an exception that is not handled by any code (no global error handler either)
         //       is correctly intercepted by the library with the response body.
@@ -63,19 +81,18 @@ public class WithExceptionHandlerTest {
             )
             .andDo(print())
             .andExpectAll(
-                status().is5xxServerError(),
+                status().is4xxClientError(),
                 jsonPath("$.error").value("Unhandled exception")
             );
-        Thread.sleep(10);
+        Thread.sleep(100);
 
-        // TODO check there is no reported violation if spec has correct response in there
-
+        assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
     // Note: Throwing a RuntimeException that has no `@ResponseStatus` annotation will cause `.perform()` to throw.
 
     @Test
-    void whenTestThrowExceptionWithoutResponseStatusThenReturns500WithoutViolationLogged()
+    public void whenTestThrowExceptionWithoutResponseStatusThenReturns500WithoutViolationLogged()
         throws Exception {
         // Note: This case tests that an endpoint that throws an exception that is not handled by any code (no global error handler either)
         //       is correctly intercepted by the library with the response body.
@@ -88,18 +105,23 @@ public class WithExceptionHandlerTest {
             .andDo(print())
             .andExpectAll(
                 status().is5xxServerError(),
-                jsonPath("$.error").value("Unhandled exception")
+                content().string(Matchers.blankOrNullString())
             );
-        Thread.sleep(10);
+        Thread.sleep(100);
 
-        // TODO check there is no reported violation if spec has correct response in there
+        assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
     @ControllerAdvice
     public static class ExceptionHandlerConfiguration {
         @ExceptionHandler(Exception.class)
         public ResponseEntity<?> handle(Exception exception) {
-            return ResponseEntity.internalServerError().body(new BadRequestResponse().error("Unhandled exception"));
+            return ResponseEntity.internalServerError().build();
+        }
+
+        @ExceptionHandler(WithResponseStatusException.class)
+        public ResponseEntity<?> handle(WithResponseStatusException exception) {
+            return ResponseEntity.badRequest().body(new BadRequestResponse().error("Unhandled exception"));
         }
 
         @ExceptionHandler(MethodArgumentTypeMismatchException.class)
