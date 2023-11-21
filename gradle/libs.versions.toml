@@ -1,6 +1,6 @@
 [versions]
 spring-boot = "3.0.2"
-spring-dependency-management = "1.1.0"
+spring-dependency-management = "1.1.4"
 openapi-generator = "6.2.1"
 openapi-tools = "0.2.4"
 swagger = "2.2.8"
