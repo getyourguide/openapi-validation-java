@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.openapi.generator)
 }
 
-apply from: "${rootDir}/gradle/publish-module.gradle"
-
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
 
@@ -21,58 +19,8 @@ dependencies {
     // TODO use spotbugs instead and also apply to all modules?
     implementation(libs.find.bugs)
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-validation'
+    testImplementation project(':test:test-utils')
     testImplementation 'org.springframework:spring-web'
     testImplementation 'org.springframework:spring-webmvc'
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
-    testImplementation(libs.jakarta.validation.api)
-    testImplementation(libs.swagger.annotations)
-    testImplementation(libs.openapi.tools.jacksonDatabindNullable)
 }
-
-
-def generatedSourceDirectory = "$buildDir/generated/openapi"
-sourceSets {
-    test {
-        java {
-            srcDir generatedSourceDirectory + '/src/test/java'
-        }
-    }
-}
-
-openApiValidate {
-    inputSpec = "$projectDir/src/test/resources/openapi.yaml"
-    recommend = true
-}
-
-openApiGenerate {
-    generatorName = "spring"
-    inputSpec = "$projectDir/src/test/resources/openapi.yaml"
-    outputDir = generatedSourceDirectory
-    apiPackage = "com.getyourguide.openapi.validation.example.openapi"
-    invokerPackage = "com.getyourguide.openapi.validation.example.openapi"
-    modelPackage = "com.getyourguide.openapi.validation.example.openapi.model"
-    configOptions = [
-            useSpringBoot3         : "true",
-            dateLibrary            : "java8",
-            performBeanValidation  : "true",
-            hideGenerationTimestamp: "true",
-            serializableModel      : "true",
-            interfaceOnly          : "true",
-            skipDefaultInterface   : "true",
-            useTags                : "true"
-    ]
-}
-
-tasks.register("openApiGenerateMove") {
-    doLast {
-        file("$generatedSourceDirectory/src/main").renameTo(file("$generatedSourceDirectory/src/test"))
-    }
-}
-
-
-
-tasks.openApiGenerate.dependsOn tasks.openApiValidate
-tasks.openApiGenerateMove.dependsOn tasks.openApiGenerate
-tasks.compileTestJava.dependsOn tasks.openApiGenerateMove

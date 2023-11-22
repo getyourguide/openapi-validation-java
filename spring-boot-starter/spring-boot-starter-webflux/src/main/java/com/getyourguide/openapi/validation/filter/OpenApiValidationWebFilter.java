@@ -27,7 +27,6 @@ import reactor.core.publisher.SignalType;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @AllArgsConstructor
 public class OpenApiValidationWebFilter implements WebFilter {
-
     private final OpenApiRequestValidator validator;
     private final TrafficSelector trafficSelector;
     private final ReactiveMetaDataFactory metaDataFactory;
