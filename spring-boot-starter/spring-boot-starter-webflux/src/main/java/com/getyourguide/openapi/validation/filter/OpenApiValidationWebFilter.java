@@ -88,18 +88,18 @@ public class OpenApiValidationWebFilter implements WebFilter {
         if (requestDecorated.getHeaders().containsKey("Content-Type") && requestDecorated.getHeaders().containsKey("Content-Length")) {
             requestDecorated.setOnBodyCachedListener(() -> {
                 var validateRequestResult = validateRequest(requestDecorated, requestMetaData, null, RunType.SYNC);
-                throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
+                throwStatusExceptionOnViolation(validateRequestResult, 400, "Request validation failed");
             });
         } else {
             var validateRequestResult = validateRequest(requestDecorated, requestMetaData, null, RunType.SYNC);
-            throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
+            throwStatusExceptionOnViolation(validateRequestResult, 400, "Request validation failed");
         }
         return true;
     }
 
-    private static void throwStatusExceptionOnViolation(ValidationResult validateRequestResult, String message) {
+    private static void throwStatusExceptionOnViolation(ValidationResult validateRequestResult, int statusCode,  String message) {
         if (validateRequestResult == ValidationResult.INVALID) {
-            throw new ResponseStatusException(HttpStatus.valueOf(400), message);
+            throw new ResponseStatusException(HttpStatus.valueOf(statusCode), message);
         }
     }
 
@@ -123,7 +123,7 @@ public class OpenApiValidationWebFilter implements WebFilter {
                 responseDecorated.getCachedBody(),
                 RunType.SYNC
             );
-            throwStatusExceptionOnViolation(validateResponseResult, "Response validation failed");
+            throwStatusExceptionOnViolation(validateResponseResult, 500, "Response validation failed");
         });
         return true;
     }
