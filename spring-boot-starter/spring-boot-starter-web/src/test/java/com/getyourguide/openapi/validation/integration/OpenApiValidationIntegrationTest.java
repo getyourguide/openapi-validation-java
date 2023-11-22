@@ -3,6 +3,7 @@ package com.getyourguide.openapi.validation.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -109,6 +110,21 @@ public class OpenApiValidationIntegrationTest {
         assertEquals(Optional.of("/value"), violation2.getInstance());
     }
 
+    @Test
+    public void whenTestOptionsCallThenShouldNotValidate() throws Exception {
+        // Note: Options is not in the spec and would report a violation if it was validated.
+        mockMvc.perform(options("/test"))
+            .andExpectAll(
+                status().isOk(),
+                content().string(Matchers.blankOrNullString())
+            );
+        Thread.sleep(100);
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
+    }
+
+    // TODO Add test that fails on request violation immediately (maybe needs separate test class & setup) should not log violation
+
     @Nullable
     private OpenApiViolation getViolationByRule(List<OpenApiViolation> violations, String rule) {
         return violations.stream()
@@ -116,6 +132,4 @@ public class OpenApiValidationIntegrationTest {
             .findFirst()
             .orElse(null);
     }
-
-    // TODO Add test that fails on request violation immediately (maybe needs separate test class & setup)
 }
