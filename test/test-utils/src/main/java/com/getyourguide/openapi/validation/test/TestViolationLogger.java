@@ -1,4 +1,4 @@
-package com.getyourguide.openapi.validation.test.openapi;
+package com.getyourguide.openapi.validation.test;
 
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;

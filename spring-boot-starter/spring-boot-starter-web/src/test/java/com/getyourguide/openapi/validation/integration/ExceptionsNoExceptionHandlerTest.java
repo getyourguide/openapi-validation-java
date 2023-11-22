@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
-import com.getyourguide.openapi.validation.integration.exception.WithoutResponseStatusException;
-import com.getyourguide.openapi.validation.test.openapi.TestViolationLogger;
+import com.getyourguide.openapi.validation.test.TestViolationLogger;
+import com.getyourguide.openapi.validation.test.exception.WithResponseStatusException;
+import com.getyourguide.openapi.validation.test.exception.WithoutResponseStatusException;
 import jakarta.servlet.ServletException;
 import java.util.Optional;
 import org.hamcrest.Matchers;

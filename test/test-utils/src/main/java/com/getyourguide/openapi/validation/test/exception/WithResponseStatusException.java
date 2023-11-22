@@ -1,4 +1,4 @@
-package com.getyourguide.openapi.validation.integration.exception;
+package com.getyourguide.openapi.validation.test.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

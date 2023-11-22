@@ -1,4 +1,4 @@
-package com.getyourguide.openapi.validation.integration.exception;
+package com.getyourguide.openapi.validation.test.exception;
 
 public class WithoutResponseStatusException extends RuntimeException {
 

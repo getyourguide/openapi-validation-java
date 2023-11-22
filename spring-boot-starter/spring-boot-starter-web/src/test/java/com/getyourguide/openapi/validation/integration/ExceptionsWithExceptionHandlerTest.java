@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.getyourguide.openapi.validation.test.openapi.TestViolationLogger;
+import com.getyourguide.openapi.validation.test.TestViolationLogger;
+import com.getyourguide.openapi.validation.test.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.test.openapi.web.model.BadRequestResponse;
-import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import java.util.Optional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;

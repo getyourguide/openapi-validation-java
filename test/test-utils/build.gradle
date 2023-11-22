@@ -13,4 +13,6 @@ dependencies {
 
     // TODO use spotbugs instead and also apply to all modules?
     implementation(libs.find.bugs)
+
+    compileOnly 'org.springframework:spring-web'
 }

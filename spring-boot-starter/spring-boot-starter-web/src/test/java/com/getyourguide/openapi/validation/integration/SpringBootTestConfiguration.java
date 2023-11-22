@@ -1,7 +1,7 @@
 package com.getyourguide.openapi.validation.integration;
 
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
-import com.getyourguide.openapi.validation.test.openapi.TestViolationLogger;
+import com.getyourguide.openapi.validation.test.TestViolationLogger;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
