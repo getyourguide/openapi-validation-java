@@ -19,6 +19,7 @@ dependencies {
     // TODO use spotbugs instead and also apply to all modules?
     implementation(libs.find.bugs)
 
+    testImplementation project(':test:test-utils')
     testImplementation project(':test:openapi-web')
     testImplementation 'org.springframework:spring-web'
     testImplementation 'org.springframework:spring-webmvc'

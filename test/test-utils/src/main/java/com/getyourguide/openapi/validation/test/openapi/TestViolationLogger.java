@@ -1,14 +1,12 @@
-package com.getyourguide.openapi.validation.integration.openapi;
+package com.getyourguide.openapi.validation.test.openapi;
 
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 
 @Getter
-@Component
 public class TestViolationLogger implements ViolationLogger {
     private final List<OpenApiViolation> violations = new ArrayList<>();
 

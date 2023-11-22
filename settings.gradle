@@ -15,3 +15,5 @@ include(':examples:example-spring-boot-starter-web')
 include(':examples:example-spring-boot-starter-webflux')
 
 include(':test:openapi-web')
+include(':test:openapi-webflux')
+include(':test:test-utils')

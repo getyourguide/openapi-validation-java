@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
-import com.getyourguide.openapi.validation.integration.openapi.TestViolationLogger;
+import com.getyourguide.openapi.validation.test.openapi.TestViolationLogger;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
