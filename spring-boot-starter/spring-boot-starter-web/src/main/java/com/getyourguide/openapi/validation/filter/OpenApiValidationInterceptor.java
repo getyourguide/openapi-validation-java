@@ -33,8 +33,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        boolean skipValidation = request.getAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION) != null;
-        if (skipValidation) {
+        if (shouldSkipValidation(request)) {
             return true;
         }
 
@@ -48,7 +47,6 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
                 request.setAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION, true);
                 throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Request validation failed");
             }
-            return false;
         }
 
         return true;
@@ -61,8 +59,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         Object handler,
         ModelAndView modelAndView
     ) {
-        boolean skipValidation = request.getAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION) != null;
-        if (skipValidation) {
+        if (shouldSkipValidation(request)) {
             return;
         }
 
@@ -83,12 +80,15 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         Object handler,
         Exception ex
     ) {
-        boolean skipValidation = request.getAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION) != null;
-        if (skipValidation) {
+        if (shouldSkipValidation(request)) {
             return;
         }
 
         validateResponse(request, response, ex);
+    }
+
+    private boolean shouldSkipValidation(HttpServletRequest request) {
+        return request.getAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION) != null;
     }
 
     private void validateResponse(HttpServletRequest request, HttpServletResponse response) {
@@ -131,7 +131,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         @Nullable ResponseMetaData responseMetaData,
         RunType runType
     ) {
-        boolean skipRequestValidation = request.getAttribute(ATTRIBUTE_SKIP_REQUEST_VALIDATION) != null;
+        var skipRequestValidation = request.getAttribute(ATTRIBUTE_SKIP_REQUEST_VALIDATION) != null;
         request.setAttribute(ATTRIBUTE_SKIP_REQUEST_VALIDATION, true);
         if (skipRequestValidation || !trafficSelector.canRequestBeValidated(requestMetaData)) {
             return ValidationResult.NOT_APPLICABLE;
@@ -156,7 +156,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         ResponseMetaData responseMetaData,
         RunType runType
     ) {
-        boolean skipResponseValidation = request.getAttribute(ATTRIBUTE_SKIP_RESPONSE_VALIDATION) != null;
+        var skipResponseValidation = request.getAttribute(ATTRIBUTE_SKIP_RESPONSE_VALIDATION) != null;
         request.setAttribute(ATTRIBUTE_SKIP_RESPONSE_VALIDATION, true);
 
         if (skipResponseValidation || !trafficSelector.canResponseBeValidated(requestMetaData, responseMetaData)) {
