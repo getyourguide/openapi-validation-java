@@ -17,7 +17,12 @@ public class ServletMetaDataFactory {
     }
 
     public ResponseMetaData buildResponseMetaData(HttpServletResponse response) {
-        return new ResponseMetaData(response.getStatus(), response.getContentType(), getHeaders(response));
+        return buildResponseMetaData(response, null);
+    }
+
+    public ResponseMetaData buildResponseMetaData(HttpServletResponse response, Exception exception) {
+        var status = response.getStatus() == 200 && exception != null ? 500 : response.getStatus();
+        return new ResponseMetaData(status, response.getContentType(), getHeaders(response));
     }
 
     private static TreeMap<String, String> getHeaders(HttpServletRequest request) {

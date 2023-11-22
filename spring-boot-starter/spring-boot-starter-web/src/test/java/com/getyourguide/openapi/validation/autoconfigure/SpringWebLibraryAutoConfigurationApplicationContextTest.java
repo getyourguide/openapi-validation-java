@@ -2,7 +2,6 @@ package com.getyourguide.openapi.validation.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.getyourguide.openapi.validation.filter.OpenApiValidationHttpFilter;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebAp
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 class SpringWebLibraryAutoConfigurationApplicationContextTest {
 
@@ -26,21 +26,21 @@ class SpringWebLibraryAutoConfigurationApplicationContextTest {
     void webApplicationWithServletContext() {
         context = servletWebApplicationContext();
 
-        assertThat(context.getBeansOfType(OpenApiValidationHttpFilter.class)).size().isEqualTo(1);
+        assertThat(context.getBeansOfType(WebMvcConfigurer.class)).size().isEqualTo(1);
     }
 
     @Test
     void webApplicationWithReactiveContext() {
         context = reactiveWebApplicationContext();
 
-        assertThat(context.getBeansOfType(OpenApiValidationHttpFilter.class)).size().isEqualTo(0);
+        assertThat(context.getBeansOfType(WebMvcConfigurer.class)).size().isEqualTo(0);
     }
 
     @Test
     void nonWebApplicationContextShouldHaveNoFilterBeans() {
         context = nonWebApplicationContext();
 
-        assertThat(context.getBeansOfType(OpenApiValidationHttpFilter.class)).size().isEqualTo(0);
+        assertThat(context.getBeansOfType(WebMvcConfigurer.class)).size().isEqualTo(0);
     }
 
     private AnnotationConfigServletWebApplicationContext servletWebApplicationContext() {

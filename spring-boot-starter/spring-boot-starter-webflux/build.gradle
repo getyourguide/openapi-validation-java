@@ -20,8 +20,9 @@ dependencies {
     // TODO use spotbugs instead and also apply to all modules?
     implementation(libs.find.bugs)
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework:spring-webflux'
+    testImplementation project(':test:test-utils')
+    testImplementation project(':test:openapi-webflux')
+    testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
 }

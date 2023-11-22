@@ -1,0 +1,66 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'java-library'
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.openapi.generator)
+}
+
+dependencies {
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+
+    compileOnly project(':openapi-validation-api')
+    compileOnly project(':openapi-validation-core')
+
+    compileOnly 'org.springframework.boot:spring-boot-starter'
+    compileOnly 'org.springframework:spring-webflux'
+
+    // TODO use spotbugs instead and also apply to all modules?
+    implementation(libs.find.bugs)
+
+    api 'org.springframework.boot:spring-boot-starter-test'
+    // For openapi generated code
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation(libs.openapi.tools.jacksonDatabindNullable)
+    implementation(libs.jakarta.validation.api)
+    implementation(libs.swagger.annotations)
+    api 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
+}
+
+
+def generatedSourceDirectory = "$buildDir/generated/openapi"
+sourceSets {
+    main {
+        java {
+            srcDir generatedSourceDirectory + '/src/main/java'
+        }
+    }
+}
+
+openApiValidate {
+    inputSpec = "$projectDir/../openapi.yaml"
+    recommend = true
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$projectDir/../openapi.yaml"
+    outputDir = generatedSourceDirectory
+    apiPackage = "com.getyourguide.openapi.validation.test.openapi.webflux"
+    invokerPackage = "com.getyourguide.openapi.validation.test.openapi.webflux"
+    modelPackage = "com.getyourguide.openapi.validation.test.openapi.webflux.model"
+    configOptions = [
+            useSpringBoot3         : "true",
+            reactive               : "true",
+            dateLibrary            : "java8",
+            performBeanValidation  : "true",
+            hideGenerationTimestamp: "true",
+            serializableModel      : "true",
+            interfaceOnly          : "true",
+            skipDefaultInterface   : "true",
+            useTags                : "true"
+    ]
+}
+
+tasks.openApiGenerate.dependsOn tasks.openApiValidate
+tasks.compileJava.dependsOn tasks.openApiGenerate

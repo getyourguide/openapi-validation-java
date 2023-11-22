@@ -1,0 +1,2 @@
+# Required as for some reason it tries to load some things from local code and as well from locally built jar
+spring.main.allow-bean-definition-overriding: true

@@ -1,0 +1,116 @@
+---
+openapi: 3.0.3
+info:
+  title: GYG OpenAPI validator example
+  version: 1.0.0
+paths:
+  "/test":
+    get:
+      description: Get test
+      operationId: getTest
+      parameters:
+        - description: Test case
+          example: 'fail'
+          in: query
+          name: testCase
+          schema:
+            type: string
+            enum:
+              - throwExceptionWithResponseStatus
+              - throwExceptionWithoutResponseStatus
+        - description: Date
+          example: '2023-11-20'
+          in: query
+          name: date
+          schema:
+            type: string
+            format: date
+        - description: Value
+          example: 'value'
+          in: query
+          name: value
+          schema:
+            type: string
+            pattern: ^[^0-9]*$
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TestResponse"
+        '400':
+          description: Bad request response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/InternalServerErrorResponse"
+    post:
+      description: Post test
+      operationId: postTest
+      requestBody:
+        description: Test request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  description: Some value
+                  example: value
+                  type: string
+                responseStatusCode:
+                  description: Optional response status code
+                  example: 10
+                  type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TestResponse"
+        '204':
+          description: Successful response without content
+components:
+  schemas:
+    TestResponse:
+      description: Index response
+      type: object
+      properties:
+        value:
+          description: Value only consisting out of letters
+          example: value
+          nullable: false
+          type: string
+          pattern: ^[a-zA-Z]*$
+      required:
+        - value
+    BadRequestResponse:
+      description: Bad request response
+      type: object
+      properties:
+        error:
+          description: Description of the error
+          example: Missing query parameter fromDate
+          nullable: false
+          type: string
+      required:
+        - error
+    InternalServerErrorResponse:
+      description: Internal server error response
+      type: object
+      properties:
+        error:
+          description: Description of the error
+          example: Something bad happened
+          nullable: false
+          type: string
+      required:
+        - error

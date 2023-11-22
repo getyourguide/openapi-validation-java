@@ -24,7 +24,7 @@ allprojects {
 }
 
 subprojects {
-    if(it.parent.name == 'examples' || it.parent.name == 'test') {
+    if(it.parent.name == 'examples') {
         apply plugin: 'java'
     } else {
         apply plugin: 'java-library'
@@ -70,6 +70,9 @@ subprojects {
         toolVersion = libs.versions.checkstyle.get()
         configDirectory.set(file("$rootProject.projectDir/config"))
         checkstyleMain.source = "src/main/java"
+        checkstyleMain.exclude('**/build/generated/**')
+        checkstyleTest.source = "src/main/java"
+        checkstyleTest.exclude('**/build/generated/**')
     }
 
     pmd {

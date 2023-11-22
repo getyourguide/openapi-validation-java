@@ -2,9 +2,8 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.openapi.generator)
 }
-
-apply from: "${rootDir}/gradle/publish-module.gradle"
 
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
@@ -20,7 +19,8 @@ dependencies {
     // TODO use spotbugs instead and also apply to all modules?
     implementation(libs.find.bugs)
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation project(':test:test-utils')
+    testImplementation project(':test:openapi-web')
     testImplementation 'org.springframework:spring-web'
     testImplementation 'org.springframework:spring-webmvc'
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
