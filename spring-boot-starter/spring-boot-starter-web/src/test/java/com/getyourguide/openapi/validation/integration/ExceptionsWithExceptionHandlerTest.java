@@ -25,8 +25,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@SpringBootTest(classes = {SpringBootTestConfiguration.class,
-    ExceptionsWithExceptionHandlerTest.ExceptionHandlerConfiguration.class})
+@SpringBootTest(classes = {
+    SpringBootTestConfiguration.class,
+    ExceptionsWithExceptionHandlerTest.ExceptionHandlerConfiguration.class,
+})
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 public class ExceptionsWithExceptionHandlerTest {

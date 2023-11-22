@@ -18,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,7 +42,7 @@ public class ExceptionsNoExceptionHandlerTest {
 
     @Test
     public void whenTestInvalidQueryParamThenReturns400WithoutViolationLogged() throws Exception {
-        mockMvc.perform(get("/test").queryParam("date", "not-a-date").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/test").queryParam("date", "not-a-date"))
             .andExpectAll(
                 status().is4xxClientError(),
                 content().string(Matchers.blankOrNullString())
@@ -61,10 +60,7 @@ public class ExceptionsNoExceptionHandlerTest {
     public void whenTestThrowExceptionWithResponseStatusThenReturns400WithoutViolationLogged()
         throws Exception {
         mockMvc
-            .perform(
-                get("/test").queryParam("testCase", "throwExceptionWithResponseStatus")
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
+            .perform(get("/test").queryParam("testCase", "throwExceptionWithResponseStatus"))
             .andExpectAll(
                 status().is4xxClientError(),
                 content().string(Matchers.blankOrNullString()),
@@ -86,10 +82,7 @@ public class ExceptionsNoExceptionHandlerTest {
         throws Exception {
         var exception = assertThrows(ServletException.class, () -> {
             mockMvc
-                .perform(
-                    get("/test").queryParam("testCase", "throwExceptionWithoutResponseStatus")
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+                .perform(get("/test").queryParam("testCase", "throwExceptionWithoutResponseStatus"))
                 .andExpect(status().is5xxServerError());
         });
         Thread.sleep(100);

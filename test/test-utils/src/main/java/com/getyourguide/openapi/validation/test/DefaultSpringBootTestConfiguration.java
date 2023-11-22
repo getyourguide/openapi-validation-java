@@ -1,8 +1,6 @@
-package com.getyourguide.openapi.validation.integration;
+package com.getyourguide.openapi.validation.test;
 
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
-import com.getyourguide.openapi.validation.test.DefaultSpringBootTestConfiguration;
-import com.getyourguide.openapi.validation.test.TestViolationLogger;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -17,5 +15,9 @@ import org.springframework.context.annotation.FilterType;
     @ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
     @ComponentScan.Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)
 })
-public class SpringBootTestConfiguration extends DefaultSpringBootTestConfiguration {
+public class DefaultSpringBootTestConfiguration {
+    @Bean
+    public ViolationLogger testViolationLogger() {
+        return new TestViolationLogger();
+    }
 }
