@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import lombok.Builder;
-import lombok.Getter;
 import org.mockito.Mockito;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
