@@ -1,6 +1,7 @@
 package com.getyourguide.openapi.validation.integration.controller;
 
 import com.getyourguide.openapi.validation.example.openapi.DefaultApi;
+import com.getyourguide.openapi.validation.example.openapi.model.PostTestRequest;
 import com.getyourguide.openapi.validation.example.openapi.model.TestResponse;
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.integration.exception.WithoutResponseStatusException;
@@ -23,5 +24,14 @@ public class DefaultRestController implements DefaultApi {
 
         var responseValue = value != null ? value : "test";
         return ResponseEntity.ok(new TestResponse().value(responseValue));
+    }
+
+    @Override
+    public ResponseEntity<TestResponse> postTest(PostTestRequest postTestRequest) {
+        var responseStatus = postTestRequest.getResponseStatusCode();
+        if (responseStatus != null && responseStatus == 200) {
+            return ResponseEntity.ok(new TestResponse().value(postTestRequest.getValue()));
+        }
+        return ResponseEntity.noContent().build();
     }
 }

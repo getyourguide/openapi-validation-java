@@ -31,6 +31,7 @@ paths:
           name: value
           schema:
             type: string
+            pattern: ^[^0-9]*$
       responses:
         '200':
           description: Successful response
@@ -50,6 +51,33 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/InternalServerErrorResponse"
+    post:
+      description: Post test
+      operationId: postTest
+      requestBody:
+        description: Test request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  description: Some value
+                  example: value
+                  type: string
+                responseStatusCode:
+                  description: Optional response status code
+                  example: 10
+                  type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TestResponse"
+        '204':
+          description: Successful response without content
 components:
   schemas:
     TestResponse:
