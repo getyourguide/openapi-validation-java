@@ -20,10 +20,10 @@ dependencies {
 
     api 'org.springframework.boot:spring-boot-starter-test'
     // For openapi generated code
-    implementation(libs.openapi.tools.jacksonDatabindNullable)
-    implementation(libs.swagger.annotations)
-    implementation(libs.jakarta.validation.api)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation(libs.openapi.tools.jacksonDatabindNullable)
+    implementation(libs.jakarta.validation.api)
+    implementation(libs.swagger.annotations)
     api 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
 }
 
