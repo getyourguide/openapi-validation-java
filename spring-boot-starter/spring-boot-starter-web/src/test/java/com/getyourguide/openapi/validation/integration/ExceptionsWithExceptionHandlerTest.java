@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.getyourguide.openapi.validation.test.openapi.model.BadRequestResponse;
+import com.getyourguide.openapi.validation.test.openapi.web.model.BadRequestResponse;
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.integration.openapi.TestViolationLogger;
 import java.util.Optional;

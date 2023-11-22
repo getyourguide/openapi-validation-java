@@ -1,8 +1,8 @@
 package com.getyourguide.openapi.validation.integration.controller;
 
-import com.getyourguide.openapi.validation.test.openapi.DefaultApi;
-import com.getyourguide.openapi.validation.test.openapi.model.PostTestRequest;
-import com.getyourguide.openapi.validation.test.openapi.model.TestResponse;
+import com.getyourguide.openapi.validation.test.openapi.web.DefaultApi;
+import com.getyourguide.openapi.validation.test.openapi.web.model.PostTestRequest;
+import com.getyourguide.openapi.validation.test.openapi.web.model.TestResponse;
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.integration.exception.WithoutResponseStatusException;
 import java.time.LocalDate;
