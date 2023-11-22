@@ -30,6 +30,7 @@ public class ContentCachingWrapperFactory {
         return WebUtils.getNativeResponse(response, ContentCachingResponseWrapper.class);
     }
 
+    @Nullable
     public ContentCachingRequestWrapper getCachingRequest(HttpServletRequest request) {
         return request instanceof ContentCachingRequestWrapper ? (ContentCachingRequestWrapper) request : null;
     }

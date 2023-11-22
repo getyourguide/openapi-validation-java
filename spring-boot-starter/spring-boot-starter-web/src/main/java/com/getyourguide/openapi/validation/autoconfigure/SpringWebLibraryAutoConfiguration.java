@@ -50,7 +50,6 @@ public class SpringWebLibraryAutoConfiguration {
     @Bean
     @ConditionalOnWebApplication(type = Type.SERVLET)
     public WebMvcConfigurer addOpenApiValidationInterceptor(
-
         OpenApiRequestValidator validator,
         TrafficSelector trafficSelector,
         ServletMetaDataFactory metaDataFactory,

@@ -9,7 +9,9 @@ import org.springframework.context.annotation.FilterType;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
-    @ComponentScan.Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)})
+@ComponentScan(excludeFilters = {
+    @ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
+    @ComponentScan.Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)
+})
 public class SpringBootTestConfiguration {
 }
