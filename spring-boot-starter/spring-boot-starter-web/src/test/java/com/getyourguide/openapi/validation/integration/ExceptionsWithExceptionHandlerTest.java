@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.getyourguide.openapi.validation.example.openapi.model.BadRequestResponse;
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
 import com.getyourguide.openapi.validation.integration.openapi.TestViolationLogger;
+import java.util.Optional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@SpringBootTest(classes = {SpringBootTestApplication.class,
-    WithExceptionHandlerTest.ExceptionHandlerConfiguration.class})
+@SpringBootTest(classes = {SpringBootTestConfiguration.class,
+    ExceptionsWithExceptionHandlerTest.ExceptionHandlerConfiguration.class})
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-public class WithExceptionHandlerTest {
+public class ExceptionsWithExceptionHandlerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,18 +40,6 @@ public class WithExceptionHandlerTest {
     @BeforeEach
     public void setup() {
         openApiViolationLogger.clearViolations();
-    }
-
-    @Test
-    public void whenTestSuccessfulResponseThenReturns200() throws Exception {
-        mockMvc.perform(get("/test").accept("application/json"))
-            .andExpectAll(
-                status().isOk(),
-                jsonPath("$.value").value("test")
-            );
-
-
-        assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
     @Test
@@ -68,8 +57,6 @@ public class WithExceptionHandlerTest {
     @Test
     public void whenTestThrowExceptionWithResponseStatusThenReturns400WithoutViolationLogged()
         throws Exception {
-        // Note: This case tests that an endpoint that throws an exception that is not handled by any code (no global error handler either)
-        //       is correctly intercepted by the library with the response body.
         mockMvc
             .perform(
                 get("/test").queryParam("testCase", "throwExceptionWithResponseStatus")
@@ -84,14 +71,9 @@ public class WithExceptionHandlerTest {
         assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
-    // Note: Throwing a RuntimeException that has no `@ResponseStatus` annotation will cause `.perform()` to throw.
-
     @Test
     public void whenTestThrowExceptionWithoutResponseStatusThenReturns500WithoutViolationLogged()
         throws Exception {
-        // Note: This case tests that an endpoint that throws an exception that is not handled by any code (no global error handler either)
-        //       is correctly intercepted by the library with the response body.
-
         mockMvc
             .perform(
                 get("/test").queryParam("testCase", "throwExceptionWithoutResponseStatus")
@@ -103,7 +85,11 @@ public class WithExceptionHandlerTest {
             );
         Thread.sleep(100);
 
-        assertEquals(0, openApiViolationLogger.getViolations().size());
+        // No body as this one is not handled by an exception handler and therefore default body is added by spring boot
+        assertEquals(1, openApiViolationLogger.getViolations().size());
+        var violation = openApiViolationLogger.getViolations().get(0);
+        assertEquals("validation.response.body.missing", violation.getRule());
+        assertEquals(Optional.of(500), violation.getResponseStatus());
     }
 
     @ControllerAdvice

@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SomeRestController implements DefaultApi {
+public class DefaultRestController implements DefaultApi {
 
     @Override
-    public ResponseEntity<TestResponse> getTest(String testCase, LocalDate date) {
+    public ResponseEntity<TestResponse> getTest(String testCase, LocalDate date, String value) {
         if (Objects.equals(testCase, "throwExceptionWithResponseStatus")) {
             throw new WithResponseStatusException("Unhandled exception");
         }
@@ -21,6 +21,7 @@ public class SomeRestController implements DefaultApi {
             throw new WithoutResponseStatusException("Unhandled exception");
         }
 
-        return ResponseEntity.ok(new TestResponse().value("test"));
+        var responseValue = value != null ? value : "test";
+        return ResponseEntity.ok(new TestResponse().value(responseValue));
     }
 }

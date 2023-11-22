@@ -25,6 +25,12 @@ paths:
           schema:
             type: string
             format: date
+        - description: Value
+          example: 'value'
+          in: query
+          name: value
+          schema:
+            type: string
       responses:
         '200':
           description: Successful response
@@ -40,6 +46,10 @@ paths:
                 "$ref": "#/components/schemas/BadRequestResponse"
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/InternalServerErrorResponse"
 components:
   schemas:
     TestResponse:
@@ -47,10 +57,11 @@ components:
       type: object
       properties:
         value:
-          description: Value
-          example: some value
+          description: Value only consisting out of letters
+          example: value
           nullable: false
           type: string
+          pattern: ^[a-zA-Z]*$
       required:
         - value
     BadRequestResponse:
@@ -60,6 +71,17 @@ components:
         error:
           description: Description of the error
           example: Missing query parameter fromDate
+          nullable: false
+          type: string
+      required:
+        - error
+    InternalServerErrorResponse:
+      description: Internal server error response
+      type: object
+      properties:
+        error:
+          description: Description of the error
+          example: Something bad happened
           nullable: false
           type: string
       required:

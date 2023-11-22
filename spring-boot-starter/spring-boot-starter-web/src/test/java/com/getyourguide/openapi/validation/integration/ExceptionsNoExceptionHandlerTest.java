@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.getyourguide.openapi.validation.integration.exception.WithResponseStatusException;
@@ -26,7 +25,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-public class NoExceptionHandlerTest {
+public class ExceptionsNoExceptionHandlerTest {
+
+    // These test cases test that requests to an endpoint that throws an exception
+    // that is not handled by any code (no global error handler either) is correctly intercepted by the library.
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,17 +42,6 @@ public class NoExceptionHandlerTest {
     }
 
     @Test
-    public void whenTestSuccessfulResponseThenReturns200() throws Exception {
-        mockMvc.perform(get("/test").accept("application/json"))
-            .andExpectAll(
-                status().isOk(),
-                jsonPath("$.value").value("test")
-            );
-
-        assertEquals(0, openApiViolationLogger.getViolations().size());
-    }
-
-    @Test
     public void whenTestInvalidQueryParamThenReturns400WithoutViolationLogged() throws Exception {
         mockMvc.perform(get("/test").queryParam("date", "not-a-date").contentType(MediaType.APPLICATION_JSON))
             .andExpectAll(
@@ -59,6 +50,7 @@ public class NoExceptionHandlerTest {
             );
         Thread.sleep(100);
 
+        // No body as this one is not handled by an exception handler and therefore default body is added by spring boot
         assertEquals(1, openApiViolationLogger.getViolations().size());
         var violation = openApiViolationLogger.getViolations().get(0);
         assertEquals("validation.response.body.missing", violation.getRule());
@@ -68,8 +60,6 @@ public class NoExceptionHandlerTest {
     @Test
     public void whenTestThrowExceptionWithResponseStatusThenReturns400WithoutViolationLogged()
         throws Exception {
-        // Note: This case tests that an endpoint that throws an exception that is not handled by any code (no global error handler either)
-        //       is correctly intercepted by the library with the response body.
         mockMvc
             .perform(
                 get("/test").queryParam("testCase", "throwExceptionWithResponseStatus")
@@ -82,7 +72,7 @@ public class NoExceptionHandlerTest {
             );
         Thread.sleep(100);
 
-        // TODO check there is no reported violation if spec has correct response in there
+        // No body as this one is not handled by an exception handler and therefore default body is added by spring boot
         assertEquals(1, openApiViolationLogger.getViolations().size());
         var violation = openApiViolationLogger.getViolations().get(0);
         assertEquals("validation.response.body.missing", violation.getRule());
@@ -94,9 +84,6 @@ public class NoExceptionHandlerTest {
     @Test
     public void whenTestThrowExceptionWithoutResponseStatusThenReturns500WithoutViolationLogged()
         throws Exception {
-        // Note: This case tests that an endpoint that throws an exception that is not handled by any code (no global error handler either)
-        //       is correctly intercepted by the library with the response body.
-
         var exception = assertThrows(ServletException.class, () -> {
             mockMvc
                 .perform(
@@ -111,10 +98,10 @@ public class NoExceptionHandlerTest {
         assertEquals(WithoutResponseStatusException.class, cause.getClass());
         assertEquals("Unhandled exception", cause.getMessage());
 
+        // No body as this one is not handled by an exception handler and therefore default body is added by spring boot
         assertEquals(1, openApiViolationLogger.getViolations().size());
         var violation = openApiViolationLogger.getViolations().get(0);
         assertEquals("validation.response.body.missing", violation.getRule());
         assertEquals(Optional.of(500), violation.getResponseStatus());
     }
-
 }
