@@ -16,8 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 @AllArgsConstructor
 public class OpenApiValidationFilter extends OncePerRequestFilter {
-    static final String ATTRIBUTE_SKIP_VALIDATION = "gyg.openapi-validation.skipValidation";
-    static final String ATTRIBUTE_REQUEST_META_DATA = "gyg.openapi-validation.requestMetaData";
+    public static final String ATTRIBUTE_SKIP_VALIDATION = "gyg.openapi-validation.skipValidation";
+    public static final String ATTRIBUTE_REQUEST_META_DATA = "gyg.openapi-validation.requestMetaData";
 
     private final OpenApiRequestValidator validator;
     private final TrafficSelector trafficSelector;
