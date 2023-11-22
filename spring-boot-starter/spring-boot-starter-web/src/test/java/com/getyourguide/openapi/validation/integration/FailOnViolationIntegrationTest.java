@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.getyourguide.openapi.validation.test.TestViolationLogger;
@@ -36,6 +37,19 @@ public class FailOnViolationIntegrationTest {
     @BeforeEach
     public void setup() {
         openApiViolationLogger.clearViolations();
+    }
+
+    @Test
+    public void whenValidRequestThenReturnSuccessfully() throws Exception {
+        mockMvc.perform(post("/test")
+                .content("{ \"value\": \"test\", \"responseStatusCode\": 200 }").contentType(MediaType.APPLICATION_JSON))
+            .andExpectAll(
+                status().isOk(),
+                jsonPath("$.value").value("test")
+            );
+        Thread.sleep(100);
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
     @Test

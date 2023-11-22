@@ -40,6 +40,21 @@ public class FailOnViolationIntegrationTest {
     }
 
     @Test
+    public void whenValidRequestThenReturnSuccessfully() throws Exception {
+        webTestClient
+            .post().uri("/test")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue("{ \"value\": \"test\", \"responseStatusCode\": 200 }")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.value").isEqualTo("test");
+        Thread.sleep(100);
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
+    }
+
+    @Test
     public void whenInvalidRequestThenReturn400AndNoViolationLogged() throws Exception {
         webTestClient
             .post().uri("/test")
