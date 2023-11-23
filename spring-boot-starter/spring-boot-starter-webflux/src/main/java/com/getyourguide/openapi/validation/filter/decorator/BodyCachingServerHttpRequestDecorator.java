@@ -5,7 +5,6 @@ import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -18,9 +17,6 @@ import reactor.core.publisher.SignalType;
 public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDecorator {
     private final TrafficSelector trafficSelector;
     private final RequestMetaData requestMetaData;
-
-    @Setter
-    private Runnable onBodyCachedListener;
 
     @Getter
     private String cachedBody;
@@ -68,8 +64,7 @@ public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDeco
                 cachedBody += dataBuffer.toString(StandardCharsets.UTF_8);
             })
             .doFinally(signalType -> {
-                if (signalType == SignalType.ON_COMPLETE && onBodyCachedListener != null) {
-                    onBodyCachedListener.run();
+                if (signalType == SignalType.ON_COMPLETE) {
                     bodyCached = true;
                 }
             });

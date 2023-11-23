@@ -229,12 +229,6 @@ class OpenApiValidationWebFilterTest {
         when(decoratedRequest.getHeaders()).thenReturn(buildHeadersForBody(configuration.requestBody));
         when(decoratedRequest.getCachedBody()).thenReturn(configuration.requestBody);
         when(decoratedRequest.consumeRequestBody()).thenReturn(Mono.just(configuration.requestBody));
-        if (configuration.requestBody != null) {
-            doAnswer(invocation -> {
-                invocation.getArgument(0, Runnable.class).run();
-                return null;
-            }).when(decoratedRequest).setOnBodyCachedListener(any());
-        }
 
         var decoratedResponse = mock(BodyCachingServerHttpResponseDecorator.class);
         when(decoratorBuilder.buildBodyCachingServerHttpResponseDecorator(response, requestMetaData))
