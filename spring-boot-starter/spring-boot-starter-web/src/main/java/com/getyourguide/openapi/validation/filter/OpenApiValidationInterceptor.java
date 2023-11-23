@@ -115,6 +115,8 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
             );
             // Note: validateResponseResult will always be null on ASYNC
             if (validateResponseResult == ValidationResult.INVALID) {
+                response.reset();
+                response.setStatus(500);
                 throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Response validation failed");
             }
         }
