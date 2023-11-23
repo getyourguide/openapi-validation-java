@@ -127,7 +127,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
     }
 
     private ValidationResult validateRequest(
-        MultiReadHttpServletRequestWrapper request,
+        MultiReadContentCachingRequestWrapper request,
         RequestMetaData requestMetaData,
         @Nullable ResponseMetaData responseMetaData,
         RunType runType
@@ -148,7 +148,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         }
     }
 
-    private static String readBodyCatchingException(MultiReadHttpServletRequestWrapper request) {
+    private static String readBodyCatchingException(MultiReadContentCachingRequestWrapper request) {
         try {
             return StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
         } catch (IOException e) {

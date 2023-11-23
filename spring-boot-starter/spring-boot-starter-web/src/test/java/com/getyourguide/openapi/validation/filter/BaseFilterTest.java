@@ -50,7 +50,7 @@ public class BaseFilterTest {
     }
 
     protected MockSetupData mockSetup(MockConfiguration configuration) {
-        var request = mock(MultiReadHttpServletRequestWrapper.class);
+        var request = mock(MultiReadContentCachingRequestWrapper.class);
         var response = mock(ContentCachingResponseWrapper.class);
         var cachingRequest = mockContentCachingRequest(request, configuration);
         var cachingResponse = mockContentCachingResponse(response, configuration);
@@ -101,11 +101,11 @@ public class BaseFilterTest {
         return cachingResponse;
     }
 
-    private MultiReadHttpServletRequestWrapper mockContentCachingRequest(
+    private MultiReadContentCachingRequestWrapper mockContentCachingRequest(
         HttpServletRequest request,
         MockConfiguration configuration
     ) {
-        var cachingRequest = mock(MultiReadHttpServletRequestWrapper.class);
+        var cachingRequest = mock(MultiReadContentCachingRequestWrapper.class);
         when(contentCachingWrapperFactory.buildContentCachingRequestWrapper(request)).thenReturn(cachingRequest);
         if (configuration.requestBody != null) {
             try {

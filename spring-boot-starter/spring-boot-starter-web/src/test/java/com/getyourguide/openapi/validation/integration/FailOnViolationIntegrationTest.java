@@ -42,10 +42,10 @@ public class FailOnViolationIntegrationTest {
     @Test
     public void whenValidRequestThenReturnSuccessfully() throws Exception {
         mockMvc.perform(post("/test")
-                .content("{ \"value\": \"test\", \"responseStatusCode\": 200 }").contentType(MediaType.APPLICATION_JSON))
+                .content("{ \"value\": \"testing\", \"responseStatusCode\": 200 }").contentType(MediaType.APPLICATION_JSON))
             .andExpectAll(
                 status().isOk(),
-                jsonPath("$.value").value("test")
+                jsonPath("$.value").value("testing")
             );
         Thread.sleep(100);
 

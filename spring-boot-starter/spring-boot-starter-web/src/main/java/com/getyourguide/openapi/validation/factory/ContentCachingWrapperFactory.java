@@ -1,6 +1,6 @@
 package com.getyourguide.openapi.validation.factory;
 
-import com.getyourguide.openapi.validation.filter.MultiReadHttpServletRequestWrapper;
+import com.getyourguide.openapi.validation.filter.MultiReadContentCachingRequestWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.annotation.Nullable;
@@ -8,12 +8,12 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.web.util.WebUtils;
 
 public class ContentCachingWrapperFactory {
-    public MultiReadHttpServletRequestWrapper buildContentCachingRequestWrapper(HttpServletRequest request) {
-        if (request instanceof MultiReadHttpServletRequestWrapper) {
-            return (MultiReadHttpServletRequestWrapper) request;
+    public MultiReadContentCachingRequestWrapper buildContentCachingRequestWrapper(HttpServletRequest request) {
+        if (request instanceof MultiReadContentCachingRequestWrapper) {
+            return (MultiReadContentCachingRequestWrapper) request;
         }
 
-        return new MultiReadHttpServletRequestWrapper(request);
+        return new MultiReadContentCachingRequestWrapper(request);
     }
 
     public ContentCachingResponseWrapper buildContentCachingResponseWrapper(HttpServletResponse response) {
@@ -26,8 +26,8 @@ public class ContentCachingWrapperFactory {
     }
 
     @Nullable
-    public MultiReadHttpServletRequestWrapper getCachingRequest(HttpServletRequest request) {
-        return request instanceof MultiReadHttpServletRequestWrapper ? (MultiReadHttpServletRequestWrapper) request : null;
+    public MultiReadContentCachingRequestWrapper getCachingRequest(HttpServletRequest request) {
+        return request instanceof MultiReadContentCachingRequestWrapper ? (MultiReadContentCachingRequestWrapper) request : null;
     }
 
     @Nullable

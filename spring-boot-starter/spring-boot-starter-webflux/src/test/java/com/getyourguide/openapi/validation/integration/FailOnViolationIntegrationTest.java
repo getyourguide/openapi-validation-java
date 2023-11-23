@@ -39,10 +39,10 @@ public class FailOnViolationIntegrationTest {
             .post().uri("/test")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue("{ \"value\": \"test\", \"responseStatusCode\": 200 }")
+            .bodyValue("{ \"value\": \"testing\", \"responseStatusCode\": 200 }")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$.value").isEqualTo("test");
+            .expectBody().jsonPath("$.value").isEqualTo("testing");
         Thread.sleep(100);
 
         assertEquals(0, openApiViolationLogger.getViolations().size());
