@@ -1,12 +1,16 @@
 package com.getyourguide.openapi.validation.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.getyourguide.openapi.validation.integration.controller.DefaultRestController;
 import com.getyourguide.openapi.validation.test.TestViolationLogger;
 import java.util.Optional;
 import org.hamcrest.Matchers;
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +39,9 @@ public class FailOnViolationIntegrationTest {
     @Autowired
     private TestViolationLogger openApiViolationLogger;
 
+    @SpyBean
+    private DefaultRestController defaultRestController;
+
     @BeforeEach
     public void setup() {
         openApiViolationLogger.clearViolations();
@@ -50,6 +58,7 @@ public class FailOnViolationIntegrationTest {
         Thread.sleep(100);
 
         assertEquals(0, openApiViolationLogger.getViolations().size());
+        verify(defaultRestController).postTest(any());
     }
 
     @Test
@@ -62,8 +71,7 @@ public class FailOnViolationIntegrationTest {
         Thread.sleep(100);
 
         assertEquals(0, openApiViolationLogger.getViolations().size());
-
-        // TODO check that controller did not execute (inject controller here and have addition method to check & clear at setup)
+        verify(defaultRestController, never()).postTest(any());
         // TODO check that something else gets logged?
     }
 
@@ -81,5 +89,6 @@ public class FailOnViolationIntegrationTest {
         assertEquals("validation.response.body.schema.pattern", violation.getRule());
         assertEquals(Optional.of(200), violation.getResponseStatus());
         assertEquals(Optional.of("/value"), violation.getInstance());
+        verify(defaultRestController).getTest(any(), any(), any());
     }
 }
