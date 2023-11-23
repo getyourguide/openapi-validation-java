@@ -8,4 +8,5 @@ import lombok.Getter;
 public class OpenApiRequestValidationConfiguration {
     private double sampleRate;
     private int validationReportThrottleWaitSeconds;
+    private boolean shouldFailOnRequestViolation;
 }
