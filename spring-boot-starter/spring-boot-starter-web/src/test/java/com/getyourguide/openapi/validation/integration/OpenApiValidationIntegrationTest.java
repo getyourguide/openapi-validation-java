@@ -123,8 +123,6 @@ public class OpenApiValidationIntegrationTest {
         assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
-    // TODO Add test that fails on request violation immediately (maybe needs separate test class & setup) should not log violation
-
     @Nullable
     private OpenApiViolation getViolationByRule(List<OpenApiViolation> violations, String rule) {
         return violations.stream()
