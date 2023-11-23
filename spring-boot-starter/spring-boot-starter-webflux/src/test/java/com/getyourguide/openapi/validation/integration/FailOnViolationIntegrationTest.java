@@ -66,7 +66,10 @@ public class FailOnViolationIntegrationTest {
             .bodyValue("{ \"value\": 1 }")
             .exchange()
             .expectStatus().is4xxClientError()
-            .expectBody().isEmpty();
+            .expectBody()
+            .jsonPath("$.status").isEqualTo(400)
+            .jsonPath("$.path").isEqualTo("/test")
+            .jsonPath("$.error").isEqualTo("Bad Request");
         Thread.sleep(100);
 
         assertEquals(0, openApiViolationLogger.getViolations().size());
