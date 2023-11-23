@@ -82,7 +82,10 @@ public class FailOnViolationIntegrationTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().is5xxServerError()
-            .expectBody().isEmpty();
+            .expectBody()
+            .jsonPath("$.status").isEqualTo(500)
+            .jsonPath("$.path").isEqualTo("/test")
+            .jsonPath("$.error").isEqualTo("Internal Server Error");
         Thread.sleep(100);
 
         assertEquals(1, openApiViolationLogger.getViolations().size());
@@ -90,6 +93,6 @@ public class FailOnViolationIntegrationTest {
         assertEquals("validation.response.body.schema.pattern", violation.getRule());
         assertEquals(Optional.of(200), violation.getResponseStatus());
         assertEquals(Optional.of("/value"), violation.getInstance());
-        verify(defaultRestController).postTest(any(), any());
+        verify(defaultRestController).getTest(any(), any(), any(), any());
     }
 }
