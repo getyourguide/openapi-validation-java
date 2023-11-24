@@ -9,15 +9,16 @@ import com.getyourguide.openapi.validation.factory.ContentCachingWrapperFactory;
 import com.getyourguide.openapi.validation.factory.ServletMetaDataFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 @Slf4j
@@ -114,6 +115,8 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
             );
             // Note: validateResponseResult will always be null on ASYNC
             if (validateResponseResult == ValidationResult.INVALID) {
+                response.reset();
+                response.setStatus(500);
                 throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Response validation failed");
             }
         }
@@ -126,7 +129,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
     }
 
     private ValidationResult validateRequest(
-        ContentCachingRequestWrapper request,
+        MultiReadContentCachingRequestWrapper request,
         RequestMetaData requestMetaData,
         @Nullable ResponseMetaData responseMetaData,
         RunType runType
@@ -137,15 +140,21 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
             return ValidationResult.NOT_APPLICABLE;
         }
 
-        var requestBody = request.getContentType() != null
-            ? new String(request.getContentAsByteArray(), StandardCharsets.UTF_8)
-            : null;
+        var requestBody = request.getContentType() != null ? readBodyCatchingException(request) : null;
 
         if (runType == RunType.ASYNC) {
             validator.validateRequestObjectAsync(requestMetaData, responseMetaData, requestBody);
             return ValidationResult.NOT_APPLICABLE;
         } else {
             return validator.validateRequestObject(requestMetaData, requestBody);
+        }
+    }
+
+    private static String readBodyCatchingException(MultiReadContentCachingRequestWrapper request) {
+        try {
+            return StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            return null;
         }
     }
 

@@ -88,6 +88,7 @@ public class OpenApiValidationApplicationProperties {
         return OpenApiRequestValidationConfiguration.builder()
             .sampleRate(getSampleRate())
             .validationReportThrottleWaitSeconds(getValidationReportThrottleWaitSeconds())
+            .shouldFailOnRequestViolation(getShouldFailOnRequestViolation() != null && getShouldFailOnRequestViolation())
             .build();
     }
 }

@@ -132,7 +132,9 @@ class OpenApiValidationWebFilterTest {
         when(validator.validateRequestObject(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY)))
             .thenReturn(ValidationResult.INVALID);
 
-        assertThrows(ResponseStatusException.class, () -> webFilter.filter(mockData.exchange, mockData.chain));
+        StepVerifier.create(webFilter.filter(mockData.exchange, mockData.chain))
+            .expectErrorMatches(throwable -> throwable instanceof ResponseStatusException)
+            .verify();
 
         verifyChainNotCalled(mockData.chain);
         verifyRequestValidatedSync(mockData);
@@ -226,12 +228,7 @@ class OpenApiValidationWebFilterTest {
             .thenReturn(decoratedRequest);
         when(decoratedRequest.getHeaders()).thenReturn(buildHeadersForBody(configuration.requestBody));
         when(decoratedRequest.getCachedBody()).thenReturn(configuration.requestBody);
-        if (configuration.requestBody != null) {
-            doAnswer(invocation -> {
-                invocation.getArgument(0, Runnable.class).run();
-                return null;
-            }).when(decoratedRequest).setOnBodyCachedListener(any());
-        }
+        when(decoratedRequest.consumeRequestBody()).thenReturn(Mono.just(configuration.requestBody));
 
         var decoratedResponse = mock(BodyCachingServerHttpResponseDecorator.class);
         when(decoratorBuilder.buildBodyCachingServerHttpResponseDecorator(response, requestMetaData))

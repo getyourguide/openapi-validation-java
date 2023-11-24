@@ -16,11 +16,13 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import lombok.Builder;
 import org.mockito.Mockito;
-import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 public class BaseFilterTest {
@@ -48,14 +50,11 @@ public class BaseFilterTest {
     }
 
     protected MockSetupData mockSetup(MockConfiguration configuration) {
-        var request = mock(ContentCachingRequestWrapper.class);
+        var request = mock(MultiReadContentCachingRequestWrapper.class);
         var response = mock(ContentCachingResponseWrapper.class);
         var cachingRequest = mockContentCachingRequest(request, configuration);
         var cachingResponse = mockContentCachingResponse(response, configuration);
         mockRequestAttributes(request, cachingRequest);
-
-        when(request.getContentType()).thenReturn("application/json");
-        when(request.getContentAsByteArray()).thenReturn(configuration.requestBody.getBytes(StandardCharsets.UTF_8));
 
         when(response.getContentType()).thenReturn("application/json");
         when(response.getContentAsByteArray()).thenReturn(configuration.responseBody.getBytes(StandardCharsets.UTF_8));
@@ -102,16 +101,24 @@ public class BaseFilterTest {
         return cachingResponse;
     }
 
-    private ContentCachingRequestWrapper mockContentCachingRequest(
+    private MultiReadContentCachingRequestWrapper mockContentCachingRequest(
         HttpServletRequest request,
         MockConfiguration configuration
     ) {
-        var cachingRequest = mock(ContentCachingRequestWrapper.class);
+        var cachingRequest = mock(MultiReadContentCachingRequestWrapper.class);
         when(contentCachingWrapperFactory.buildContentCachingRequestWrapper(request)).thenReturn(cachingRequest);
-        if (configuration.responseBody != null) {
-            when(cachingRequest.getContentType()).thenReturn("application/json");
-            when(cachingRequest.getContentAsByteArray())
-                .thenReturn(configuration.requestBody.getBytes(StandardCharsets.UTF_8));
+        if (configuration.requestBody != null) {
+            try {
+                var sourceStream = new ByteArrayInputStream(configuration.requestBody.getBytes(StandardCharsets.UTF_8));
+                when(request.getContentType()).thenReturn("application/json");
+                when(request.getInputStream()).thenReturn(new DelegatingServletInputStream(sourceStream));
+
+                sourceStream = new ByteArrayInputStream(configuration.requestBody.getBytes(StandardCharsets.UTF_8));
+                when(cachingRequest.getContentType()).thenReturn("application/json");
+                when(cachingRequest.getInputStream()).thenReturn(new DelegatingServletInputStream(sourceStream));
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
         }
         return cachingRequest;
     }

@@ -23,6 +23,7 @@ public class OpenApiRequestValidator {
     private final ThreadPoolExecutor threadPoolExecutor;
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportHandler validationReportHandler;
+    private final OpenApiRequestValidationConfiguration configuration;
 
     public OpenApiRequestValidator(
         ThreadPoolExecutor threadPoolExecutor,
@@ -34,6 +35,7 @@ public class OpenApiRequestValidator {
         this.threadPoolExecutor = threadPoolExecutor;
         this.validator = validator;
         this.validationReportHandler = validationReportHandler;
+        this.configuration = configuration;
 
         metricsReporter.reportStartup(
             validator != null,
@@ -74,7 +76,12 @@ public class OpenApiRequestValidator {
         try {
             var simpleRequest = buildSimpleRequest(request, requestBody);
             var result = validator.validateRequest(simpleRequest);
-            validationReportHandler.handleValidationReport(request, response, Direction.REQUEST, requestBody, result);
+            // TODO this should not be done here, but currently the only way to do it -> Refactor this so that logging
+            //      is actually done in the interceptor/filter where logging can easily be skipped then.
+            if (!configuration.isShouldFailOnRequestViolation()) {
+                validationReportHandler
+                    .handleValidationReport(request, response, Direction.REQUEST, requestBody, result);
+            }
             return buildValidationResult(result);
         } catch (Exception e) {
             log.error("Could not validate request", e);

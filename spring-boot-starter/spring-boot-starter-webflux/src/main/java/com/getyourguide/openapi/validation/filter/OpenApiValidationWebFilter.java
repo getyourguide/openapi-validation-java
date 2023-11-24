@@ -52,19 +52,19 @@ public class OpenApiValidationWebFilter implements WebFilter {
 
         var serverWebExchange = exchange.mutate().request(requestDecorated).response(responseDecorated).build();
 
-        var alreadyDidRequestValidation = validateRequestWithFailOnViolation(requestMetaData, requestDecorated);
-        var alreadyDidResponseValidation = validateResponseWithFailOnViolation(requestMetaData, responseDecorated);
-
-        return chain.filter(serverWebExchange)
+        final var alreadyDidValidation = new AlreadyDidValidation();
+        alreadyDidValidation.response = validateResponseWithFailOnViolation(requestMetaData, responseDecorated);
+        return optionalValidateRequestWithFailOnViolation(requestMetaData, requestDecorated, alreadyDidValidation)
+            .flatMap(dataBuffer -> chain.filter(serverWebExchange))
             .doFinally(signalType -> {
                 // Note: Errors are not handled here. They could be handled with SignalType.ON_ERROR, but then the response body can't be accessed.
                 //       Reason seems to be that those don't use the decorated response that is set here, but use the previous response object.
                 if (signalType == SignalType.ON_COMPLETE) {
                     var responseMetaData = metaDataFactory.buildResponseMetaData(responseDecorated);
-                    if (!alreadyDidRequestValidation) {
+                    if (!alreadyDidValidation.request) {
                         validateRequest(requestDecorated, requestMetaData, responseMetaData, RunType.ASYNC);
                     }
-                    if (!alreadyDidResponseValidation) {
+                    if (!alreadyDidValidation.response) {
                         validateResponse(
                             requestMetaData, responseMetaData, responseDecorated.getCachedBody(), RunType.ASYNC);
                     }
@@ -72,34 +72,29 @@ public class OpenApiValidationWebFilter implements WebFilter {
             });
     }
 
-    /**
-     * Validate request and fail on violation if configured to do so.
-     *
-     * @return true if validation is done as part of this method
-     */
-    private boolean validateRequestWithFailOnViolation(
+    private Mono<AlreadyDidValidation> optionalValidateRequestWithFailOnViolation(
         RequestMetaData requestMetaData,
-        BodyCachingServerHttpRequestDecorator requestDecorated
+        BodyCachingServerHttpRequestDecorator request,
+        AlreadyDidValidation alreadyDidValidation
     ) {
-        if (!trafficSelector.shouldFailOnRequestViolation(requestMetaData)) {
-            return false;
+        if (!trafficSelector.shouldFailOnRequestViolation(requestMetaData)
+            || !request.getHeaders().containsKey("Content-Type")
+            || !request.getHeaders().containsKey("Content-Length")) {
+            return Mono.just(alreadyDidValidation);
         }
 
-        if (requestDecorated.getHeaders().containsKey("Content-Type") && requestDecorated.getHeaders().containsKey("Content-Length")) {
-            requestDecorated.setOnBodyCachedListener(() -> {
-                var validateRequestResult = validateRequest(requestDecorated, requestMetaData, null, RunType.SYNC);
-                throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
+        return request.consumeRequestBody()
+            .map((optionalRequestBody) -> {
+                var validateRequestResult = validateRequest(request, requestMetaData, null, RunType.SYNC);
+                throwStatusExceptionOnViolation(validateRequestResult, 400, "Request validation failed");
+                alreadyDidValidation.request = true;
+                return alreadyDidValidation;
             });
-        } else {
-            var validateRequestResult = validateRequest(requestDecorated, requestMetaData, null, RunType.SYNC);
-            throwStatusExceptionOnViolation(validateRequestResult, "Request validation failed");
-        }
-        return true;
     }
 
-    private static void throwStatusExceptionOnViolation(ValidationResult validateRequestResult, String message) {
+    private static void throwStatusExceptionOnViolation(ValidationResult validateRequestResult, int statusCode, String message) {
         if (validateRequestResult == ValidationResult.INVALID) {
-            throw new ResponseStatusException(HttpStatus.valueOf(400), message);
+            throw new ResponseStatusException(HttpStatus.valueOf(statusCode), message);
         }
     }
 
@@ -123,7 +118,7 @@ public class OpenApiValidationWebFilter implements WebFilter {
                 responseDecorated.getCachedBody(),
                 RunType.SYNC
             );
-            throwStatusExceptionOnViolation(validateResponseResult, "Response validation failed");
+            throwStatusExceptionOnViolation(validateResponseResult, 500, "Response validation failed");
         });
         return true;
     }
@@ -165,4 +160,9 @@ public class OpenApiValidationWebFilter implements WebFilter {
     }
 
     private enum RunType { SYNC, ASYNC }
+
+    private static class AlreadyDidValidation {
+        private boolean request = false;
+        private boolean response = false;
+    }
 }
