@@ -19,6 +19,7 @@ import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFacto
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
+import com.getyourguide.openapi.validation.core.log.ExclusionsOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import java.util.Optional;
@@ -67,16 +68,15 @@ public class LibraryAutoConfiguration {
         MetricsReporter metricsReporter,
         Optional<ViolationExclusions> violationExclusions
     ) {
-        OpenApiViolationHandler handler = new DefaultOpenApiViolationHandler(
-            logger,
-            metricsReporter,
-            new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new))
-        );
+        OpenApiViolationHandler handler = new DefaultOpenApiViolationHandler(logger, metricsReporter);
 
         if (properties.getValidationReportThrottleWaitSeconds() != 0) {
             handler =
                 new ThrottlingOpenApiViolationHandler(handler, properties.getValidationReportThrottleWaitSeconds());
         }
+
+        var exclusions = new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new));
+        handler = new ExclusionsOpenApiViolationHandler(handler, exclusions);
 
         return handler;
     }
