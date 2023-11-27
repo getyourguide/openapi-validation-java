@@ -4,13 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +32,15 @@ public class OpenApiRequestValidatorTest {
     public void setup() {
         threadPoolExecutor = mock();
         validator = mock();
-        ValidationReportHandler validationReportHandler = mock();
         MetricsReporter metricsReporter = mock();
+        var mapper = mock(ValidationReportToOpenApiViolationsMapper.class);
+        when(mapper.map(any(), any(), any(), any(), any())).thenReturn(List.of());
 
         openApiRequestValidator = new OpenApiRequestValidator(
             threadPoolExecutor,
-            validationReportHandler,
             metricsReporter,
             validator,
+            mapper,
             mock()
         );
     }
@@ -45,7 +49,7 @@ public class OpenApiRequestValidatorTest {
     public void testWhenThreadPoolExecutorRejectsExecutionThenItShouldNotThrow() {
         Mockito.doThrow(new RejectedExecutionException()).when(threadPoolExecutor).execute(any());
 
-        openApiRequestValidator.validateRequestObjectAsync(mock(), null, null);
+        openApiRequestValidator.validateRequestObjectAsync(mock(), null, null, mock());
     }
 
     @Test

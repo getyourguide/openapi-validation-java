@@ -1,14 +1,16 @@
 package com.getyourguide.openapi.validation.filter;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
-import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.factory.ReactiveMetaDataFactory;
 import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpRequestDecorator;
 import com.getyourguide.openapi.validation.filter.decorator.BodyCachingServerHttpResponseDecorator;
 import com.getyourguide.openapi.validation.filter.decorator.DecoratorBuilder;
+import java.util.List;
 import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.springframework.core.Ordered;
@@ -31,6 +33,7 @@ public class OpenApiValidationWebFilter implements WebFilter {
     private final TrafficSelector trafficSelector;
     private final ReactiveMetaDataFactory metaDataFactory;
     private final DecoratorBuilder decoratorBuilder;
+    private final OpenApiViolationHandler openApiViolationHandler;
 
     @Override
     @NonNull
@@ -62,11 +65,14 @@ public class OpenApiValidationWebFilter implements WebFilter {
                 if (signalType == SignalType.ON_COMPLETE) {
                     var responseMetaData = metaDataFactory.buildResponseMetaData(responseDecorated);
                     if (!alreadyDidValidation.request) {
-                        validateRequest(requestDecorated, requestMetaData, responseMetaData, RunType.ASYNC);
+                        var violations =
+                            validateRequest(requestDecorated, requestMetaData, responseMetaData, RunType.ASYNC);
+                        violations.forEach(openApiViolationHandler::onOpenApiViolation);
                     }
                     if (!alreadyDidValidation.response) {
-                        validateResponse(
+                        var violations = validateResponse(
                             requestMetaData, responseMetaData, responseDecorated.getCachedBody(), RunType.ASYNC);
+                        violations.forEach(openApiViolationHandler::onOpenApiViolation);
                     }
                 }
             });
@@ -85,15 +91,15 @@ public class OpenApiValidationWebFilter implements WebFilter {
 
         return request.consumeRequestBody()
             .map((optionalRequestBody) -> {
-                var validateRequestResult = validateRequest(request, requestMetaData, null, RunType.SYNC);
-                throwStatusExceptionOnViolation(validateRequestResult, 400, "Request validation failed");
+                var violations = validateRequest(request, requestMetaData, null, RunType.SYNC);
+                throwStatusExceptionOnViolation(violations, 400, "Request validation failed");
                 alreadyDidValidation.request = true;
                 return alreadyDidValidation;
             });
     }
 
-    private static void throwStatusExceptionOnViolation(ValidationResult validateRequestResult, int statusCode, String message) {
-        if (validateRequestResult == ValidationResult.INVALID) {
+    private static void throwStatusExceptionOnViolation(List<OpenApiViolation> violations, int statusCode, String message) {
+        if (!violations.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.valueOf(statusCode), message);
         }
     }
@@ -112,50 +118,53 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
 
         responseDecorated.setOnBodyCachedListener(() -> {
-            var validateResponseResult = validateResponse(
+            var violations = validateResponse(
                 requestMetaData,
                 metaDataFactory.buildResponseMetaData(responseDecorated),
                 responseDecorated.getCachedBody(),
                 RunType.SYNC
             );
-            throwStatusExceptionOnViolation(validateResponseResult, 500, "Response validation failed");
+            violations.forEach(openApiViolationHandler::onOpenApiViolation);
+            throwStatusExceptionOnViolation(violations, 500, "Response validation failed");
         });
         return true;
     }
 
-    private ValidationResult validateRequest(
+    private List<OpenApiViolation> validateRequest(
         BodyCachingServerHttpRequestDecorator request,
         RequestMetaData requestMetaData,
         @Nullable ResponseMetaData responseMetaData,
         RunType runType
     ) {
         if (!trafficSelector.canRequestBeValidated(requestMetaData)) {
-            return ValidationResult.NOT_APPLICABLE;
+            return List.of();
         }
 
         if (runType == RunType.SYNC) {
             return validator.validateRequestObject(requestMetaData, responseMetaData, request.getCachedBody());
         } else {
-            validator.validateRequestObjectAsync(requestMetaData, responseMetaData, request.getCachedBody());
-            return ValidationResult.NOT_APPLICABLE;
+            validator.validateRequestObjectAsync(
+                requestMetaData, responseMetaData, request.getCachedBody(), openApiViolationHandler);
+            return List.of();
         }
     }
 
-    private ValidationResult validateResponse(
+    private List<OpenApiViolation> validateResponse(
         RequestMetaData requestMetaData,
         @Nullable ResponseMetaData responseMetaData,
         @Nullable String responseBody,
         RunType runType
     ) {
         if (!trafficSelector.canResponseBeValidated(requestMetaData, responseMetaData)) {
-            return ValidationResult.NOT_APPLICABLE;
+            return List.of();
         }
 
         if (runType == RunType.SYNC) {
             return validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
         } else {
-            validator.validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody);
-            return ValidationResult.NOT_APPLICABLE;
+            validator
+                .validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody, openApiViolationHandler);
+            return List.of();
         }
     }
 

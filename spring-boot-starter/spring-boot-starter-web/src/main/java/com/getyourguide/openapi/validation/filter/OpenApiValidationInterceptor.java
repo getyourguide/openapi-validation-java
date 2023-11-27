@@ -1,8 +1,9 @@
 package com.getyourguide.openapi.validation.filter;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
-import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.factory.ContentCachingWrapperFactory;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
     private final TrafficSelector trafficSelector;
     private final ServletMetaDataFactory metaDataFactory;
     private final ContentCachingWrapperFactory contentCachingWrapperFactory;
+    private final OpenApiViolationHandler openApiViolationHandler;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -43,8 +46,8 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         if (requestToUse != null
             && requestMetaData != null
             && trafficSelector.shouldFailOnRequestViolation(requestMetaData)) {
-            var validateRequestResult = validateRequest(requestToUse, requestMetaData, null, RunType.SYNC);
-            if (validateRequestResult == ValidationResult.INVALID) {
+            var violations = validateRequest(requestToUse, requestMetaData, null, RunType.SYNC);
+            if (!violations.isEmpty()) {
                 request.setAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION, true);
                 throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Request validation failed");
             }
@@ -106,15 +109,16 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         var requestToUse = contentCachingWrapperFactory.getCachingRequest(request);
         var responseToUse = contentCachingWrapperFactory.getCachingResponse(response);
         if (responseToUse != null) {
-            var validateResponseResult = validateResponse(
+            var violations = validateResponse(
                 requestToUse,
                 responseToUse,
                 requestMetaData,
                 responseMetaData,
                 trafficSelector.shouldFailOnResponseViolation(requestMetaData) ? RunType.SYNC : RunType.ASYNC
             );
-            // Note: validateResponseResult will always be null on ASYNC
-            if (validateResponseResult == ValidationResult.INVALID) {
+            violations.forEach(openApiViolationHandler::onOpenApiViolation);
+            // Note: violations will always be empty on ASYNC
+            if (!violations.isEmpty()) {
                 response.reset();
                 response.setStatus(500);
                 throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Response validation failed");
@@ -128,7 +132,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         return metaData instanceof RequestMetaData ? (RequestMetaData) metaData : null;
     }
 
-    private ValidationResult validateRequest(
+    private List<OpenApiViolation> validateRequest(
         MultiReadContentCachingRequestWrapper request,
         RequestMetaData requestMetaData,
         @Nullable ResponseMetaData responseMetaData,
@@ -137,14 +141,15 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         var skipRequestValidation = request.getAttribute(ATTRIBUTE_SKIP_REQUEST_VALIDATION) != null;
         request.setAttribute(ATTRIBUTE_SKIP_REQUEST_VALIDATION, true);
         if (skipRequestValidation || !trafficSelector.canRequestBeValidated(requestMetaData)) {
-            return ValidationResult.NOT_APPLICABLE;
+            return List.of();
         }
 
         var requestBody = request.getContentType() != null ? readBodyCatchingException(request) : null;
 
         if (runType == RunType.ASYNC) {
-            validator.validateRequestObjectAsync(requestMetaData, responseMetaData, requestBody);
-            return ValidationResult.NOT_APPLICABLE;
+            validator
+                .validateRequestObjectAsync(requestMetaData, responseMetaData, requestBody, openApiViolationHandler);
+            return List.of();
         } else {
             return validator.validateRequestObject(requestMetaData, requestBody);
         }
@@ -158,7 +163,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         }
     }
 
-    private ValidationResult validateResponse(
+    private List<OpenApiViolation> validateResponse(
         HttpServletRequest request,
         ContentCachingResponseWrapper response,
         RequestMetaData requestMetaData,
@@ -169,7 +174,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
         request.setAttribute(ATTRIBUTE_SKIP_RESPONSE_VALIDATION, true);
 
         if (skipResponseValidation || !trafficSelector.canResponseBeValidated(requestMetaData, responseMetaData)) {
-            return ValidationResult.NOT_APPLICABLE;
+            return List.of();
         }
 
         var responseBody = response.getContentType() != null
@@ -177,8 +182,9 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
             : null;
 
         if (runType == RunType.ASYNC) {
-            validator.validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody);
-            return ValidationResult.NOT_APPLICABLE;
+            validator
+                .validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody, openApiViolationHandler);
+            return List.of();
         } else {
             return validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
         }

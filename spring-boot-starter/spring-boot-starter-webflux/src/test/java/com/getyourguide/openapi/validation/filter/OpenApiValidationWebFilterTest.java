@@ -10,9 +10,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
-import com.getyourguide.openapi.validation.api.model.ValidationResult;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.factory.ReactiveMetaDataFactory;
@@ -40,9 +41,15 @@ class OpenApiValidationWebFilterTest {
     private final TrafficSelector trafficSelector = mock();
     private final ReactiveMetaDataFactory metaDataFactory = mock();
     private final DecoratorBuilder decoratorBuilder = mock();
+    private final OpenApiViolationHandler openApiViolationHandler = mock();
 
-    private final OpenApiValidationWebFilter webFilter =
-        new OpenApiValidationWebFilter(validator, trafficSelector, metaDataFactory, decoratorBuilder);
+    private final OpenApiValidationWebFilter webFilter = new OpenApiValidationWebFilter(
+        validator,
+        trafficSelector,
+        metaDataFactory,
+        decoratorBuilder,
+        openApiViolationHandler
+    );
 
     @Test
     public void testNormalFlowWithValidation() {
@@ -130,7 +137,7 @@ class OpenApiValidationWebFilterTest {
     public void testShouldFailOnRequestViolationWithViolation() {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnRequestViolation(true).build());
         when(validator.validateRequestObject(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY)))
-            .thenReturn(ValidationResult.INVALID);
+            .thenReturn(List.of(mock(OpenApiViolation.class)));
 
         StepVerifier.create(webFilter.filter(mockData.exchange, mockData.chain))
             .expectErrorMatches(throwable -> throwable instanceof ResponseStatusException)
@@ -149,7 +156,7 @@ class OpenApiValidationWebFilterTest {
                 eq(mockData.requestMetaData),
                 eq(mockData.responseMetaData), eq(REQUEST_BODY)
             )
-        ).thenReturn(ValidationResult.INVALID);
+        ).thenReturn(List.of(mock(OpenApiViolation.class)));
 
         assertThrows(ResponseStatusException.class, () -> webFilter.filter(mockData.exchange, mockData.chain));
 
@@ -164,17 +171,22 @@ class OpenApiValidationWebFilterTest {
     }
 
     private void verifyNoRequestValidation() {
-        verify(validator, never()).validateRequestObjectAsync(any(), any(), anyString());
+        verify(validator, never()).validateRequestObjectAsync(any(), any(), anyString(), eq(openApiViolationHandler));
         verify(validator, never()).validateRequestObject(any(), anyString());
     }
 
     private void verifyNoResponseValidation() {
-        verify(validator, never()).validateResponseObjectAsync(any(), any(), anyString());
+        verify(validator, never()).validateResponseObjectAsync(any(), any(), anyString(), eq(openApiViolationHandler));
         verify(validator, never()).validateResponseObject(any(), any(), anyString());
     }
 
     private void verifyRequestValidatedAsync(MockSetupData mockData) {
-        verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY));
+        verify(validator).validateRequestObjectAsync(
+            eq(mockData.requestMetaData),
+            any(),
+            eq(REQUEST_BODY),
+            eq(openApiViolationHandler)
+        );
     }
 
     private void verifyRequestValidatedSync(MockSetupData mockData) {
@@ -185,7 +197,8 @@ class OpenApiValidationWebFilterTest {
         verify(validator).validateResponseObjectAsync(
             eq(mockData.requestMetaData),
             eq(mockData.responseMetaData),
-            eq(RESPONSE_BODY)
+            eq(RESPONSE_BODY),
+            eq(openApiViolationHandler)
         );
     }
 

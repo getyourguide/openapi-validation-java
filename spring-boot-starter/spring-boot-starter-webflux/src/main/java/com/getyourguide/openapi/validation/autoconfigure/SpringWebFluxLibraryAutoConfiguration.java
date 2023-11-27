@@ -2,6 +2,7 @@ package com.getyourguide.openapi.validation.autoconfigure;
 
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.factory.ReactiveMetaDataFactory;
@@ -33,8 +34,15 @@ public class SpringWebFluxLibraryAutoConfiguration {
         OpenApiRequestValidator validator,
         TrafficSelector trafficSelector,
         ReactiveMetaDataFactory metaDataFactory,
+        OpenApiViolationHandler openApiViolationHandler,
         DecoratorBuilder decoratorBuilder
     ) {
-        return new OpenApiValidationWebFilter(validator, trafficSelector, metaDataFactory, decoratorBuilder);
+        return new OpenApiValidationWebFilter(
+            validator,
+            trafficSelector,
+            metaDataFactory,
+            decoratorBuilder,
+            openApiViolationHandler
+        );
     }
 }

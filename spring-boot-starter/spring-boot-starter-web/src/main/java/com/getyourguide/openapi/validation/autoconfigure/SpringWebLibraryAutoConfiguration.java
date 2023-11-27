@@ -2,6 +2,7 @@ package com.getyourguide.openapi.validation.autoconfigure;
 
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.factory.ContentCachingWrapperFactory;
@@ -53,13 +54,15 @@ public class SpringWebLibraryAutoConfiguration {
         OpenApiRequestValidator validator,
         TrafficSelector trafficSelector,
         ServletMetaDataFactory metaDataFactory,
+        OpenApiViolationHandler openApiViolationHandler,
         ContentCachingWrapperFactory contentCachingWrapperFactory
     ) {
         var interceptor = new OpenApiValidationInterceptor(
             validator,
             trafficSelector,
             metaDataFactory,
-            contentCachingWrapperFactory
+            contentCachingWrapperFactory,
+            openApiViolationHandler
         );
         return new WebMvcConfigurer() {
             @Override

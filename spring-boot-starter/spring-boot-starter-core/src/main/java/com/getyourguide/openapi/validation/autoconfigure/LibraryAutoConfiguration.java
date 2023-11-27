@@ -6,6 +6,7 @@ import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.LoggerExtension;
 import com.getyourguide.openapi.validation.api.log.NoOpLoggerExtension;
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.metrics.DefaultMetricsReporter;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
@@ -16,8 +17,8 @@ import com.getyourguide.openapi.validation.api.model.ValidatorConfigurationBuild
 import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
 import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFactory;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
-import com.getyourguide.openapi.validation.core.ValidationReportHandler;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
+import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import com.getyourguide.openapi.validation.core.throttle.RequestBasedValidationReportThrottler;
 import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
@@ -72,18 +73,17 @@ public class LibraryAutoConfiguration {
     }
 
     @Bean
-    public ValidationReportHandler validationReportHandler(
+    public OpenApiViolationHandler openApiViolationHandler(
         ValidationReportThrottler validationReportThrottler,
         ViolationLogger logger,
         MetricsReporter metricsReporter,
         Optional<ViolationExclusions> violationExclusions
     ) {
-        return new ValidationReportHandler(
+        return new DefaultOpenApiViolationHandler(
             validationReportThrottler,
             logger,
             metricsReporter,
-            new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new)),
-            new ValidationReportToOpenApiViolationsMapper()
+            new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new))
         );
     }
 
@@ -101,7 +101,7 @@ public class LibraryAutoConfiguration {
 
     @Bean
     public OpenApiRequestValidator openApiRequestValidator(
-        ValidationReportHandler validationReportHandler,
+        OpenApiViolationHandler openApiViolationHandler,
         MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {
@@ -116,10 +116,10 @@ public class LibraryAutoConfiguration {
 
         return new OpenApiRequestValidator(
             threadPoolExecutor,
-            validationReportHandler,
             metricsReporter,
             new OpenApiInteractionValidatorFactory()
                 .build(properties.getSpecificationFilePath(), validatorConfiguration),
+            new ValidationReportToOpenApiViolationsMapper(),
             properties.toOpenApiRequestValidationConfiguration()
         );
     }
