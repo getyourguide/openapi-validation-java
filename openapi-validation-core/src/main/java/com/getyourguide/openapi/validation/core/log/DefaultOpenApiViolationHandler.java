@@ -5,12 +5,10 @@ import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class DefaultOpenApiViolationHandler implements OpenApiViolationHandler {
-    private final ValidationReportThrottler throttleHelper;
     private final ViolationLogger logger;
     private final MetricsReporter metrics;
     private final InternalViolationExclusions violationExclusions;
@@ -21,11 +19,7 @@ public class DefaultOpenApiViolationHandler implements OpenApiViolationHandler {
             return;
         }
 
-        throttleHelper.throttle(violation, () -> logValidationError(violation));
-    }
-
-    private void logValidationError(OpenApiViolation openApiViolation) {
-        logger.log(openApiViolation);
-        metrics.reportViolation(openApiViolation);
+        logger.log(violation);
+        metrics.reportViolation(violation);
     }
 }

@@ -19,10 +19,8 @@ import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFacto
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
+import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
-import com.getyourguide.openapi.validation.core.throttle.RequestBasedValidationReportThrottler;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottlerNone;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -41,15 +39,6 @@ public class LibraryAutoConfiguration {
     public static final String DEFAULT_METRIC_NAME = "openapi.validation";
 
     private final OpenApiValidationApplicationProperties properties;
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ValidationReportThrottler requestBasedThrottleHelper() {
-        if (properties.getValidationReportThrottleWaitSeconds() == 0) {
-            return new ValidationReportThrottlerNone();
-        }
-        return new RequestBasedValidationReportThrottler(properties.getValidationReportThrottleWaitSeconds());
-    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -74,17 +63,22 @@ public class LibraryAutoConfiguration {
 
     @Bean
     public OpenApiViolationHandler openApiViolationHandler(
-        ValidationReportThrottler validationReportThrottler,
         ViolationLogger logger,
         MetricsReporter metricsReporter,
         Optional<ViolationExclusions> violationExclusions
     ) {
-        return new DefaultOpenApiViolationHandler(
-            validationReportThrottler,
+        OpenApiViolationHandler handler = new DefaultOpenApiViolationHandler(
             logger,
             metricsReporter,
             new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new))
         );
+
+        if (properties.getValidationReportThrottleWaitSeconds() != 0) {
+            handler =
+                new ThrottlingOpenApiViolationHandler(handler, properties.getValidationReportThrottleWaitSeconds());
+        }
+
+        return handler;
     }
 
     @Bean
@@ -101,7 +95,6 @@ public class LibraryAutoConfiguration {
 
     @Bean
     public OpenApiRequestValidator openApiRequestValidator(
-        OpenApiViolationHandler openApiViolationHandler,
         MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {

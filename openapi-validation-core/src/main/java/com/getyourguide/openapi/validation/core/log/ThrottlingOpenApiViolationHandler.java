@@ -1,5 +1,6 @@
-package com.getyourguide.openapi.validation.core.throttle;
+package com.getyourguide.openapi.validation.core.log;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,20 +9,19 @@ import lombok.NonNull;
 import org.joda.time.DateTime;
 
 @AllArgsConstructor
-public class RequestBasedValidationReportThrottler implements ValidationReportThrottler {
-
+public class ThrottlingOpenApiViolationHandler implements OpenApiViolationHandler {
+    private final OpenApiViolationHandler delegate;
     private final int waitSeconds;
-
     private final Map<String, DateTime> loggedMessages = new ConcurrentHashMap<>();
 
     @Override
-    public void throttle(OpenApiViolation openApiViolation, Runnable runnable) {
-        if (isThrottled(openApiViolation)) {
+    public void onOpenApiViolation(OpenApiViolation violation) {
+        if (isThrottled(violation)) {
             return;
         }
 
-        runnable.run();
-        registerLoggedMessage(openApiViolation);
+        delegate.onOpenApiViolation(violation);
+        registerLoggedMessage(violation);
     }
 
     private void registerLoggedMessage(OpenApiViolation openApiViolation) {

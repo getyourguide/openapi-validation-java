@@ -1,8 +1,13 @@
-package com.getyourguide.openapi.validation.core.throttle;
+package com.getyourguide.openapi.validation.core.log;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.atlassian.oai.validator.model.Request;
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
@@ -11,16 +16,15 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RequestBasedValidationReportThrottlerTest {
+public class ThrottlingOpenApiViolationHandlerTest {
     private static final Direction DIRECTION = Direction.REQUEST;
-    private static final Runnable NO_OP_RUNNABLE = () -> {
-    };
+    private static final OpenApiViolationHandler delegate = mock();
 
-    private RequestBasedValidationReportThrottler throttler;
+    private ThrottlingOpenApiViolationHandler handler;
 
     @BeforeEach
     public void beforeEach() {
-        throttler = new RequestBasedValidationReportThrottler(10);
+        handler = new ThrottlingOpenApiViolationHandler(delegate, 10);
     }
 
     @Test
@@ -33,7 +37,7 @@ public class RequestBasedValidationReportThrottlerTest {
     @Test
     public void testThrottledIfEntryExists() {
         var violation = buildViolation(DIRECTION, Request.Method.GET, "/path", 200);
-        throttler.throttle(violation, NO_OP_RUNNABLE);
+        handler.onOpenApiViolation(violation);
 
         assertThrottled(true, violation);
     }
@@ -41,7 +45,7 @@ public class RequestBasedValidationReportThrottlerTest {
     @Test
     public void testNotThrottledIfSmallDifference() {
         var violation = buildViolation(DIRECTION, Request.Method.GET, "/path", 200);
-        throttler.throttle(violation, NO_OP_RUNNABLE);
+        handler.onOpenApiViolation(violation);
 
         assertThrottled(false, buildViolation(Direction.RESPONSE, Request.Method.GET, "/path", 200));
         assertThrottled(false, buildViolation(DIRECTION, Request.Method.POST, "/path", 200));
@@ -52,7 +56,7 @@ public class RequestBasedValidationReportThrottlerTest {
     @Test
     public void testThrottledIfInstanceContainsArrayIndex() {
         var violation = buildViolation(DIRECTION, Request.Method.GET, "/path", 200, "/items/1/name", "/properties/items/items/properties/name");
-        throttler.throttle(violation, NO_OP_RUNNABLE);
+        handler.onOpenApiViolation(violation);
 
         assertThrottled(
             true,
@@ -68,14 +72,12 @@ public class RequestBasedValidationReportThrottlerTest {
         );
     }
 
-    private void assertThrottled(boolean expectThrottled, OpenApiViolation openApiViolation) {
-        var ref = new Object() {
-            boolean wasThrottled = true;
-        };
+    private void assertThrottled(boolean expectThrottled, OpenApiViolation violation) {
+        clearInvocations(delegate);
+        handler.onOpenApiViolation(violation);
 
-        throttler.throttle(openApiViolation, () -> ref.wasThrottled = false);
-
-        assertEquals(expectThrottled, ref.wasThrottled);
+        verify(delegate, expectThrottled ? never() : times(1))
+            .onOpenApiViolation(violation);
     }
 
     private OpenApiViolation buildViolation(Direction direction, Request.Method method, String path, int status) {
