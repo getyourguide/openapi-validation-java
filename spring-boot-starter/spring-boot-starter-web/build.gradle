@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.openapi.generator)
 }
 
+apply from: "${rootDir}/gradle/publish-module.gradle"
+
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
 
