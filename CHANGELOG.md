@@ -4,6 +4,24 @@
 
 ## [Unreleased]
 
+## [2.0] - 2023-11-28
+
+### Changed
+
+- Use strict operation path matching ([#52](https://github.com/getyourguide/openapi-validation-java/pull/52))
+- Default sample-rate to 100% ([#55](https://github.com/getyourguide/openapi-validation-java/pull/55))
+- Use toml file for versions of dependencies ([#54](https://github.com/getyourguide/openapi-validation-java/pull/54))
+
+### Removed
+
+- Removed spring boot 2.7 support ([#53](https://github.com/getyourguide/openapi-validation-java/pull/53))
+
+### Fixed
+
+- Exclude 406 status code violations ([#48](https://github.com/getyourguide/openapi-validation-java/pull/48))
+- On exception log 500 status code instead of 200 status code ([#65](https://github.com/getyourguide/openapi-validation-java/pull/65))
+- Do not report violation on blocked request ([#66](https://github.com/getyourguide/openapi-validation-java/pull/66))
+
 ## [1.2.7] - 2023-10-23
 
 ### Changed
@@ -16,7 +34,6 @@
 
 - Ignore violation `operation.notAllowed` with status code 404 ([#45](https://github.com/getyourguide/openapi-validation-java/pull/45))
 - Ignore violation `operation.notAllowed` with status code 405 ([#43](https://github.com/getyourguide/openapi-validation-java/pull/43))
-
 
 ## [1.2.6] - 2023-08-30
 
@@ -114,7 +131,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v1.2.7...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0...HEAD
+[2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0
 [1.2.7]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.7
 [1.2.6]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.6
 [1.2.5]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.5
