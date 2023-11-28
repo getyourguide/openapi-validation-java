@@ -4,18 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.getyourguide.openapi.validation.api.model.ValidationResult;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
 
 class OpenApiValidationInterceptorTest extends BaseFilterTest {
 
     private final OpenApiValidationInterceptor httpInterceptor =
-        new OpenApiValidationInterceptor(validator, trafficSelector, metaDataFactory, contentCachingWrapperFactory);
+        new OpenApiValidationInterceptor(validator, trafficSelector, metaDataFactory, contentCachingWrapperFactory, openApiViolationHandler);
 
     @Test
     public void testNormalFlowWithValidation() {
@@ -91,7 +93,7 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
     public void testShouldFailOnRequestViolationWithViolation() {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnRequestViolation(true).build());
         when(validator.validateRequestObject(eq(mockData.requestMetaData()), eq(REQUEST_BODY)))
-            .thenReturn(ValidationResult.INVALID);
+            .thenReturn(List.of(mock(OpenApiViolation.class)));
 
         assertThrows(ResponseStatusException.class,
             () -> httpInterceptor.preHandle(mockData.request(), mockData.response(), new Object()));
@@ -110,7 +112,7 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
                 eq(mockData.requestMetaData()),
                 eq(mockData.responseMetaData()), eq(REQUEST_BODY)
             )
-        ).thenReturn(ValidationResult.INVALID);
+        ).thenReturn(List.of(mock(OpenApiViolation.class)));
 
 
         httpInterceptor.preHandle(mockData.request(), mockData.response(), new Object());
@@ -128,18 +130,22 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
     }
 
     private void verifyNoRequestValidation() {
-        verify(validator, never()).validateRequestObjectAsync(any(), any(), anyString());
+        verify(validator, never()).validateRequestObjectAsync(any(), any(), anyString(), eq(openApiViolationHandler));
         verify(validator, never()).validateRequestObject(any(), anyString());
     }
 
     private void verifyNoResponseValidation() {
-        verify(validator, never()).validateResponseObjectAsync(any(), any(), anyString());
+        verify(validator, never()).validateResponseObjectAsync(any(), any(), anyString(), eq(openApiViolationHandler));
         verify(validator, never()).validateResponseObject(any(), any(), anyString());
     }
 
     private void verifyRequestValidatedAsync(MockSetupData mockData) {
-        verify(validator).validateRequestObjectAsync(eq(mockData.requestMetaData()), eq(mockData.responseMetaData()),
-            eq(REQUEST_BODY));
+        verify(validator).validateRequestObjectAsync(
+            eq(mockData.requestMetaData()),
+            eq(mockData.responseMetaData()),
+            eq(REQUEST_BODY),
+            eq(openApiViolationHandler)
+        );
     }
 
     private void verifyRequestValidatedSync(MockSetupData mockData) {
@@ -150,7 +156,8 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
         verify(validator).validateResponseObjectAsync(
             eq(mockData.requestMetaData()),
             eq(mockData.responseMetaData()),
-            eq(RESPONSE_BODY)
+            eq(RESPONSE_BODY),
+            eq(openApiViolationHandler)
         );
     }
 

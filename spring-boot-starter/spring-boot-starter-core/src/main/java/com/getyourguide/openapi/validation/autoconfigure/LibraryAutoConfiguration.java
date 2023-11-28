@@ -6,6 +6,7 @@ import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
 import com.getyourguide.openapi.validation.api.log.LoggerExtension;
 import com.getyourguide.openapi.validation.api.log.NoOpLoggerExtension;
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
 import com.getyourguide.openapi.validation.api.metrics.DefaultMetricsReporter;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
@@ -16,11 +17,11 @@ import com.getyourguide.openapi.validation.api.model.ValidatorConfigurationBuild
 import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
 import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFactory;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
-import com.getyourguide.openapi.validation.core.ValidationReportHandler;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
-import com.getyourguide.openapi.validation.core.throttle.RequestBasedValidationReportThrottler;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottlerNone;
+import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
+import com.getyourguide.openapi.validation.core.log.ExclusionsOpenApiViolationHandler;
+import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
+import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -39,15 +40,6 @@ public class LibraryAutoConfiguration {
     public static final String DEFAULT_METRIC_NAME = "openapi.validation";
 
     private final OpenApiValidationApplicationProperties properties;
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ValidationReportThrottler requestBasedThrottleHelper() {
-        if (properties.getValidationReportThrottleWaitSeconds() == 0) {
-            return new ValidationReportThrottlerNone();
-        }
-        return new RequestBasedValidationReportThrottler(properties.getValidationReportThrottleWaitSeconds());
-    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -71,18 +63,22 @@ public class LibraryAutoConfiguration {
     }
 
     @Bean
-    public ValidationReportHandler validationReportHandler(
-        ValidationReportThrottler validationReportThrottler,
+    public OpenApiViolationHandler openApiViolationHandler(
         ViolationLogger logger,
         MetricsReporter metricsReporter,
         Optional<ViolationExclusions> violationExclusions
     ) {
-        return new ValidationReportHandler(
-            validationReportThrottler,
-            logger,
-            metricsReporter,
-            new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new))
-        );
+        OpenApiViolationHandler handler = new DefaultOpenApiViolationHandler(logger, metricsReporter);
+
+        if (properties.getValidationReportThrottleWaitSeconds() != 0) {
+            handler =
+                new ThrottlingOpenApiViolationHandler(handler, properties.getValidationReportThrottleWaitSeconds());
+        }
+
+        var exclusions = new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new));
+        handler = new ExclusionsOpenApiViolationHandler(handler, exclusions);
+
+        return handler;
     }
 
     @Bean
@@ -99,7 +95,6 @@ public class LibraryAutoConfiguration {
 
     @Bean
     public OpenApiRequestValidator openApiRequestValidator(
-        ValidationReportHandler validationReportHandler,
         MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {
@@ -114,10 +109,10 @@ public class LibraryAutoConfiguration {
 
         return new OpenApiRequestValidator(
             threadPoolExecutor,
-            validationReportHandler,
             metricsReporter,
             new OpenApiInteractionValidatorFactory()
                 .build(properties.getSpecificationFilePath(), validatorConfiguration),
+            new ValidationReportToOpenApiViolationsMapper(),
             properties.toOpenApiRequestValidationConfiguration()
         );
     }

@@ -1,47 +1,29 @@
-package com.getyourguide.openapi.validation.core;
+package com.getyourguide.openapi.validation.core.mapper;
 
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.getyourguide.openapi.validation.api.log.LogLevel;
-import com.getyourguide.openapi.validation.api.log.ViolationLogger;
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
-import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
-public class ValidationReportHandler {
-    private final ValidationReportThrottler throttleHelper;
-    private final ViolationLogger logger;
-    private final MetricsReporter metrics;
-    private final InternalViolationExclusions violationExclusions;
-
-    public void handleValidationReport(
+public class ValidationReportToOpenApiViolationsMapper {
+    public List<OpenApiViolation> map(
+        ValidationReport validationReport,
         RequestMetaData request,
         @Nullable ResponseMetaData response,
         Direction direction,
-        String body,
-        ValidationReport result
+        String body
     ) {
-        if (!result.getMessages().isEmpty()) {
-            result
-                .getMessages()
-                .stream()
-                .map(message -> buildOpenApiViolation(message, request, response, body, direction))
-                .filter(violation -> !violationExclusions.isExcluded(violation))
-                .forEach(violation -> throttleHelper.throttle(violation, () -> logValidationError(violation)));
-        }
-    }
-
-    private void logValidationError(OpenApiViolation openApiViolation) {
-        logger.log(openApiViolation);
-        metrics.reportViolation(openApiViolation);
+        return validationReport
+            .getMessages()
+            .stream()
+            .map(message -> buildOpenApiViolation(message, request, response, body, direction))
+            .toList();
     }
 
     private OpenApiViolation buildOpenApiViolation(

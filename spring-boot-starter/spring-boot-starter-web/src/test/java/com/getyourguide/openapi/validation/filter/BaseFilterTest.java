@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
 import com.getyourguide.openapi.validation.api.selector.TrafficSelector;
@@ -34,6 +35,7 @@ public class BaseFilterTest {
     protected final TrafficSelector trafficSelector = mock();
     protected final ServletMetaDataFactory metaDataFactory = mock();
     protected final ContentCachingWrapperFactory contentCachingWrapperFactory = mock();
+    protected final OpenApiViolationHandler openApiViolationHandler = mock();
 
     protected static void mockRequestAttributes(ServletRequest... requests) {
         var requestAttributes = new HashMap<String, Object>();

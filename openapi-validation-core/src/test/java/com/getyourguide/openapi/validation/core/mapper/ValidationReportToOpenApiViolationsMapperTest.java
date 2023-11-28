@@ -1,20 +1,12 @@
-package com.getyourguide.openapi.validation.core;
+package com.getyourguide.openapi.validation.core.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.atlassian.oai.validator.report.ValidationReport;
-import com.getyourguide.openapi.validation.api.log.ViolationLogger;
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.model.Direction;
-import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
-import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
-import com.getyourguide.openapi.validation.core.throttle.ValidationReportThrottler;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.net.URI;
 import java.util.HashMap;
@@ -22,35 +14,24 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
-class ValidationReportHandlerTest {
-    private ValidationReportThrottler throttleHelper;
-    private ViolationLogger logger;
-
-    private ValidationReportHandler validationReportHandler;
+class ValidationReportToOpenApiViolationsMapperTest {
+    private ValidationReportToOpenApiViolationsMapper mapper;
 
     @BeforeEach
     public void setUp() {
-        throttleHelper = mock();
-        logger = mock();
-        MetricsReporter metrics = mock();
-        InternalViolationExclusions violationExclusions = mock();
-
-        validationReportHandler = new ValidationReportHandler(throttleHelper, logger, metrics, violationExclusions);
+        mapper = new ValidationReportToOpenApiViolationsMapper();
     }
 
     @Test
     public void testWhenParameterNameIsPresentThenItShouldAddItToTheMessage() {
-        mockNoThrottling();
         var request = mockRequestMetaData();
         var validationReport = mockValidationReport("parameterName");
 
-        validationReportHandler.handleValidationReport(request, null, Direction.REQUEST, null, validationReport);
+        var violations = mapper.map(validationReport, request, null, Direction.REQUEST, null);
 
-        var argumentCaptor = ArgumentCaptor.forClass(OpenApiViolation.class);
-        verify(logger).log(argumentCaptor.capture());
-        var openApiViolation = argumentCaptor.getValue();
+        assertEquals(1, violations.size());
+        var openApiViolation = violations.get(0);
         assertEquals(Optional.of("parameterName"), openApiViolation.getParameter());
         assertEquals(
             String.join("\n",
@@ -64,8 +45,7 @@ class ValidationReportHandlerTest {
     }
 
     private static RequestMetaData mockRequestMetaData() {
-        var request = new RequestMetaData("GET", URI.create("https://api.example.com/index"), new HashMap<>());
-        return request;
+        return new RequestMetaData("GET", URI.create("https://api.example.com/index"), new HashMap<>());
     }
 
     private static ValidationReport mockValidationReport(String parameterName) {
@@ -81,12 +61,5 @@ class ValidationReportHandlerTest {
         when(message.getContext()).thenReturn(Optional.of(context));
         when(validationReport.getMessages()).thenReturn(List.of(message));
         return validationReport;
-    }
-
-    private void mockNoThrottling() {
-        doAnswer(invocation -> {
-            ((Runnable) invocation.getArguments()[1]).run();
-            return null;
-        }).when(throttleHelper).throttle(any(), any());
     }
 }
