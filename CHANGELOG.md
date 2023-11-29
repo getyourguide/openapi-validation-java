@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [2.0.1] - 2023-11-29
+
+### Fixed
+
+- Possible NullPointerException ([#71](https://github.com/getyourguide/openapi-validation-java/pull/71))
+
 ## [2.0] - 2023-11-28
 
 ### Changed
@@ -131,7 +137,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.1
 [2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0
 [1.2.7]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.7
 [1.2.6]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.6

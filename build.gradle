@@ -10,7 +10,7 @@ apply from: "${rootDir}/gradle/publish-root.gradle"
 allprojects {
     group = 'com.getyourguide.openapi.validation'
     description = 'OpenAPI Validation library'
-    version = '2.0'
+    version = '2.0.1'
 
     java {
         toolchain {
