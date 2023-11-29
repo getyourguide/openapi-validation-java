@@ -123,6 +123,18 @@ public class OpenApiValidationIntegrationTest {
         assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
+    @Test
+    public void whenTestNoBodyThenShouldReturnSuccessAndNoViolation() throws Exception {
+        mockMvc.perform(post("/test/no-body"))
+            .andExpectAll(
+                status().isNoContent(),
+                content().string(Matchers.blankOrNullString())
+            );
+        Thread.sleep(100);
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
+    }
+
     @Nullable
     private OpenApiViolation getViolationByRule(List<OpenApiViolation> violations, String rule) {
         return violations.stream()

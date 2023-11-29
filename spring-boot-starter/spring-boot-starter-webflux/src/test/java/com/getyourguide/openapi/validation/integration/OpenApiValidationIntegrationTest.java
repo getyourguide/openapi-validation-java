@@ -2,6 +2,9 @@ package com.getyourguide.openapi.validation.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.test.TestViolationLogger;
@@ -9,6 +12,7 @@ import com.getyourguide.openapi.validation.test.openapi.webflux.model.TestRespon
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -128,6 +132,19 @@ public class OpenApiValidationIntegrationTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk()
+            .expectBody().isEmpty();
+        Thread.sleep(100);
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
+    }
+
+    @Test
+    public void whenTestNoBodyThenShouldReturnSuccessAndNoViolation() throws Exception {
+        webTestClient
+            .post().uri("/test/no-body")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNoContent()
             .expectBody().isEmpty();
         Thread.sleep(100);
 

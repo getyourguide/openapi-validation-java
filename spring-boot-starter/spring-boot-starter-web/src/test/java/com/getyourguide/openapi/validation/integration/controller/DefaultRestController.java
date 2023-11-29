@@ -34,4 +34,9 @@ public class DefaultRestController implements DefaultApi {
         }
         return ResponseEntity.noContent().build();
     }
+
+    @Override
+    public ResponseEntity<TestResponse> postTestNoBody() {
+        return ResponseEntity.noContent().build();
+    }
 }

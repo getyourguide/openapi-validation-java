@@ -78,6 +78,19 @@ paths:
                 "$ref": "#/components/schemas/TestResponse"
         '204':
           description: Successful response without content
+  "/test/no-body":
+    post:
+      description: Post test without request/response body
+      operationId: postTestNoBody
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TestResponse"
+        '204':
+          description: Successful response without content
 components:
   schemas:
     TestResponse:

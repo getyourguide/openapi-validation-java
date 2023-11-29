@@ -43,4 +43,9 @@ public class DefaultRestController implements DefaultApi {
             return Mono.just(ResponseEntity.noContent().build());
         });
     }
+
+    @Override
+    public Mono<ResponseEntity<TestResponse>> postTestNoBody(ServerWebExchange exchange) {
+        return Mono.just(ResponseEntity.noContent().build());
+    }
 }
