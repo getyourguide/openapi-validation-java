@@ -31,7 +31,6 @@ public class OpenApiValidationFilter extends OncePerRequestFilter {
         request.setAttribute(ATTRIBUTE_REQUEST_META_DATA, requestMetaData);
         if (!validator.isReady() || !trafficSelector.shouldRequestBeValidated(requestMetaData)) {
             request.setAttribute(ATTRIBUTE_SKIP_VALIDATION, true);
-            request.setAttribute(ATTRIBUTE_SKIP_VALIDATION, true);
             filterChain.doFilter(request, response);
             return;
         }

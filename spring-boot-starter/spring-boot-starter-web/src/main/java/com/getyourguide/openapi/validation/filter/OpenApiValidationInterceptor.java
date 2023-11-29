@@ -92,7 +92,7 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
     }
 
     private boolean shouldSkipValidation(HttpServletRequest request) {
-        return request.getAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION) != null;
+        return request == null || request.getAttribute(OpenApiValidationFilter.ATTRIBUTE_SKIP_VALIDATION) != null;
     }
 
     private void validateResponse(HttpServletRequest request, HttpServletResponse response) {
@@ -106,11 +106,10 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
     ) {
         var requestMetaData = getRequestMetaData(request);
         var responseMetaData = metaDataFactory.buildResponseMetaData(response, exception);
-        var requestToUse = contentCachingWrapperFactory.getCachingRequest(request);
         var responseToUse = contentCachingWrapperFactory.getCachingResponse(response);
         if (responseToUse != null) {
             var violations = validateResponse(
-                requestToUse,
+                request,
                 responseToUse,
                 requestMetaData,
                 responseMetaData,

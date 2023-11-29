@@ -134,6 +134,19 @@ public class OpenApiValidationIntegrationTest {
         assertEquals(0, openApiViolationLogger.getViolations().size());
     }
 
+    @Test
+    public void whenTestNoBodyThenShouldReturnSuccessAndNoViolation() throws Exception {
+        webTestClient
+            .post().uri("/test/no-body")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNoContent()
+            .expectBody().isEmpty();
+        Thread.sleep(100);
+
+        assertEquals(0, openApiViolationLogger.getViolations().size());
+    }
+
     @Nullable
     private OpenApiViolation getViolationByRule(List<OpenApiViolation> violations, String rule) {
         return violations.stream()
