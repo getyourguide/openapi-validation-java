@@ -51,7 +51,7 @@ public class OpenApiInteractionValidatorFactory {
                 var path = entry.specificationFilePath();
                 var specOptional = loadSpecFromPath(path).or(() -> loadSpecFromResources(path));
                 if (specOptional.isEmpty()) {
-                    log.error("OpenAPI spec file {} could not be found", path);
+                    log.error("[OpenAPI Validation] Spec file {} could not be found", path);
                     return null;
                 }
                 var validator = buildSingleSpecOpenApiInteractionValidatorWrapper(specOptional.get(),
@@ -86,7 +86,7 @@ public class OpenApiInteractionValidatorFactory {
                 .build();
             return new SingleSpecOpenApiInteractionValidatorWrapper(validator);
         } catch (Throwable e) {
-            log.error("Could not initialize OpenApiInteractionValidator [validation disabled]", e);
+            log.error("[OpenAPI Validation] Could not initialize OpenApiInteractionValidator [validation disabled]", e);
             return null;
         }
     }

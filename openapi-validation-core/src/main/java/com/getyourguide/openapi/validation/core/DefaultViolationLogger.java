@@ -25,7 +25,7 @@ public class DefaultViolationLogger implements ViolationLogger {
                 default -> { /* do nothing */ }
             }
         } catch (IOException e) {
-            log.error("Could not add to LoggingContext", e);
+            log.error("[OpenAPI Validation] Could not add to LoggingContext", e);
         }
     }
 
