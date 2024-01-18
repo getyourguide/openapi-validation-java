@@ -40,7 +40,7 @@ public class MultipleSpecOpenApiInteractionValidatorWrapper implements OpenApiIn
     private Optional<OpenApiInteractionValidatorWrapper> getValidatorForPath(String path) {
         for (var validator : validators) {
             if (validator.getLeft().matcher(path).matches()) {
-                return Optional.of(validator.getRight());
+                return validator.getRight() == null ? Optional.of(validator.getRight()) : Optional.empty();
             }
         }
 

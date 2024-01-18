@@ -56,9 +56,7 @@ public class OpenApiInteractionValidatorFactory {
                 }
                 var validator = buildSingleSpecOpenApiInteractionValidatorWrapper(specOptional.get(),
                     configuration.getLevelResolverLevels(), configuration.getLevelResolverDefaultLevel());
-                return validator != null
-                    ? Pair.of(entry.pathPattern(), (OpenApiInteractionValidatorWrapper) validator)
-                    : null;
+                return Pair.of(entry.pathPattern(), (OpenApiInteractionValidatorWrapper) validator);
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
@@ -71,6 +69,7 @@ public class OpenApiInteractionValidatorFactory {
         return new MultipleSpecOpenApiInteractionValidatorWrapper(validators);
     }
 
+    @Nullable
     private SingleSpecOpenApiInteractionValidatorWrapper buildSingleSpecOpenApiInteractionValidatorWrapper(
         String spec,
         Map<String, LogLevel> levelResolverLevels,
