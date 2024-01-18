@@ -94,7 +94,7 @@ public class OpenApiRequestValidator {
             var result = validator.validateRequest(simpleRequest);
             return mapper.map(result, request, response, Direction.REQUEST, requestBody);
         } catch (Exception e) {
-            log.error("Could not validate request", e);
+            log.error("[OpenAPI Validation] Could not validate request", e);
             return List.of();
         }
     }
@@ -138,7 +138,7 @@ public class OpenApiRequestValidator {
             );
             return mapper.map(result, request, response, Direction.RESPONSE, responseBody);
         } catch (Exception e) {
-            log.error("Could not validate response", e);
+            log.error("[OpenAPI Validation] Could not validate response", e);
             return List.of();
         }
     }

@@ -56,6 +56,27 @@ public class MultipleSpecOpenApiInteractionValidatorWrapperTest {
         assertEquals("ValidatorConfiguration has no spec file matching path: /123", message.getMessage());
     }
 
+    @Test
+    public void testReturnsViolationWhenMatchingValidatorIsNull() {
+        var catchAllValidator = mockValidator();
+
+        validator = new MultipleSpecOpenApiInteractionValidatorWrapper(
+            List.of(
+                Pair.of(Pattern.compile("/test/.*"), null),
+                Pair.of(Pattern.compile(".*"), catchAllValidator.validator())
+            )
+        );
+
+        var path = "/test/123";
+        var report = validator.validateRequest(new SimpleRequest.Builder("GET", path).build());
+
+        var messages = report.getMessages();
+        assertEquals(1, messages.size());
+        var message = messages.get(0);
+        assertEquals(MESSAGE_KEY_NO_VALIDATOR_FOUND, message.getKey());
+        assertEquals("ValidatorConfiguration has no spec file matching path: /test/123", message.getMessage());
+    }
+
     private static MockValidatorResult mockValidator() {
         var catchAllValidator = mock(OpenApiInteractionValidatorWrapper.class);
         var catchAllValidationReport = mock(ValidationReport.class);
