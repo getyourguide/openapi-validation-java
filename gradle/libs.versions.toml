@@ -10,7 +10,7 @@ lombok = "1.18.30"
 commons-codec = "1.16.0"
 find-bugs = "3.0.2"
 gradle-nexus-publish-plugin = "1.3.0"
-datadog-statsd = "4.2.0"
+datadog-statsd = "4.3.0"
 # Verify
 checkstyle = "8.44"
 pmd = "6.55.0"
