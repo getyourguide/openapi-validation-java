@@ -1,4 +1,4 @@
-[![Drone Build Status](https://drone.gygadmin.com/api/badges/getyourguide/openapi-validation-java/status.svg)](https://drone.gygadmin.com/getyourguide/openapi-validation-java)
+[![GHA check status](https://github.com/getyourguide/openapi-validation-java/actions/workflows/check.yml/badge.svg)](https://github.com/getyourguide/openapi-validation-java/actions?query=branch%3Amain)
 
 # Java OpenAPI Validation Library
 
