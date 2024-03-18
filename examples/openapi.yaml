@@ -35,7 +35,7 @@ paths:
       description: Update index
       operationId: postIndex
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
