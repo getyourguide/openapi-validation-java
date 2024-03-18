@@ -22,7 +22,7 @@ public class MultiReadContentCachingRequestWrapper extends ContentCachingRequest
     @Override
     public ServletInputStream getInputStream() throws IOException {
         var cachedContent = getContentAsByteArray();
-        if (cachedContent.length > 0 ) {
+        if (cachedContent.length > 0) {
             return new CachedServletInputStream(cachedContent);
         }
 
