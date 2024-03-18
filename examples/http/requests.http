@@ -1,0 +1,16 @@
+### POST request
+POST http://localhost:8080/
+Content-Type: application/json
+
+{
+  "name": 1
+}
+
+### GET request
+GET http://localhost:8080/?fromDate=2020-01-01
+
+### GET request (with body)
+GET http://localhost:8080/?fromDate=2020-01-01
+Content-Type: application/json
+
+{}
