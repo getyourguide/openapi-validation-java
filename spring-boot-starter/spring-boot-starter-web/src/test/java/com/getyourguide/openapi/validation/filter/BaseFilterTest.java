@@ -53,6 +53,7 @@ public class BaseFilterTest {
 
     protected MockSetupData mockSetup(MockConfiguration configuration) {
         var request = mock(MultiReadContentCachingRequestWrapper.class);
+        when(request.getMethod()).thenReturn(configuration.requestMethod);
         var response = mock(ContentCachingResponseWrapper.class);
         var cachingRequest = mockContentCachingRequest(request, configuration);
         var cachingResponse = mockContentCachingResponse(response, configuration);
@@ -108,6 +109,7 @@ public class BaseFilterTest {
         MockConfiguration configuration
     ) {
         var cachingRequest = mock(MultiReadContentCachingRequestWrapper.class);
+        when(cachingRequest.getMethod()).thenReturn(configuration.requestMethod);
         when(contentCachingWrapperFactory.buildContentCachingRequestWrapper(request)).thenReturn(cachingRequest);
         if (configuration.requestBody != null) {
             try {
@@ -159,6 +161,8 @@ public class BaseFilterTest {
 
         @Builder.Default
         private String requestBody = REQUEST_BODY;
+        @Builder.Default
+        private String requestMethod = "POST";
         @Builder.Default
         private String responseBody = RESPONSE_BODY;
     }
