@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+## [2.0.2] - 2024-03-19
+
+### Changed
+- ignore unexpected body on GET/DELETE/OPTIONS/HEAD/TRACE ([#91](https://github.com/getyourguide/openapi-validation-java/pull/91))
+
+### Fixed
+
+- undertow can't validate request body ([#90](https://github.com/getyourguide/openapi-validation-java/pull/90))
+- Handle invalid spec on a spec with multiple spec setup ([#79](https://github.com/getyourguide/openapi-validation-java/pull/79))
+ 
 ## [2.0.1] - 2023-11-29
 
 ### Fixed
@@ -137,7 +147,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0.1...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0.2...HEAD
+[2.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.2
 [2.0.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.1
 [2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0
 [1.2.7]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v1.2.7
