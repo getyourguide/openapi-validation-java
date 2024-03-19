@@ -105,6 +105,18 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
     }
 
     @Test
+    public void testShouldIgnoreBodyOnGetRequests() {
+        var mockData = mockSetup(MockConfiguration.builder().requestBody("{\"field\": 1}}").requestMethod("GET").build());
+
+        httpInterceptor.preHandle(mockData.request(), mockData.response(), new Object());
+        httpInterceptor.postHandle(mockData.request(), mockData.response(), new Object(), null);
+        httpInterceptor.afterCompletion(mockData.request(), mockData.response(), new Object(), null);
+
+        verifyRequestValidatedAsync(mockData, null);
+        verifyResponseValidatedAsync(mockData);
+    }
+
+    @Test
     public void testShouldFailOnResponseViolationWithViolation() {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnResponseViolation(true).build());
         when(
@@ -140,10 +152,14 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
     }
 
     private void verifyRequestValidatedAsync(MockSetupData mockData) {
+        verifyRequestValidatedAsync(mockData, REQUEST_BODY);
+    }
+
+    private void verifyRequestValidatedAsync(MockSetupData mockData, String requestBody) {
         verify(validator).validateRequestObjectAsync(
             eq(mockData.requestMetaData()),
             eq(mockData.responseMetaData()),
-            eq(REQUEST_BODY),
+            eq(requestBody),
             eq(openApiViolationHandler)
         );
     }
