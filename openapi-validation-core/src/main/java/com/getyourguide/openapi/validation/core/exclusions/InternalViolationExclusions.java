@@ -13,9 +13,9 @@ public class InternalViolationExclusions {
 
     public boolean isExcluded(OpenApiViolation violation) {
         return falsePositive404(violation)
-            || falsePositive400(violation)
             || falsePositive405(violation)
             || falsePositive406(violation)
+            || falsePositiveRequestWith4xxResponse(violation)
             || customViolationExclusions.isExcluded(violation)
             || oneOfMatchesMoreThanOneSchema(violation);
     }
@@ -40,8 +40,10 @@ public class InternalViolationExclusions {
             );
     }
 
-    private boolean falsePositive400(OpenApiViolation violation) {
-        return violation.getDirection() == Direction.REQUEST && violation.getResponseStatus().orElse(0) == 400;
+    private boolean falsePositiveRequestWith4xxResponse(OpenApiViolation violation) {
+        return violation.getDirection() == Direction.REQUEST
+            && violation.getResponseStatus().orElse(0) >= 400
+            && violation.getResponseStatus().orElse(0) < 500;
     }
 
     private boolean falsePositive405(OpenApiViolation violation) {
