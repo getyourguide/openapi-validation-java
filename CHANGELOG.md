@@ -4,9 +4,17 @@
 
 ## [Unreleased]
 
+## [2.0.3] - 2024-05-26
+
+### Changed
+
+- Ignore request violations with response status code 4xx ([#108](https://github.com/getyourguide/openapi-validation-java/pull/108))
+- Updated several dependencies
+
 ## [2.0.2] - 2024-03-19
 
 ### Changed
+
 - ignore unexpected body on GET/DELETE/OPTIONS/HEAD/TRACE ([#91](https://github.com/getyourguide/openapi-validation-java/pull/91))
 
 ### Fixed
@@ -147,7 +155,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0.2...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0.3...HEAD
+[2.0.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.3
 [2.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.2
 [2.0.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.1
 [2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0
