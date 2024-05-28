@@ -116,14 +116,16 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
-    public void whenRequestViolationsAnd400ThenViolationExcluded() {
+    public void whenRequestViolationsAnd4xxThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 
-        checkViolationExcluded(OpenApiViolation.builder()
-            .direction(Direction.REQUEST)
-            .responseStatus(400)
-            .message("")
-            .build());
+        for (int responseStatus = 400; responseStatus < 500; responseStatus++) {
+            checkViolationExcluded(OpenApiViolation.builder()
+                .direction(Direction.REQUEST)
+                .responseStatus(responseStatus)
+                .message("")
+                .build());
+        }
     }
 
     @Test
