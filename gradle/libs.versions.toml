@@ -1,7 +1,7 @@
 [versions]
 spring-boot = "3.2.3"
 spring-dependency-management = "1.1.5"
-openapi-generator = "7.4.0"
+openapi-generator = "7.6.0"
 openapi-tools = "0.2.6"
 swagger = "2.2.22"
 swagger-request-validator = "2.40.0"
