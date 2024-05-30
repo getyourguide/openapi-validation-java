@@ -231,7 +231,7 @@ This can be achieved as demonstrated in the following snippet.
 public class MetricTagProviderExample implements MetricTagProvider {
   @Override
   public List<MetricTag> getTagsForViolation(OpenApiViolation violation) {
-    return List.of();
+    return List.of(new MetricTag("rule", violation.getRule()));
   }
 }
 ```
