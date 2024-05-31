@@ -8,8 +8,9 @@ import com.getyourguide.openapi.validation.api.log.LoggerExtension;
 import com.getyourguide.openapi.validation.api.log.NoOpLoggerExtension;
 import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.log.ViolationLogger;
-import com.getyourguide.openapi.validation.api.metrics.DefaultMetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.MetricTagProvider;
 import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
+import com.getyourguide.openapi.validation.api.metrics.NullMetricTagProvider;
 import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
 import com.getyourguide.openapi.validation.api.metrics.client.NoOpMetricsClient;
 import com.getyourguide.openapi.validation.api.model.ValidatorConfiguration;
@@ -22,6 +23,7 @@ import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandl
 import com.getyourguide.openapi.validation.core.log.ExclusionsOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
+import com.getyourguide.openapi.validation.core.metrics.DefaultMetricsReporter;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -49,12 +51,16 @@ public class LibraryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MetricsReporter metricsReporter(Optional<MetricsClient> metricsClient) {
+    public MetricsReporter metricsReporter(
+        Optional<MetricsClient> metricsClient,
+        Optional<MetricTagProvider> metricTagProvider
+    ) {
         var metricName = properties.getValidationReportMetricName() != null
             ? properties.getValidationReportMetricName()
             : DEFAULT_METRIC_NAME;
         return new DefaultMetricsReporter(
             metricsClient.orElseGet(NoOpMetricsClient::new),
+            metricTagProvider.orElseGet(NullMetricTagProvider::new),
             DefaultMetricsReporter.Configuration.builder()
                 .metricName(metricName)
                 .metricAdditionalTags(properties.getValidationReportMetricAdditionalTags())

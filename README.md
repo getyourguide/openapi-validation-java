@@ -222,6 +222,20 @@ public class ViolationExclusionsExample implements ViolationExclusions {
 }
 ```
 
+### Provide metric tags at runtime
+Sometimes you want to generate your own metric tags based on the violation.
+This can be achieved as demonstrated in the following snippet.
+
+```java
+@Component
+public class MetricTagProviderExample implements MetricTagProvider {
+  @Override
+  public List<MetricTag> getTagsForViolation(OpenApiViolation violation) {
+    return List.of(new MetricTag("rule", violation.getRule()));
+  }
+}
+```
+
 ## Examples
 Run examples with `./gradlew :examples:example-spring-boot-starter-web:bootRun` or `./gradlew :examples:example-spring-boot-starter-webflux:bootRun`.
 

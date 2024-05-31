@@ -9,7 +9,14 @@ plugins {
 dependencies {
     implementation project(':examples:examples-common')
     implementation project(':spring-boot-starter:spring-boot-starter-web')
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        exclude group: 'io.undertow', module: 'undertow-websockets-jsr'
+    }
+
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.hibernate.validator:hibernate-validator'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation(libs.openapi.tools.jacksonDatabindNullable)

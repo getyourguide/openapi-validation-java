@@ -1,6 +1,9 @@
-package com.getyourguide.openapi.validation.api.metrics;
+package com.getyourguide.openapi.validation.core.metrics;
 
 import com.getyourguide.openapi.validation.api.log.LogLevel;
+import com.getyourguide.openapi.validation.api.metrics.MetricTag;
+import com.getyourguide.openapi.validation.api.metrics.MetricTagProvider;
+import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
 import com.getyourguide.openapi.validation.api.metrics.client.MetricsClient;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import lombok.Getter;
 public class DefaultMetricsReporter implements MetricsReporter {
 
     private final MetricsClient metricsClient;
+    private final MetricTagProvider metricTagProvider;
     private final Configuration configuration;
 
     @Override
@@ -49,7 +53,8 @@ public class DefaultMetricsReporter implements MetricsReporter {
         violation.getResponseStatus()
             .ifPresent(responseStatus -> tags.add(new MetricTag("status", responseStatus.toString())));
 
-        addAdditionalTags(tags);
+        tags.addAll(getMetricTagsFromConfiguration());
+        tags.addAll(metricTagProvider.getTagsForViolation(violation));
 
         return tags.toArray(MetricTag[]::new);
     }
@@ -64,15 +69,16 @@ public class DefaultMetricsReporter implements MetricsReporter {
         tags.add(new MetricTag("validation_enabled", String.valueOf(isValidationEnabled)));
         tags.add(new MetricTag("sample_rate", String.valueOf(sampleRate)));
         tags.add(new MetricTag("throttling", String.valueOf(validationReportThrottleWaitSeconds)));
-        addAdditionalTags(tags);
+        tags.addAll(getMetricTagsFromConfiguration());
 
         return tags.toArray(MetricTag[]::new);
     }
 
-    private void addAdditionalTags(ArrayList<MetricTag> tags) {
+    private List<MetricTag> getMetricTagsFromConfiguration() {
         if (configuration.getMetricAdditionalTags() != null) {
-            tags.addAll(configuration.getMetricAdditionalTags());
+            return configuration.getMetricAdditionalTags();
         }
+        return List.of();
     }
 
     @Builder
