@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+## [2.1.0] - 2024-06-03
+
+### Added
+
+- Provide custom MetricTags during runtime ([#111](https://github.com/getyourguide/openapi-validation-java/pull/111))
+
+### Changed
+
+- Updated several dependencies
+
 ## [2.0.3] - 2024-05-26
 
 ### Changed
@@ -155,7 +165,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.0.3...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.1.0
 [2.0.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.3
 [2.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.2
 [2.0.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.1
