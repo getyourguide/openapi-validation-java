@@ -17,7 +17,8 @@ public class InternalViolationExclusions {
             || falsePositive406(violation)
             || falsePositiveRequestWith4xxResponse(violation)
             || customViolationExclusions.isExcluded(violation)
-            || oneOfMatchesMoreThanOneSchema(violation);
+            || oneOfMatchesMoreThanOneSchema(violation)
+            || isConcurrentModificationExceptionInLibrary(violation);
     }
 
     private static boolean oneOfMatchesMoreThanOneSchema(OpenApiViolation violation) {
@@ -54,5 +55,10 @@ public class InternalViolationExclusions {
     private boolean falsePositive406(OpenApiViolation violation) {
         return violation.getResponseStatus().orElse(0) == 406
             && Rules.Response.STATUS_UNKNOWN.equals(violation.getRule());
+    }
+
+    private boolean isConcurrentModificationExceptionInLibrary(OpenApiViolation violation) {
+        return "validation.response.body.schema.unknownError".equals(violation.getRule())
+            && violation.getMessage().contains("java.util.ConcurrentModificationException");
     }
 }
