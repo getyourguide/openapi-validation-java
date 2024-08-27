@@ -17,7 +17,7 @@ pmd = "6.55.0"
 jacoco = "0.8.7"
 # Testing
 mockito = "5.12.0"
-junit-jupiter = "5.10.2"
+junit-jupiter = "5.11.0"
 
 [libraries]
 openapi-tools-jacksonDatabindNullable = { group = "org.openapitools", name = "jackson-databind-nullable", version.ref = "openapi-tools" }
