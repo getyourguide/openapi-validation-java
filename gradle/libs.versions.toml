@@ -1,23 +1,23 @@
 [versions]
-spring-boot = "3.3.0"
+spring-boot = "3.3.3"
 spring-dependency-management = "1.1.6"
 openapi-generator = "7.4.0"
 openapi-tools = "0.2.6"
 swagger = "2.2.22"
-swagger-request-validator = "2.40.0"
+swagger-request-validator = "2.41.0"
 jakarta-validation = "3.1.0"
-lombok = "1.18.32"
+lombok = "1.18.34"
 commons-codec = "1.17.0"
 find-bugs = "3.0.2"
 gradle-nexus-publish-plugin = "2.0.0"
-datadog-statsd = "4.4.0"
+datadog-statsd = "4.4.2"
 # Verify
 checkstyle = "8.44"
 pmd = "6.55.0"
 jacoco = "0.8.7"
 # Testing
 mockito = "5.12.0"
-junit-jupiter = "5.10.2"
+junit-jupiter = "5.11.0"
 
 [libraries]
 openapi-tools-jacksonDatabindNullable = { group = "org.openapitools", name = "jackson-databind-nullable", version.ref = "openapi-tools" }
