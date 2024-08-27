@@ -31,11 +31,18 @@ class DefaultTrafficSelectorTest {
 
         assertHeaderIsExcluded(true, "x-is-bot", "true");
         assertHeaderIsExcluded(false, "x-is-bot", "truebot");
+    }
 
+    @Test
+    public void testIsExcludedByPath() {
+        // Default exclusions
+        assertPathIsExcluded(true, "/graphql");
+        assertPathIsExcluded(true, "/graphiql");
+
+        assertPathIsExcluded(false, "/v1/path");
     }
 
     private void assertHeaderIsExcluded(boolean expectedExclusion, String headerName, String headerValue) {
-
         var request = new RequestMetaData(
             "GET",
             URI.create("https://api.example.com/v1/path"),
@@ -44,6 +51,15 @@ class DefaultTrafficSelectorTest {
                 "Content-Length", "10",
                 headerName, headerValue
             ))
+        );
+        assertEquals(!expectedExclusion, trafficSelector.shouldRequestBeValidated(request));
+    }
+
+    private void assertPathIsExcluded(boolean expectedExclusion, String path) {
+        var request = new RequestMetaData(
+            "GET",
+            URI.create("https://api.example.com" + path),
+            Map.of("Content-Type", "application/json")
         );
         assertEquals(!expectedExclusion, trafficSelector.shouldRequestBeValidated(request));
     }
