@@ -12,6 +12,7 @@ public class DefaultTrafficSelector implements TrafficSelector {
 
     private final double sampleRate;
     private final Set<String> excludedPaths;
+    private final Set<String> defaultExcludedPaths;
     private final List<ExcludedHeader> excludedHeaders;
     private final Boolean shouldFailOnRequestViolation;
     private final Boolean shouldFailOnResponseViolation;
@@ -28,6 +29,7 @@ public class DefaultTrafficSelector implements TrafficSelector {
         Boolean shouldFailOnResponseViolation
     ) {
         this.sampleRate = sampleRate;
+        this.defaultExcludedPaths = Set.of("/graphql", "/graphiql");
         this.excludedPaths = excludedPaths != null ? excludedPaths : Set.of();
         this.excludedHeaders = excludedHeaders != null ? excludedHeaders : Collections.emptyList();
         this.shouldFailOnRequestViolation = shouldFailOnRequestViolation != null ? shouldFailOnRequestViolation : false;
@@ -82,7 +84,8 @@ public class DefaultTrafficSelector implements TrafficSelector {
     }
 
     private boolean isRequestExcludedByPath(RequestMetaData request) {
-        return excludedPaths.contains(request.getUri().getPath());
+        var path = request.getUri().getPath();
+        return defaultExcludedPaths.contains(path) || excludedPaths.contains(path);
     }
 
     private static boolean methodEquals(String method, String expectedMethod) {
