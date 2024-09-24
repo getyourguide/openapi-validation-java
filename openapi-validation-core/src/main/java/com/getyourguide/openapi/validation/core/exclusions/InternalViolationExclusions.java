@@ -58,7 +58,7 @@ public class InternalViolationExclusions {
     }
 
     private boolean isConcurrentModificationExceptionInLibrary(OpenApiViolation violation) {
-        return "validation.response.body.schema.unknownError".equals(violation.getRule())
+        return violation.getRule() != null && violation.getRule().endsWith(".body.schema.unknownError")
             && violation.getMessage().contains("java.util.ConcurrentModificationException");
     }
 }
