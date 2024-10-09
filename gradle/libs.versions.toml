@@ -3,7 +3,7 @@ spring-boot = "3.3.4"
 spring-dependency-management = "1.1.6"
 openapi-generator = "7.4.0"
 openapi-tools = "0.2.6"
-swagger = "2.2.24"
+swagger = "2.2.25"
 swagger-request-validator = "2.42.0"
 jakarta-validation = "3.1.0"
 lombok = "1.18.34"
@@ -16,7 +16,7 @@ checkstyle = "8.44"
 pmd = "6.55.0"
 jacoco = "0.8.7"
 # Testing
-mockito = "5.13.0"
+mockito = "5.14.1"
 junit-jupiter = "5.11.2"
 
 [libraries]
