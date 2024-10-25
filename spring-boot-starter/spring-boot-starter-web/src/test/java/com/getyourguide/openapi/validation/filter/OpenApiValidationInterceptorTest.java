@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.web.server.ResponseStatusException;
 
 class OpenApiValidationInterceptorTest extends BaseFilterTest {
@@ -104,15 +106,16 @@ class OpenApiValidationInterceptorTest extends BaseFilterTest {
         verifyNoResponseValidation();
     }
 
-    @Test
-    public void testShouldIgnoreBodyOnGetRequests() {
-        var mockData = mockSetup(MockConfiguration.builder().requestBody("{\"field\": 1}}").requestMethod("GET").build());
+    @ParameterizedTest
+    @ValueSource(strings = {"GET", "POST", "PUT", "PATCH", "DELETE"})
+    public void testShouldSupportBodyOnGetRequests(String requestMethod) {
+        var mockData = mockSetup(MockConfiguration.builder().requestBody("{\"field\": 1}}").requestMethod(requestMethod).build());
 
         httpInterceptor.preHandle(mockData.request(), mockData.response(), new Object());
         httpInterceptor.postHandle(mockData.request(), mockData.response(), new Object(), null);
         httpInterceptor.afterCompletion(mockData.request(), mockData.response(), new Object(), null);
 
-        verifyRequestValidatedAsync(mockData, null);
+        verifyRequestValidatedAsync(mockData, "{\"field\": 1}}");
         verifyResponseValidatedAsync(mockData);
     }
 

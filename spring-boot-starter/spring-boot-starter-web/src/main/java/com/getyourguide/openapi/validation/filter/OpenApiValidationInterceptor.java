@@ -155,12 +155,6 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
     }
 
     private static String readBodyCatchingException(MultiReadContentCachingRequestWrapper request) {
-        if (!"POST".equalsIgnoreCase(request.getMethod())
-            && !"PUT".equalsIgnoreCase(request.getMethod())
-            && !"PATCH".equalsIgnoreCase(request.getMethod())) {
-            return null;
-        }
-
         try {
             return StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
         } catch (IOException e) {
