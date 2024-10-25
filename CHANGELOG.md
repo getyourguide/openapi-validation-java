@@ -4,6 +4,26 @@
 
 ## [Unreleased]
 
+## [2.2.1] - 2024-09-24
+
+### Fixed
+
+- Ignore unknownError related to ConcurrentModificationException ([#137](https://github.com/getyourguide/openapi-validation-java/pull/137))
+
+### Changed
+
+- Updated several dependencies
+
+## [2.2.0] - 2024-08-27
+
+### Added
+
+- Exclude graphql endpoints from validation by default ([#129](https://github.com/getyourguide/openapi-validation-java/pull/129))
+
+### Changed
+
+- Updated several dependencies
+
 ## [2.1.0] - 2024-06-03
 
 ### Added
@@ -165,7 +185,9 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.2.1
+[2.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.2.0
 [2.1.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.1.0
 [2.0.3]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.3
 [2.0.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.0.2
