@@ -1,0 +1,13 @@
+name: Repository Maintenance
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  maintenance_workflow:
+    uses: getyourguide/java-actions/.github/workflows/reusable-java-repo-maintenance-workflow.yml@v1.1.0
+    name: Maintenance
+    secrets:
+      CODEARTIFACT_AUTH_TOKEN: ${{ secrets.CODEARTIFACT_AUTH_TOKEN }}
+
