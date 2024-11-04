@@ -2,35 +2,37 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'java-library'
+    id 'java-test-fixtures'
     alias(libs.plugins.spring.boot) apply false
     alias(libs.plugins.openapi.generator)
 }
 
 dependencies {
-    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    testFixturesImplementation platform(SpringBootPlugin.BOM_COORDINATES)
 
-    compileOnly project(':openapi-validation-api')
-    compileOnly project(':openapi-validation-core')
+    testFixturesCompileOnly project(':openapi-validation-api')
+    testFixturesCompileOnly project(':openapi-validation-core')
 
-    compileOnly 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.springframework:spring-webflux'
+    testFixturesCompileOnly 'org.springframework.boot:spring-boot-starter'
+    testFixturesCompileOnly 'org.springframework:spring-webflux'
 
     // TODO use spotbugs instead and also apply to all modules?
-    implementation(libs.find.bugs)
+    testFixturesImplementation(libs.find.bugs)
 
-    api 'org.springframework.boot:spring-boot-starter-test'
+    testFixturesApi platform(SpringBootPlugin.BOM_COORDINATES)
+    testFixturesApi 'org.springframework.boot:spring-boot-starter-test'
     // For openapi generated code
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation(libs.openapi.tools.jacksonDatabindNullable)
-    implementation(libs.jakarta.validation.api)
-    implementation(libs.swagger.annotations)
-    api 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
+    testFixturesApi 'org.springframework.boot:spring-boot-starter-validation'
+    testFixturesApi(libs.openapi.tools.jacksonDatabindNullable)
+    testFixturesApi(libs.jakarta.validation.api)
+    testFixturesApi(libs.swagger.annotations)
+    testFixturesApi 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext
 }
 
 
 def generatedSourceDirectory = "$buildDir/generated/openapi"
 sourceSets {
-    main {
+    testFixtures {
         java {
             srcDir generatedSourceDirectory + '/src/main/java'
         }

@@ -2,18 +2,22 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'java-library'
+    id 'java-test-fixtures'
     alias(libs.plugins.spring.boot) apply false
 }
 
 dependencies {
-    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    testFixturesImplementation platform(SpringBootPlugin.BOM_COORDINATES)
 
-    compileOnly project(':openapi-validation-api')
-    compileOnly project(':openapi-validation-core')
+    testFixturesCompileOnly(libs.lombok)
+    testFixturesAnnotationProcessor(libs.lombok)
+
+    testFixturesCompileOnly project(':openapi-validation-api')
+    testFixturesCompileOnly project(':openapi-validation-core')
 
     // TODO use spotbugs instead and also apply to all modules?
-    implementation(libs.find.bugs)
+    testFixturesImplementation(libs.find.bugs)
 
-    compileOnly 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.springframework:spring-web'
+    testFixturesCompileOnly 'org.springframework.boot:spring-boot-starter'
+    testFixturesCompileOnly 'org.springframework:spring-web'
 }
