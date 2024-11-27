@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.nexus.publish)
 }
 
-def javaVersion = providers.environmentVariable("JAVA_BUILD_VERSION").getOrElse("17")
-
 apply from: "${rootDir}/gradle/publish-root.gradle"
 
 allprojects {
@@ -14,7 +12,7 @@ allprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(javaVersion)
+            languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
         }
     }
 

@@ -16,7 +16,7 @@ jobs:
         name: Setup Java
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v4.1.0
         with:
