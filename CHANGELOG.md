@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [3.0.0] - 2024-11-28
+
+### Changed
+
+- Java updated to 21 ([#158](https://github.com/getyourguide/openapi-validation-java/pull/158))
+- Spring boot updated to 3.4.0 ([#159](https://github.com/getyourguide/openapi-validation-java/pull/159))
+- Updated several other dependencies
+
 ## [2.2.2] - 2024-10-25
 
 ### Changed
@@ -192,7 +200,8 @@
 - Initial squashed GitHub public release.
 
 
-[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v2.2.2...HEAD
+[unreleased]: https://github.com/getyourguide/openapi-validation-java/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v3.0.0
 [2.2.2]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.2.2
 [2.2.1]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.2.1
 [2.2.0]: https://github.com/getyourguide/openapi-validation-java/releases/tag/v2.2.0

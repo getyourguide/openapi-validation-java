@@ -8,7 +8,7 @@ apply from: "${rootDir}/gradle/publish-root.gradle"
 allprojects {
     group = 'com.getyourguide.openapi.validation'
     description = 'OpenAPI Validation library'
-    version = '2.2.2'
+    version = '3.0.0'
 
     java {
         toolchain {
