@@ -93,6 +93,7 @@ subprojects {
                 def minimum = parse('1.5.15')
                 if (current < minimum) {
                     details.useVersion '1.5.15'
+                    details.because 'Security requirement: forcing logback version'
                 }
             }
         }

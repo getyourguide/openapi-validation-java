@@ -5,6 +5,17 @@ plugins {
     alias(libs.plugins.openapi.generator)
 }
 
+// Needed for security. See:
+// - https://github.com/getyourguide/openapi-validation-java/security/dependabot/7
+// - https://github.com/getyourguide/openapi-validation-java/security/dependabot/6
+// Hopefully with spring-boot 3.4.2+ this won't be needed anymore and can be removed.
+dependencyManagement {
+    dependencies {
+        dependency 'ch.qos.logback:logback-core:1.5.15'
+        dependency 'ch.qos.logback:logback-classic:1.5.15'
+    }
+}
+
 dependencies {
     implementation project(':examples:examples-common')
     implementation project(':spring-boot-starter:spring-boot-starter-web')
