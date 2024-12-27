@@ -1,6 +1,6 @@
 [versions]
 java = "21"
-spring-boot = "3.4.0"
+spring-boot = "3.4.1"
 spring-dependency-management = "1.1.7"
 openapi-generator = "7.10.0"
 openapi-tools = "0.2.6"
