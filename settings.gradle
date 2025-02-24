@@ -1,3 +1,23 @@
+pluginManagement {
+    apply from: "$rootDir/gradle/token-utils.gradle"
+    def token = fetchToken()
+    repositories {
+        maven {
+            name "codeartifact"
+            url "https://getyourguide-130607246975.d.codeartifact.eu-central-1.amazonaws.com/maven/private/"
+            credentials {
+                username "aws"
+                password "$token"
+            }
+        }
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id 'com.getyourguide.libs.gradle.develocity.configuration' version '4.9.2'
+}
+
 rootProject.name = 'openapi-validation'
 
 include('openapi-validation-api')

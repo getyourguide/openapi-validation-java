@@ -21,12 +21,15 @@ jobs:
       - name: Checkstyle
         uses: gradle/gradle-build-action@v2
         with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: checkstyleMain checkstyleTest
       - name: PMD
         uses: gradle/gradle-build-action@v2
         with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: pmdMain pmdTest
       - name: Test
         uses: gradle/gradle-build-action@v2
         with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: test

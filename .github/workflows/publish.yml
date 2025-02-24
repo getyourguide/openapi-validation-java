@@ -23,10 +23,12 @@ jobs:
       - name: Build sourcesJar and javadocJar
         uses: gradle/gradle-build-action@v2
         with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: sourcesJar javadocJar
       - name: Publish to MavenCentral
         uses: gradle/gradle-build-action@v2
         with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: publishMavenPublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
         env:
           OSSRH_USERNAME: ${{ secrets.MAVEN_USERNAME }}

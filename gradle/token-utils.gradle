@@ -1,0 +1,20 @@
+def fetchToken() {
+    String token = System.getenv("CODEARTIFACT_AUTH_TOKEN")
+    if (token == null || System.getenv("CI") == null) {
+        token = """aws codeartifact get-authorization-token
+                                 --profile production/developer
+                                 --domain getyourguide
+                                 --domain-owner 130607246975
+                                 --query authorizationToken
+                                 --output text""".execute().onExit().get().text
+    }
+    if (token == null || token.isEmpty()) {
+        throw new RuntimeException("Error getting codeartifact token. Please call `gygauth setup` in cli and try again.")
+    }
+    println("Use codeartifact token: " + token.substring(0, 10) + "...")
+    return token
+}
+
+ext {
+    fetchToken = this.&fetchToken
+}
