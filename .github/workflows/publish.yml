@@ -6,14 +6,21 @@ on:
       - 'v*'
 
 jobs:
-  credentials-scan:
-    uses: getyourguide/actions/.github/workflows/credentials-scan.yml@main
   check:
     uses: ./.github/workflows/check.yml
   publish:
     needs: check
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
+      - name: Log into production account
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::130607246975:role/ci-base-access
+          role-session-name: dss
       - uses: actions/checkout@v3
       - name: Set up JDK
         uses: actions/setup-java@v3
