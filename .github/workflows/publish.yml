@@ -6,6 +6,8 @@ on:
       - 'v*'
 
 jobs:
+  credentials-scan:
+    uses: getyourguide/actions/.github/workflows/credentials-scan.yml@main
   check:
     uses: ./.github/workflows/check.yml
   publish:
@@ -21,12 +23,12 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1.0.6
       - name: Build sourcesJar and javadocJar
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: sourcesJar javadocJar
       - name: Publish to MavenCentral
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           arguments: publishMavenPublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
