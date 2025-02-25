@@ -7,6 +7,8 @@ on:
   workflow_call:
 
 jobs:
+  credentials-scan:
+    uses: getyourguide/actions/.github/workflows/credentials-scan.yml@main
   check:
     runs-on: ubuntu-latest
     steps:
