@@ -12,7 +12,7 @@ plugins {
 dependencyManagement {
     dependencies {
         dependency 'ch.qos.logback:logback-core:1.5.17'
-        dependency 'ch.qos.logback:logback-classic:1.5.17'
+        dependency 'ch.qos.logback:logback-classic:1.5.18'
     }
 }
 
