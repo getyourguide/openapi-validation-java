@@ -1,12 +1,9 @@
 # Release process
 
 1. Update the `version` in `build.gradle`
-2. Update `CHANGELOG.md`
-   - Add the new version with the date
-   - Add the new version at the bottom and link it to the tag
-   - Update the `unreleased` link at the bottom
-3. Tag the commit on main with above changes with the version (e.g. `v1.0.0`)
-4. Push the tag
-   - This will trigger the following in CI
-     - Push new version to maven central (sonatype)
-     - Create a GitHub release
+   - Push this to `main`
+2. Create a new release on github: [direct link](https://github.com/getyourguide/openapi-validation-java/releases/new)
+   - Choose a tag `v....` (the new version)
+   - Select "Create new tag"
+   - Press "Generate release notes"
+   - Publish release
