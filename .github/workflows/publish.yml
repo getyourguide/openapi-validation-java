@@ -39,16 +39,3 @@ jobs:
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-  github-release:
-    needs: publish
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Extract release notes
-        id: release_notes
-        uses: ffurrer2/extract-release-notes@v1
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        with:
-          body: ${{ steps.release_notes.outputs.release_notes }}
-          discussionCategory: Announcements
