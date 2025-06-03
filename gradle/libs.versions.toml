@@ -17,7 +17,7 @@ checkstyle = "8.44"
 pmd = "6.55.0"
 jacoco = "0.8.13"
 # Testing
-mockito = "5.17.0"
+mockito = "5.18.0"
 junit-jupiter = "5.12.2"
 junit-platform = "1.12.2"
 
