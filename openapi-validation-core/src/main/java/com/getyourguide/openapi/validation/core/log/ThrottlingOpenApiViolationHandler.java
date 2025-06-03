@@ -31,10 +31,7 @@ public class ThrottlingOpenApiViolationHandler implements OpenApiViolationHandle
     private boolean isThrottled(OpenApiViolation openApiViolation) {
         var key = buildKey(openApiViolation);
         var lastLoggedTime = loggedMessages.get(key);
-        if (lastLoggedTime == null) {
-            return false;
-        }
-        return lastLoggedTime.plusSeconds(waitSeconds).isAfterNow();
+        return lastLoggedTime != null && lastLoggedTime.plusSeconds(waitSeconds).isAfterNow();
     }
 
     @NonNull
