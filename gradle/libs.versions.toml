@@ -14,7 +14,7 @@ gradle-nexus-publish-plugin = "2.0.0"
 datadog-statsd = "4.4.4"
 # Verify
 checkstyle = "8.44"
-pmd = "6.55.0"
+pmd = "7.14.0"
 jacoco = "0.8.13"
 # Testing
 mockito = "5.17.0"
