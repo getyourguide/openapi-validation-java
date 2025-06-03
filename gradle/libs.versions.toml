@@ -15,10 +15,11 @@ datadog-statsd = "4.4.4"
 # Verify
 checkstyle = "8.44"
 pmd = "6.55.0"
-jacoco = "0.8.7"
+jacoco = "0.8.13"
 # Testing
 mockito = "5.17.0"
-junit-jupiter = "5.11.4"
+junit-jupiter = "5.12.2"
+junit-platform = "1.12.2"
 
 [libraries]
 openapi-tools-jacksonDatabindNullable = { group = "org.openapitools", name = "jackson-databind-nullable", version.ref = "openapi-tools" }
@@ -34,7 +35,7 @@ mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mo
 mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
-
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
