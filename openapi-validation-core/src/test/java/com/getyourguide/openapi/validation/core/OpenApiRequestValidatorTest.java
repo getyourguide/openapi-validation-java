@@ -14,8 +14,8 @@ import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionVali
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,21 +23,21 @@ import org.mockito.Mockito;
 
 public class OpenApiRequestValidatorTest {
 
-    private ThreadPoolExecutor threadPoolExecutor;
+    private Executor executor;
     private OpenApiInteractionValidatorWrapper validator;
 
     private OpenApiRequestValidator openApiRequestValidator;
 
     @BeforeEach
     public void setup() {
-        threadPoolExecutor = mock();
+        executor = mock();
         validator = mock();
         MetricsReporter metricsReporter = mock();
         var mapper = mock(ValidationReportToOpenApiViolationsMapper.class);
         when(mapper.map(any(), any(), any(), any(), any())).thenReturn(List.of());
 
         openApiRequestValidator = new OpenApiRequestValidator(
-            threadPoolExecutor,
+            executor,
             metricsReporter,
             validator,
             mapper,
@@ -47,7 +47,7 @@ public class OpenApiRequestValidatorTest {
 
     @Test
     public void testWhenThreadPoolExecutorRejectsExecutionThenItShouldNotThrow() {
-        Mockito.doThrow(new RejectedExecutionException()).when(threadPoolExecutor).execute(any());
+        Mockito.doThrow(new RejectedExecutionException()).when(executor).execute(any());
 
         openApiRequestValidator.validateRequestObjectAsync(mock(), null, null, mock());
     }
