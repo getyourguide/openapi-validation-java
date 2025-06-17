@@ -19,6 +19,7 @@ import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
 import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFactory;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
+import com.getyourguide.openapi.validation.core.executor.VirtualThreadLimitedExecutor;
 import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ExclusionsOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
@@ -118,28 +119,18 @@ public class LibraryAutoConfiguration {
     }
 
     private Executor createThreadPoolExecutor() {
-        try {
-            // Try to use virtual threads if available (Java 21+)
-            var virtualThreadFactory = Thread.ofVirtual().factory();
-            return new ThreadPoolExecutor(
-                2,
-                2,
-                1000L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(10),
-                virtualThreadFactory,
-                new ThreadPoolExecutor.DiscardPolicy()
-            );
-        } catch (UnsupportedOperationException | NoSuchMethodError e) {
-            // Fallback to ThreadPoolExecutor with regular threads for older Java versions
-            return new ThreadPoolExecutor(
-                2,
-                2,
-                1000L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(10),
-                new ThreadPoolExecutor.DiscardPolicy()
-            );
+        if (VirtualThreadLimitedExecutor.isSupported()) {
+            return new VirtualThreadLimitedExecutor();
         }
+
+        // Fallback to ThreadPoolExecutor with regular threads for older Java versions
+        return new ThreadPoolExecutor(
+            2,
+            2,
+            1000L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(10),
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
     }
 }
