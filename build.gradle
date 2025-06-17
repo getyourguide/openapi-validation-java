@@ -35,22 +35,6 @@ subprojects {
             testRuntimeOnly(libs.junit.platform.launcher)
             testImplementation(libs.mockito.core)
             testImplementation(libs.mockito.junit.jupiter)
-
-            // Security constraints
-            constraints {
-                implementation("ch.qos.logback:logback-core:1.5.15") {
-                    because("versions below 1.5.15 have security vulnerabilities - see dependabot #7, #6")
-                }
-                implementation("ch.qos.logback:logback-classic:1.5.15") {
-                    because("versions below 1.5.15 have security vulnerabilities - see dependabot #7, #6")
-                }
-                implementation("org.springframework:spring-web:6.2.8") {
-                    because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
-                }
-                implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
-                    because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
-                }
-            }
         }
 
         jacoco {
@@ -79,6 +63,22 @@ subprojects {
         annotationProcessor(libs.lombok)
         testCompileOnly(libs.lombok)
         testAnnotationProcessor(libs.lombok)
+
+        // Security constraints
+        constraints {
+            implementation("ch.qos.logback:logback-core:1.5.15") {
+                because("versions below 1.5.15 have security vulnerabilities - see dependabot #7, #6")
+            }
+            implementation("ch.qos.logback:logback-classic:1.5.15") {
+                because("versions below 1.5.15 have security vulnerabilities - see dependabot #7, #6")
+            }
+            implementation("org.springframework:spring-web:6.2.8") {
+                because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
+            }
+            implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
+                because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
+            }
+        }
     }
 
     checkstyle {
