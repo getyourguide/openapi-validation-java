@@ -4,7 +4,6 @@ import com.getyourguide.openapi.validation.test.exception.WithResponseStatusExce
 import com.getyourguide.openapi.validation.test.exception.WithoutResponseStatusException;
 import com.getyourguide.openapi.validation.test.openapi.web.DefaultApi;
 import com.getyourguide.openapi.validation.test.openapi.web.model.PostTestRequest;
-import com.getyourguide.openapi.validation.test.openapi.web.model.TestEmailResponse;
 import com.getyourguide.openapi.validation.test.openapi.web.model.TestResponse;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -25,11 +24,6 @@ public class DefaultRestController implements DefaultApi {
 
         var responseValue = value != null ? value : "test";
         return ResponseEntity.ok(new TestResponse().value(responseValue));
-    }
-
-    @Override
-    public ResponseEntity<TestEmailResponse> getTestEmail() {
-        return ResponseEntity.ok(new TestEmailResponse().email("mail@example.com"));
     }
 
     @Override
