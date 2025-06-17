@@ -64,20 +64,23 @@ subprojects {
         testCompileOnly(libs.lombok)
         testAnnotationProcessor(libs.lombok)
 
-        // Security constraints
-        constraints {
-            implementation("ch.qos.logback:logback-core:1.5.15") {
-                because("versions below 1.5.15 have security vulnerabilities - see dependabot #7, #6")
+        // Security constraints - force minimum versions for vulnerable dependencies
+        def enforceMinVersion = { groupId, artifactId, minVersion, reason ->
+            return { details ->
+                if (details.requested.group == groupId && details.requested.name == artifactId) {
+                    def parse = { String v -> v.tokenize('.').collect { it.padLeft(3, '0') }.join() }
+                    def current = parse(details.requested.version)
+                    def minimum = parse(minVersion)
+                    if (current < minimum) {
+                        details.useVersion minVersion
+                        details.because reason
+                    }
+                }
             }
-            implementation("ch.qos.logback:logback-classic:1.5.15") {
-                because("versions below 1.5.15 have security vulnerabilities - see dependabot #7, #6")
-            }
-            implementation("org.springframework:spring-web:6.2.8") {
-                because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
-            }
-            implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
-                because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
-            }
+        }
+        configurations.configureEach {
+            resolutionStrategy.eachDependency enforceMinVersion('org.springframework', 'spring-web', '6.2.8', 'versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12')
+            resolutionStrategy.eachDependency enforceMinVersion('org.apache.tomcat.embed', 'tomcat-embed-core', '10.1.42', 'versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13')
         }
     }
 
