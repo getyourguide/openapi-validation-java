@@ -67,7 +67,7 @@ subprojects {
         testCompileOnly(libs.lombok)
         testAnnotationProcessor(libs.lombok)
 
-        // Security constraintsAdd commentMore actions
+        // Security constraints
         constraints {
             implementation("org.springframework:spring-web:6.2.8") {
                 because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
