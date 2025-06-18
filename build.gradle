@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.nexus.publish)
 }
 
+ext['spring-framework.version'] = '6.2.8'
+ext['tomcat.version'] = '10.1.42'
+
 apply from: "${rootDir}/gradle/publish-root.gradle"
 
 allprojects {
@@ -63,16 +66,6 @@ subprojects {
         annotationProcessor(libs.lombok)
         testCompileOnly(libs.lombok)
         testAnnotationProcessor(libs.lombok)
-
-        // Security constraints
-        constraints {
-            implementation("org.springframework:spring-web:6.2.8") {
-                because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
-            }
-            implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
-                because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
-            }
-        }
     }
 
     checkstyle {
@@ -89,5 +82,4 @@ subprojects {
         consoleOutput = true
         ruleSets = ["$rootDir/ruleset.xml"]
     }
-
 }
