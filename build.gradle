@@ -3,12 +3,15 @@ plugins {
     alias(libs.plugins.nexus.publish)
 }
 
+ext['spring-framework.version'] = '6.2.8'
+ext['tomcat.version'] = '10.1.42'
+
 apply from: "${rootDir}/gradle/publish-root.gradle"
 
 allprojects {
     group = 'com.getyourguide.openapi.validation'
     description = 'OpenAPI Validation library'
-    version = '3.2.0'
+    version = '3.2.1'
 
     java {
         toolchain {
@@ -63,6 +66,16 @@ subprojects {
         annotationProcessor(libs.lombok)
         testCompileOnly(libs.lombok)
         testAnnotationProcessor(libs.lombok)
+
+        // Security constraints
+        constraints {
+            implementation("org.springframework:spring-web:6.2.8") {
+                because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
+            }
+            implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
+                because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
+            }
+        }
     }
 
     checkstyle {
@@ -78,25 +91,5 @@ subprojects {
         toolVersion = libs.versions.pmd.get()
         consoleOutput = true
         ruleSets = ["$rootDir/ruleset.xml"]
-    }
-
-    // Needed for security. See:
-    // - https://github.com/getyourguide/openapi-validation-java/security/dependabot/7
-    // - https://github.com/getyourguide/openapi-validation-java/security/dependabot/6
-    // Hopefully with spring-boot 3.4.2+ this won't be needed anymore and can be removed.
-    configurations.configureEach {
-        resolutionStrategy.eachDependency {details ->
-            if (details.requested.group == 'ch.qos.logback'
-                && (details.requested.name == 'logback-core' || details.requested.name == 'logback-classic')
-            ) {
-                def parse = { String v -> v.tokenize('.').collect { it.padLeft(3, '0') }.join() }
-                def current = parse(details.requested.version)
-                def minimum = parse('1.5.15')
-                if (current < minimum) {
-                    details.useVersion '1.5.15'
-                    details.because 'Security requirement: forcing logback version'
-                }
-            }
-        }
     }
 }
