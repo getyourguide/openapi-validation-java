@@ -38,6 +38,7 @@ public class OpenApiValidationApplicationProperties {
     private List<String> excludedHeaders;
     private Boolean shouldFailOnRequestViolation;
     private Boolean shouldFailOnResponseViolation;
+    private Boolean enableVirtualThreads;
 
     public double getSampleRate() {
         return sampleRate != null ? sampleRate : SAMPLE_RATE_DEFAULT;
@@ -82,6 +83,10 @@ public class OpenApiValidationApplicationProperties {
             })
             .filter(Objects::nonNull)
             .toList();
+    }
+
+    public boolean isEnableVirtualThreads() {
+        return enableVirtualThreads != null ? enableVirtualThreads : false;
     }
 
     public OpenApiRequestValidationConfiguration toOpenApiRequestValidationConfiguration() {

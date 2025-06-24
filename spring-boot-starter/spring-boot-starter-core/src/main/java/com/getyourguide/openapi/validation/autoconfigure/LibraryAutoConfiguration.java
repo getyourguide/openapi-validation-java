@@ -119,11 +119,11 @@ public class LibraryAutoConfiguration {
     }
 
     private Executor createThreadPoolExecutor() {
-        if (VirtualThreadLimitedExecutor.isSupported()) {
+        if (properties.isEnableVirtualThreads() && VirtualThreadLimitedExecutor.isSupported()) {
             return new VirtualThreadLimitedExecutor();
         }
 
-        // Fallback to ThreadPoolExecutor with regular threads for older Java versions
+        // Fallback to ThreadPoolExecutor with regular threads
         return new ThreadPoolExecutor(
             2,
             2,
