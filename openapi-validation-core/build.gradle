@@ -4,6 +4,8 @@ dependencies {
     api project(':openapi-validation-api')
 
     implementation(libs.swagger.request.validator.core)
+    implementation(libs.javax.mail) // needed as otherwise ClassNotFoundException: javax.mail.internet.AddressException
+
     constraints {
         implementation(libs.commons.codec) {
             because 'Apache commons-codec before 1.13 is vulnerable to information exposure. See https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/'

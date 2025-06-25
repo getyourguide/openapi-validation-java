@@ -18,7 +18,7 @@ pmd = "7.14.0"
 jacoco = "0.8.13"
 # Testing
 mockito = "5.18.0"
-junit-jupiter = "5.13.0"
+junit-jupiter = "5.13.1"
 junit-platform = "1.13.1"
 
 [libraries]
@@ -36,6 +36,7 @@ mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter",
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform" }
+javax-mail = { module = "com.sun.mail:javax.mail", version = "1.6.2" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
