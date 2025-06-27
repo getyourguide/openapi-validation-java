@@ -34,7 +34,8 @@ class OpenApiValidationApplicationPropertiesTest {
             EXCLUDED_PATHS,
             EXCLUDED_HEADERS,
             true,
-            false
+            false,
+            true
         );
 
         assertEquals(SAMPLE_RATE, loggingConfiguration.getSampleRate());

@@ -102,6 +102,9 @@ openapi.validation.validation-report-metric-additional-tags=service=example,team
 # Fail requests on request/response violations. Defaults to false.
 openapi.validation.should-fail-on-request-violation=true
 openapi.validation.should-fail-on-response-violation=true
+
+# Enable virtual threads for async validation. Defaults to false.
+openapi.validation.enable-virtual-threads=true
 ```
 
 ### DataDog metrics

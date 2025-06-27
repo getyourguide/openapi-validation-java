@@ -19,12 +19,14 @@ import com.getyourguide.openapi.validation.core.DefaultViolationLogger;
 import com.getyourguide.openapi.validation.core.OpenApiInteractionValidatorFactory;
 import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
+import com.getyourguide.openapi.validation.core.executor.VirtualThreadLimitedExecutor;
 import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ExclusionsOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import com.getyourguide.openapi.validation.core.metrics.DefaultMetricsReporter;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -104,14 +106,7 @@ public class LibraryAutoConfiguration {
         MetricsReporter metricsReporter,
         ValidatorConfiguration validatorConfiguration
     ) {
-        var threadPoolExecutor = new ThreadPoolExecutor(
-            2,
-            2,
-            1000L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(10),
-            new ThreadPoolExecutor.DiscardPolicy()
-        );
+        var threadPoolExecutor = createThreadPoolExecutor();
 
         return new OpenApiRequestValidator(
             threadPoolExecutor,
@@ -120,6 +115,22 @@ public class LibraryAutoConfiguration {
                 .build(properties.getSpecificationFilePath(), validatorConfiguration),
             new ValidationReportToOpenApiViolationsMapper(),
             properties.toOpenApiRequestValidationConfiguration()
+        );
+    }
+
+    private Executor createThreadPoolExecutor() {
+        if (properties.isEnableVirtualThreads() && VirtualThreadLimitedExecutor.isSupported()) {
+            return new VirtualThreadLimitedExecutor();
+        }
+
+        // Fallback to ThreadPoolExecutor with regular threads
+        return new ThreadPoolExecutor(
+            2,
+            2,
+            1000L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(10),
+            new ThreadPoolExecutor.DiscardPolicy()
         );
     }
 }
