@@ -18,7 +18,8 @@ public class InternalViolationExclusions {
             || falsePositiveRequestWith4xxResponse(violation)
             || customViolationExclusions.isExcluded(violation)
             || oneOfMatchesMoreThanOneSchema(violation)
-            || isConcurrentModificationExceptionInLibrary(violation);
+            || isConcurrentModificationExceptionInLibrary(violation)
+            || isUnhandledUncheckedExecutionExceptionInLibrary(violation);
     }
 
     private static boolean oneOfMatchesMoreThanOneSchema(OpenApiViolation violation) {
@@ -60,5 +61,11 @@ public class InternalViolationExclusions {
     private boolean isConcurrentModificationExceptionInLibrary(OpenApiViolation violation) {
         return violation.getRule() != null && violation.getRule().endsWith(".body.schema.unknownError")
             && violation.getMessage().contains("java.util.ConcurrentModificationException");
+    }
+
+    private boolean isUnhandledUncheckedExecutionExceptionInLibrary(OpenApiViolation violation) {
+        return violation.getRule() != null && violation.getRule().endsWith(".body.schema.unknownError")
+            && violation.getMessage().contains("UncheckedExecutionException")
+            && violation.getMessage().contains("unhandled token type NOT_AVAILABLE");
     }
 }
