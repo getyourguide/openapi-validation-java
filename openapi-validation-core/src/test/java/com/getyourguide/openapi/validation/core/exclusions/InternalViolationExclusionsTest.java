@@ -179,6 +179,26 @@ public class InternalViolationExclusionsTest {
             .build());
     }
 
+    @Test
+    public void whenUnknownErrorWithNotAvailableTokenThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+        String message =
+            "An error occurred during schema validation - com.google.common.util.concurrent.UncheckedExecutionException: java.lang.NullPointerException: unhandled token type NOT_AVAILABLE.";
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.RESPONSE)
+            .rule("validation.request.body.schema.unknownError")
+            .responseStatus(200)
+            .message(message)
+            .build());
+        checkViolationExcluded(OpenApiViolation.builder()
+            .direction(Direction.RESPONSE)
+            .rule("validation.response.body.schema.unknownError")
+            .responseStatus(200)
+            .message(message)
+            .build());
+    }
+
     private void checkViolationNotExcluded(OpenApiViolation violation) {
         var isExcluded = violationExclusions.isExcluded(violation);
 
