@@ -75,6 +75,9 @@ subprojects {
             implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
                 because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
             }
+            implementation("org.apache.commons:commons-lang3:3.18.0") {
+                because("versions below 3.18.0 have security vulnerabilities including CVE-2025-48924 - see dependabot #15")
+            }
         }
     }
 
