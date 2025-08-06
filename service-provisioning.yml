@@ -1,7 +1,6 @@
-version: '1'
 service:
   name: openapi-validation-java
-  type: Library
-  main_language: Java
   owner: chk
+  type: Library
   level: best effort
+  main_language: Java
