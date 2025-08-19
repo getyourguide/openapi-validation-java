@@ -69,7 +69,7 @@ subprojects {
 
         // Security constraints
         constraints {
-            implementation("org.springframework:spring-web:6.2.8") {
+            implementation("org.springframework:spring-web:6.2.10") {
                 because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
             }
             implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
