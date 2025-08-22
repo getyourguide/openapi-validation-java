@@ -1,11 +1,11 @@
 [versions]
 java = "21"
-spring-boot = "3.5.3"
+spring-boot = "3.5.4"
 spring-dependency-management = "1.1.7"
-openapi-generator = "7.13.0"
+openapi-generator = "7.14.0"
 openapi-tools = "0.2.6"
-swagger = "2.2.34"
-swagger-request-validator = "2.44.9"
+swagger = "2.2.36"
+swagger-request-validator = "2.45.1"
 jakarta-validation = "3.1.1"
 lombok = "1.18.38"
 commons-codec = "1.18.0"
@@ -17,8 +17,8 @@ checkstyle = "8.44"
 pmd = "7.14.0"
 jacoco = "0.8.13"
 # Testing
-mockito = "5.18.0"
-junit-jupiter = "5.13.1"
+mockito = "5.19.0"
+junit-jupiter = "5.13.4"
 junit-platform = "1.13.4"
 
 [libraries]

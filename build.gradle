@@ -69,7 +69,7 @@ subprojects {
 
         // Security constraints
         constraints {
-            implementation("org.springframework:spring-web:6.2.8") {
+            implementation("org.springframework:spring-web:6.2.10") {
                 because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
             }
             implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.42") {
@@ -77,6 +77,12 @@ subprojects {
             }
             implementation("org.apache.commons:commons-lang3:3.18.0") {
                 because("versions below 3.18.0 have security vulnerabilities including CVE-2025-48924 - see dependabot #15")
+            }
+            implementation("io.projectreactor.netty:reactor-netty-http:1.2.9") {
+                because("versions below 1.2.8 have security vulnerabilities including CVE-2025-22227 - see dependabot #16")
+            }
+            implementation("io.netty:netty-codec-http2:4.1.124.Final") {
+                because("versions below 4.1.124.Final have security vulnerabilities including CVE-2025-55163 - see dependabot #17")
             }
         }
     }
