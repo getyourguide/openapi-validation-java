@@ -4,7 +4,7 @@ plugins {
 }
 
 ext['spring-framework.version'] = '6.2.10'
-ext['tomcat.version'] = '10.1.42'
+ext['tomcat.version'] = '11.0.10'
 
 apply from: "${rootDir}/gradle/publish-root.gradle"
 
