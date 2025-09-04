@@ -7,8 +7,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.atlassian.oai.validator.model.SimpleRequest;
-import com.getyourguide.openapi.validation.api.metrics.MetricsReporter;
+import com.atlassian.oai.validator.report.ValidationReport;
+import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
+import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.net.URI;
@@ -25,22 +27,25 @@ public class OpenApiRequestValidatorTest {
 
     private Executor executor;
     private OpenApiInteractionValidatorWrapper validator;
+    private ValidationReportToOpenApiViolationsMapper mapper;
 
     private OpenApiRequestValidator openApiRequestValidator;
+    private InternalViolationExclusions internalViolationExclusions;
 
     @BeforeEach
     public void setup() {
         executor = mock();
         validator = mock();
-        MetricsReporter metricsReporter = mock();
-        var mapper = mock(ValidationReportToOpenApiViolationsMapper.class);
+        mapper = mock(ValidationReportToOpenApiViolationsMapper.class);
         when(mapper.map(any(), any(), any(), any(), any())).thenReturn(List.of());
+        internalViolationExclusions = mock();
 
         openApiRequestValidator = new OpenApiRequestValidator(
             executor,
-            metricsReporter,
+            mock(),
             validator,
             mapper,
+            internalViolationExclusions,
             mock()
         );
     }
@@ -64,6 +69,23 @@ public class OpenApiRequestValidatorTest {
         verifyQueryParamValueEquals(simpleRequestArgumentCaptor, "ids", "1,2,3");
         verifyQueryParamValueEquals(simpleRequestArgumentCaptor, "text", "e=mc2 & more");
         verifyQueryParamValueEquals(simpleRequestArgumentCaptor, "spaces", "this is a sparta");
+    }
+
+    @Test
+    public void testWhenViolationIsExcludedThenItShouldNotBeReturned() {
+        var uri = URI.create("https://api.example.com/path");
+        var request = new RequestMetaData("GET", uri, new HashMap<>());
+        var validationReport = mock(ValidationReport.class);
+        when(validator.validateRequest(any())).thenReturn(validationReport);
+        var violationExcluded = mock(OpenApiViolation.class);
+        var violations = List.of(violationExcluded, mock(OpenApiViolation.class));
+        when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+        when(internalViolationExclusions.isExcluded(violationExcluded)).thenReturn(true);
+
+        var result = openApiRequestValidator.validateRequestObject(request, null);
+
+        assertEquals(1, result.size());
+        assertEquals(violations.get(1), result.getFirst());
     }
 
     private void verifyQueryParamValueEquals(
