@@ -9,6 +9,7 @@ import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
 import com.getyourguide.openapi.validation.api.model.ResponseMetaData;
+import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import com.getyourguide.openapi.validation.core.validator.OpenApiInteractionValidatorWrapper;
 import java.net.URLDecoder;
@@ -25,17 +26,20 @@ public class OpenApiRequestValidator {
     private final Executor executor;
     private final OpenApiInteractionValidatorWrapper validator;
     private final ValidationReportToOpenApiViolationsMapper mapper;
+    private final InternalViolationExclusions violationExclusions;
 
     public OpenApiRequestValidator(
         Executor executor,
         MetricsReporter metricsReporter,
         OpenApiInteractionValidatorWrapper validator,
         ValidationReportToOpenApiViolationsMapper mapper,
+        InternalViolationExclusions violationExclusions,
         OpenApiRequestValidationConfiguration configuration
     ) {
         this.executor = executor;
         this.validator = validator;
         this.mapper = mapper;
+        this.violationExclusions = violationExclusions;
 
         metricsReporter.reportStartup(
             validator != null,
@@ -92,7 +96,10 @@ public class OpenApiRequestValidator {
         try {
             var simpleRequest = buildSimpleRequest(request, requestBody);
             var result = validator.validateRequest(simpleRequest);
-            return mapper.map(result, request, response, Direction.REQUEST, requestBody);
+            var violations = mapper.map(result, request, response, Direction.REQUEST, requestBody);
+            return violations.stream()
+                .filter(violation -> !violationExclusions.isExcluded(violation))
+                .toList();
         } catch (Exception e) {
             log.error("[OpenAPI Validation] Could not validate request", e);
             return List.of();
@@ -136,7 +143,10 @@ public class OpenApiRequestValidator {
                 Request.Method.valueOf(request.getMethod().toUpperCase()),
                 responseBuilder.build()
             );
-            return mapper.map(result, request, response, Direction.RESPONSE, responseBody);
+            var violations = mapper.map(result, request, response, Direction.RESPONSE, responseBody);
+            return violations.stream()
+                .filter(violation -> !violationExclusions.isExcluded(violation))
+                .toList();
         } catch (Exception e) {
             log.error("[OpenAPI Validation] Could not validate response", e);
             return List.of();

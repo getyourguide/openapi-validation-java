@@ -21,7 +21,6 @@ import com.getyourguide.openapi.validation.core.OpenApiRequestValidator;
 import com.getyourguide.openapi.validation.core.exclusions.InternalViolationExclusions;
 import com.getyourguide.openapi.validation.core.executor.VirtualThreadLimitedExecutor;
 import com.getyourguide.openapi.validation.core.log.DefaultOpenApiViolationHandler;
-import com.getyourguide.openapi.validation.core.log.ExclusionsOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.log.ThrottlingOpenApiViolationHandler;
 import com.getyourguide.openapi.validation.core.mapper.ValidationReportToOpenApiViolationsMapper;
 import com.getyourguide.openapi.validation.core.metrics.DefaultMetricsReporter;
@@ -71,10 +70,14 @@ public class LibraryAutoConfiguration {
     }
 
     @Bean
+    public InternalViolationExclusions internalExclusions(Optional<ViolationExclusions> violationExclusions) {
+        return new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new));
+    }
+
+    @Bean
     public OpenApiViolationHandler openApiViolationHandler(
         ViolationLogger logger,
-        MetricsReporter metricsReporter,
-        Optional<ViolationExclusions> violationExclusions
+        MetricsReporter metricsReporter
     ) {
         OpenApiViolationHandler handler = new DefaultOpenApiViolationHandler(logger, metricsReporter);
 
@@ -82,9 +85,6 @@ public class LibraryAutoConfiguration {
             handler =
                 new ThrottlingOpenApiViolationHandler(handler, properties.getValidationReportThrottleWaitSeconds());
         }
-
-        var exclusions = new InternalViolationExclusions(violationExclusions.orElseGet(NoViolationExclusions::new));
-        handler = new ExclusionsOpenApiViolationHandler(handler, exclusions);
 
         return handler;
     }
@@ -104,7 +104,8 @@ public class LibraryAutoConfiguration {
     @Bean
     public OpenApiRequestValidator openApiRequestValidator(
         MetricsReporter metricsReporter,
-        ValidatorConfiguration validatorConfiguration
+        ValidatorConfiguration validatorConfiguration,
+        InternalViolationExclusions internalExclusions
     ) {
         var threadPoolExecutor = createThreadPoolExecutor();
 
@@ -114,6 +115,7 @@ public class LibraryAutoConfiguration {
             new OpenApiInteractionValidatorFactory()
                 .build(properties.getSpecificationFilePath(), validatorConfiguration),
             new ValidationReportToOpenApiViolationsMapper(),
+            internalExclusions,
             properties.toOpenApiRequestValidationConfiguration()
         );
     }
