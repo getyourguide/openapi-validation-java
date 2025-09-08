@@ -75,7 +75,7 @@ subprojects {
             implementation("org.springframework:spring-webmvc:6.2.10") {
                 because("versions below 6.2.10 have Path Traversal Vulnerability CVE-2025-41242 - see dependabot #247")
             }
-            implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.10") {
+            implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.11") {
                 because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
             }
             implementation("org.apache.commons:commons-lang3:3.18.0") {
