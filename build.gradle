@@ -87,6 +87,9 @@ subprojects {
             implementation("io.netty:netty-codec-http2:4.2.6.Final") {
                 because("versions below 4.1.124.Final have security vulnerabilities including CVE-2025-55163 - see dependabot #17")
             }
+            implementation("io.netty:netty-codec:4.1.125.Final") {
+                because("versions below 4.1.125.Final have security vulnerabilities including CVE-2025-58057 - see dependabot #21")
+            }
         }
     }
 
