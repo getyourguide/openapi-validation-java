@@ -5,6 +5,7 @@ plugins {
 
 ext['spring-framework.version'] = '6.2.10'
 ext['tomcat.version'] = '11.0.10'
+ext['netty.version'] = '4.2.6.Final' // Due to security vulnerabilities in 4.125.Final and older
 
 apply from: "${rootDir}/gradle/publish-root.gradle"
 
@@ -87,7 +88,7 @@ subprojects {
             implementation("io.netty:netty-codec-http2:4.2.6.Final") {
                 because("versions below 4.1.124.Final have security vulnerabilities including CVE-2025-55163 - see dependabot #17")
             }
-            implementation("io.netty:netty-codec:4.1.125.Final") {
+            implementation("io.netty:netty-codec:4.2.6.Final") {
                 because("versions below 4.1.125.Final have security vulnerabilities including CVE-2025-58057 - see dependabot #21")
             }
         }
