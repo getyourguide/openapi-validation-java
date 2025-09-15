@@ -82,7 +82,7 @@ subprojects {
             implementation("org.apache.commons:commons-lang3:3.18.0") {
                 because("versions below 3.18.0 have security vulnerabilities including CVE-2025-48924 - see dependabot #15")
             }
-            implementation("io.projectreactor.netty:reactor-netty-http:1.2.9") {
+            implementation("io.projectreactor.netty:reactor-netty-http:1.2.10") {
                 because("versions below 1.2.8 have security vulnerabilities including CVE-2025-22227 - see dependabot #16")
             }
             implementation("io.netty:netty-codec-http2:4.2.6.Final") {
