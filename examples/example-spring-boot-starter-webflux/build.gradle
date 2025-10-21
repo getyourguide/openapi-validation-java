@@ -11,8 +11,8 @@ plugins {
 // Hopefully with spring-boot 3.4.2+ this won't be needed anymore and can be removed.
 dependencyManagement {
     dependencies {
-        dependency 'ch.qos.logback:logback-core:1.5.18'
-        dependency 'ch.qos.logback:logback-classic:1.5.18'
+        dependency 'ch.qos.logback:logback-core:1.5.19'
+        dependency 'ch.qos.logback:logback-classic:1.5.19'
     }
 }
 
