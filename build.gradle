@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.nexus.publish)
 }
 
-ext['spring-framework.version'] = '6.2.10'
+ext['spring-framework.version'] = '6.2.11'
 ext['tomcat.version'] = '11.0.10'
 ext['netty.version'] = '4.2.6.Final' // Due to security vulnerabilities in 4.125.Final and older
 
@@ -70,11 +70,11 @@ subprojects {
 
         // Security constraints
         constraints {
-            implementation("org.springframework:spring-web:6.2.10") {
-                because("versions below 6.2.8 have security vulnerabilities including CVE-2024-38820 - see dependabot #12")
+            implementation("org.springframework:spring-web:6.2.11") {
+                because("versions below 6.2.11 have security vulnerabilities including CVE-2024-38820 and CVE-2025-41249 - see dependabot #12, #24")
             }
-            implementation("org.springframework:spring-webmvc:6.2.10") {
-                because("versions below 6.2.10 have Path Traversal Vulnerability CVE-2025-41242 - see dependabot #247")
+            implementation("org.springframework:spring-webmvc:6.2.11") {
+                because("versions below 6.2.11 have security vulnerabilities including CVE-2025-41242 and CVE-2025-41249 - see dependabot #24, #247")
             }
             implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.10") {
                 because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
