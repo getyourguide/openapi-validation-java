@@ -150,7 +150,9 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
                 .validateRequestObjectAsync(requestMetaData, responseMetaData, requestBody, openApiViolationHandler);
             return List.of();
         } else {
-            return validator.validateRequestObject(requestMetaData, requestBody);
+            var violations = validator.validateRequestObject(requestMetaData, requestBody);
+            violations.forEach(openApiViolationHandler::onOpenApiViolation);
+            return violations;
         }
     }
 
@@ -185,7 +187,9 @@ public class OpenApiValidationInterceptor implements AsyncHandlerInterceptor {
                 .validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody, openApiViolationHandler);
             return List.of();
         } else {
-            return validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
+            var violations = validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
+            violations.forEach(openApiViolationHandler::onOpenApiViolation);
+            return violations;
         }
     }
 

@@ -141,7 +141,9 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
 
         if (runType == RunType.SYNC) {
-            return validator.validateRequestObject(requestMetaData, responseMetaData, request.getCachedBody());
+            var violations = validator.validateRequestObject(requestMetaData, responseMetaData, request.getCachedBody());
+            violations.forEach(openApiViolationHandler::onOpenApiViolation);
+            return violations;
         } else {
             validator.validateRequestObjectAsync(
                 requestMetaData, responseMetaData, request.getCachedBody(), openApiViolationHandler);
@@ -160,7 +162,9 @@ public class OpenApiValidationWebFilter implements WebFilter {
         }
 
         if (runType == RunType.SYNC) {
-            return validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
+            var violations = validator.validateResponseObject(requestMetaData, responseMetaData, responseBody);
+            violations.forEach(openApiViolationHandler::onOpenApiViolation);
+            return violations;
         } else {
             validator
                 .validateResponseObjectAsync(requestMetaData, responseMetaData, responseBody, openApiViolationHandler);
