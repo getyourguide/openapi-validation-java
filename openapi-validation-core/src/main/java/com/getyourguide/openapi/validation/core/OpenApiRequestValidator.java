@@ -99,7 +99,7 @@ public class OpenApiRequestValidator {
             var result = validator.validateRequest(simpleRequest);
             var violations = mapper.map(result, request, response, Direction.REQUEST, requestBody);
             return violations.stream()
-                .filter(violation -> !LogLevel.IGNORE.equals(violation.getLevel()) && !violationExclusions.isExcluded(violation))
+                .filter(this::isNonExcludedViolation)
                 .toList();
         } catch (Exception e) {
             log.error("[OpenAPI Validation] Could not validate request", e);
@@ -146,11 +146,15 @@ public class OpenApiRequestValidator {
             );
             var violations = mapper.map(result, request, response, Direction.RESPONSE, responseBody);
             return violations.stream()
-                .filter(violation -> !LogLevel.IGNORE.equals(violation.getLevel()) && !violationExclusions.isExcluded(violation))
+                .filter(this::isNonExcludedViolation)
                 .toList();
         } catch (Exception e) {
             log.error("[OpenAPI Validation] Could not validate response", e);
             return List.of();
         }
+    }
+
+    private boolean isNonExcludedViolation(OpenApiViolation violation) {
+        return !LogLevel.IGNORE.equals(violation.getLevel()) && !violationExclusions.isExcluded(violation);
     }
 }
