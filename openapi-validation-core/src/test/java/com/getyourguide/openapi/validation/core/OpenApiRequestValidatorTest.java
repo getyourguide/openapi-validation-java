@@ -64,7 +64,7 @@ public class OpenApiRequestValidatorTest {
 
     @Nested
     @DisplayName("validateRequestObject")
-    class ValidateRequestObjectTests {
+    public class ValidateRequestObjectTests {
 
         @Test
         @DisplayName("When encoded query param is passed then validation should happen with query param decoded")
@@ -84,7 +84,6 @@ public class OpenApiRequestValidatorTest {
         @Test
         @DisplayName("When violation is excluded then it should not be returned")
         public void testWhenViolationIsExcludedThenItShouldNotBeReturned() {
-            ;
             var validationReport = mock(ValidationReport.class);
             when(validator.validateRequest(any())).thenReturn(validationReport);
             var violationExcluded = mock(OpenApiViolation.class);
@@ -139,7 +138,7 @@ public class OpenApiRequestValidatorTest {
 
     @Nested
     @DisplayName("validateResponseObject")
-    class ValidateResponseObjectTests {
+    public class ValidateResponseObjectTests {
 
         @Test
         @DisplayName("When violation has log level IGNORE then it should not be returned")
