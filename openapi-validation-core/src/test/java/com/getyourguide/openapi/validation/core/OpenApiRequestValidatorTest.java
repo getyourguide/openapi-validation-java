@@ -102,62 +102,42 @@ public class OpenApiRequestValidatorTest {
         @Test
         @DisplayName("When violation has log level IGNORE then it should not be returned")
         public void testWhenRequestViolationHasLogLevelIgnoreThenItShouldNotBeReturned() {
-            var uri = URI.create("https://api.example.com/path");
-            var request = new RequestMetaData("GET", uri, new HashMap<>());
-            var validationReport = mock(ValidationReport.class);
-            when(validator.validateRequest(any())).thenReturn(validationReport);
-
+            var request = createRequest("/path");
             var violationIgnored = createViolation(LogLevel.IGNORE);
             var violationError = createViolation(LogLevel.ERROR);
-
-            var violations = List.of(violationIgnored, violationError);
-            when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+            mockRequestValidation(List.of(violationIgnored, violationError));
 
             var result = openApiRequestValidator.validateRequestObject(request, null);
 
-            assertEquals(1, result.size());
-            assertEquals(violationError, result.getFirst());
+            assertSingleViolationReturned(result, violationError);
         }
 
         @Test
         @DisplayName("When violation has log level IGNORE and another is excluded then both should not be returned")
         public void testWhenRequestViolationHasLogLevelIgnoreAndIsExcludedThenItShouldNotBeReturned() {
-            var uri = URI.create("https://api.example.com/path");
-            var request = new RequestMetaData("GET", uri, new HashMap<>());
-            var validationReport = mock(ValidationReport.class);
-            when(validator.validateRequest(any())).thenReturn(validationReport);
-
+            var request = createRequest("/path");
             var violationIgnored = createViolation(LogLevel.IGNORE);
             var violationExcluded = createViolation(LogLevel.WARN);
             when(internalViolationExclusions.isExcluded(violationExcluded)).thenReturn(true);
             var violationError = createViolation(LogLevel.ERROR);
-
-            var violations = List.of(violationIgnored, violationExcluded, violationError);
-            when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+            mockRequestValidation(List.of(violationIgnored, violationExcluded, violationError));
 
             var result = openApiRequestValidator.validateRequestObject(request, null);
 
-            assertEquals(1, result.size());
-            assertEquals(violationError, result.getFirst());
+            assertSingleViolationReturned(result, violationError);
         }
 
         @Test
         @DisplayName("When all violations are ignored then empty list is returned")
         public void testWhenAllRequestViolationsAreIgnoredThenEmptyListIsReturned() {
-            var uri = URI.create("https://api.example.com/path");
-            var request = new RequestMetaData("GET", uri, new HashMap<>());
-            var validationReport = mock(ValidationReport.class);
-            when(validator.validateRequest(any())).thenReturn(validationReport);
-
+            var request = createRequest("/path");
             var violation1 = createViolation(LogLevel.IGNORE);
             var violation2 = createViolation(LogLevel.IGNORE);
-
-            var violations = List.of(violation1, violation2);
-            when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+            mockRequestValidation(List.of(violation1, violation2));
 
             var result = openApiRequestValidator.validateRequestObject(request, null);
 
-            assertEquals(0, result.size());
+            assertNoViolationsReturned(result);
         }
     }
 
@@ -168,65 +148,45 @@ public class OpenApiRequestValidatorTest {
         @Test
         @DisplayName("When violation has log level IGNORE then it should not be returned")
         public void testWhenResponseViolationHasLogLevelIgnoreThenItShouldNotBeReturned() {
-            var uri = URI.create("https://api.example.com/path");
-            var request = new RequestMetaData("GET", uri, new HashMap<>());
-            var response = new ResponseMetaData(200, "application/json", new HashMap<>());
-            var validationReport = mock(ValidationReport.class);
-            when(validator.validateResponse(any(), any(), any())).thenReturn(validationReport);
-
+            var request = createRequest("/path");
+            var response = createResponse();
             var violationIgnored = createViolation(LogLevel.IGNORE);
             var violationWarn = createViolation(LogLevel.WARN);
-
-            var violations = List.of(violationIgnored, violationWarn);
-            when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+            mockResponseValidation(List.of(violationIgnored, violationWarn));
 
             var result = openApiRequestValidator.validateResponseObject(request, response, null);
 
-            assertEquals(1, result.size());
-            assertEquals(violationWarn, result.getFirst());
+            assertSingleViolationReturned(result, violationWarn);
         }
 
         @Test
         @DisplayName("When violation has log level IGNORE and another is excluded then both should not be returned")
         public void testWhenResponseViolationHasLogLevelIgnoreAndIsExcludedThenItShouldNotBeReturned() {
-            var uri = URI.create("https://api.example.com/path");
-            var request = new RequestMetaData("GET", uri, new HashMap<>());
-            var response = new ResponseMetaData(200, "application/json", new HashMap<>());
-            var validationReport = mock(ValidationReport.class);
-            when(validator.validateResponse(any(), any(), any())).thenReturn(validationReport);
-
+            var request = createRequest("/path");
+            var response = createResponse();
             var violationIgnored = createViolation(LogLevel.IGNORE);
             var violationExcluded = createViolation(LogLevel.INFO);
             when(internalViolationExclusions.isExcluded(violationExcluded)).thenReturn(true);
             var violationError = createViolation(LogLevel.ERROR);
-
-            var violations = List.of(violationIgnored, violationExcluded, violationError);
-            when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+            mockResponseValidation(List.of(violationIgnored, violationExcluded, violationError));
 
             var result = openApiRequestValidator.validateResponseObject(request, response, null);
 
-            assertEquals(1, result.size());
-            assertEquals(violationError, result.getFirst());
+            assertSingleViolationReturned(result, violationError);
         }
 
         @Test
         @DisplayName("When all violations are ignored then empty list is returned")
         public void testWhenAllResponseViolationsAreIgnoredThenEmptyListIsReturned() {
-            var uri = URI.create("https://api.example.com/path");
-            var request = new RequestMetaData("GET", uri, new HashMap<>());
-            var response = new ResponseMetaData(200, "application/json", new HashMap<>());
-            var validationReport = mock(ValidationReport.class);
-            when(validator.validateResponse(any(), any(), any())).thenReturn(validationReport);
-
+            var request = createRequest("/path");
+            var response = createResponse();
             var violation1 = createViolation(LogLevel.IGNORE);
             var violation2 = createViolation(LogLevel.IGNORE);
-
-            var violations = List.of(violation1, violation2);
-            when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+            mockResponseValidation(List.of(violation1, violation2));
 
             var result = openApiRequestValidator.validateResponseObject(request, response, null);
 
-            assertEquals(0, result.size());
+            assertNoViolationsReturned(result);
         }
     }
 
@@ -243,5 +203,35 @@ public class OpenApiRequestValidatorTest {
         var violation = mock(OpenApiViolation.class);
         when(violation.getLevel()).thenReturn(level);
         return violation;
+    }
+
+    private RequestMetaData createRequest(String path) {
+        var uri = URI.create("https://api.example.com" + path);
+        return new RequestMetaData("GET", uri, new HashMap<>());
+    }
+
+    private ResponseMetaData createResponse() {
+        return new ResponseMetaData(200, "application/json", new HashMap<>());
+    }
+
+    private void mockRequestValidation(List<OpenApiViolation> violations) {
+        var validationReport = mock(ValidationReport.class);
+        when(validator.validateRequest(any())).thenReturn(validationReport);
+        when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+    }
+
+    private void mockResponseValidation(List<OpenApiViolation> violations) {
+        var validationReport = mock(ValidationReport.class);
+        when(validator.validateResponse(any(), any(), any())).thenReturn(validationReport);
+        when(mapper.map(any(), any(), any(), any(), any())).thenReturn(violations);
+    }
+
+    private void assertSingleViolationReturned(List<OpenApiViolation> result, OpenApiViolation expected) {
+        assertEquals(1, result.size());
+        assertEquals(expected, result.getFirst());
+    }
+
+    private void assertNoViolationsReturned(List<OpenApiViolation> result) {
+        assertEquals(0, result.size());
     }
 }
