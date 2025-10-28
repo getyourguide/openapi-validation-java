@@ -13,7 +13,7 @@ allprojects {
     group = 'com.getyourguide.openapi.validation'
     description = 'OpenAPI Validation library'
     // Use version from GitHub tag if provided, otherwise use default version
-    version = project.hasProperty('gh_tag') ? project.property('gh_tag').replaceFirst('^v', '') : '0-SNAPSHOT'
+    version = System.getenv('GH_TAG') ? System.getenv('GH_TAG').replaceFirst('^v', '') : '0-SNAPSHOT'
 
     java {
         toolchain {
