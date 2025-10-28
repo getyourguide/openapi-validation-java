@@ -1,9 +1,17 @@
 # Release process
 
-1. Update the `version` in `build.gradle`
-   - Push this to `main` (optionally with a PR)
-2. Create a new release on github: [direct link](https://github.com/getyourguide/openapi-validation-java/releases/new)
-   - Choose a tag `v....` (the new version)
-   - Select "Create new tag"
-   - Press "Generate release notes"
-   - Publish release
+- Create a new release on github: [direct link](https://github.com/getyourguide/openapi-validation-java/releases/new)
+- Choose a tag `v....` (the new version)
+- Select "Create new tag"
+- Press "Generate release notes"
+- Publish release
+
+## Release SNAPSHOT version from branch
+
+- Create a new release on github: [direct link](https://github.com/getyourguide/openapi-validation-java/releases/new)
+- Choose a tag `v....` (the new version)
+- Select "Create new tag"
+- **Choose your branch as target**
+- Press "Generate release notes"
+- **Check "Set as a pre-release"**
+- Publish release
