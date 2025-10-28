@@ -12,7 +12,8 @@ apply from: "${rootDir}/gradle/publish-root.gradle"
 allprojects {
     group = 'com.getyourguide.openapi.validation'
     description = 'OpenAPI Validation library'
-    version = '3.3.2'
+    // Use version from GitHub tag if provided, otherwise use default version
+    version = project.hasProperty('gh_tag') ? project.property('gh_tag').replaceFirst('^v', '') : '0-SNAPSHOT'
 
     java {
         toolchain {
