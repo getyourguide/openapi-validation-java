@@ -86,10 +86,10 @@ subprojects {
             implementation("io.projectreactor.netty:reactor-netty-http:1.2.11") {
                 because("versions below 1.2.8 have security vulnerabilities including CVE-2025-22227 - see dependabot #16")
             }
-            implementation("io.netty:netty-codec-http2:4.2.6.Final") {
+            implementation("io.netty:netty-codec-http2:4.2.7.Final") {
                 because("versions below 4.1.124.Final have security vulnerabilities including CVE-2025-55163 - see dependabot #17")
             }
-            implementation("io.netty:netty-codec:4.2.6.Final") {
+            implementation("io.netty:netty-codec:4.2.7.Final") {
                 because("versions below 4.1.125.Final have security vulnerabilities including CVE-2025-58057 - see dependabot #21")
             }
         }
