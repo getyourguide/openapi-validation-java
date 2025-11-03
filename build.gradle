@@ -4,7 +4,7 @@ plugins {
 }
 
 ext['spring-framework.version'] = '6.2.11'
-ext['tomcat.version'] = '11.0.10'
+ext['tomcat.version'] = '11.0.11'
 ext['netty.version'] = '4.2.6.Final' // Due to security vulnerabilities in 4.125.Final and older
 
 apply from: "${rootDir}/gradle/publish-root.gradle"
