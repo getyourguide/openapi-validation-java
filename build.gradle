@@ -4,7 +4,7 @@ plugins {
 }
 
 ext['spring-framework.version'] = '6.2.11'
-ext['tomcat.version'] = '11.0.11'
+ext['tomcat.version'] = '11.0.12'
 ext['netty.version'] = '4.2.6.Final' // Due to security vulnerabilities in 4.125.Final and older
 
 apply from: "${rootDir}/gradle/publish-root.gradle"
@@ -78,7 +78,7 @@ subprojects {
                 because("versions below 6.2.11 have security vulnerabilities including CVE-2025-41242 and CVE-2025-41249 - see dependabot #24, #247")
             }
             implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.13") {
-                because("versions below 10.1.42 have security vulnerabilities including CVE-2024-56337 - see dependabot #13")
+                because("versions below 11.0.12 have security vulnerabilities including CVE-2024-56337, CVE-2025-55754, CVE-2025-61795 - see dependabot #13, #27, #28")
             }
             implementation("org.apache.commons:commons-lang3:3.19.0") {
                 because("versions below 3.18.0 have security vulnerabilities including CVE-2025-48924 - see dependabot #15")
