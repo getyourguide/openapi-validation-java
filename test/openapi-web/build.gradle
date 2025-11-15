@@ -1,4 +1,3 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'java-library'
@@ -8,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    testFixturesImplementation platform(SpringBootPlugin.BOM_COORDINATES)
+    testFixturesImplementation platform("com.getyourguide.java.bom:gyg-spring-lib-bom:1.1.0")
 
     testFixturesCompileOnly project(':openapi-validation-api')
     testFixturesCompileOnly project(':openapi-validation-core')
@@ -19,7 +18,7 @@ dependencies {
     // TODO use spotbugs instead and also apply to all modules?
     testFixturesImplementation(libs.find.bugs)
 
-    testFixturesApi platform(SpringBootPlugin.BOM_COORDINATES)
+    testFixturesApi platform("com.getyourguide.java.bom:gyg-spring-lib-bom:1.1.0")
     testFixturesApi 'org.springframework.boot:spring-boot-starter-test'
     // For openapi generated code
     testFixturesApi 'org.springframework.boot:spring-boot-starter-validation'

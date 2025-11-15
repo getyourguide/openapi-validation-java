@@ -1,4 +1,3 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     alias(libs.plugins.spring.boot) apply false
@@ -8,7 +7,7 @@ plugins {
 apply from: "${rootDir}/gradle/publish-module.gradle"
 
 dependencies {
-    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    implementation platform("com.getyourguide.java.bom:gyg-spring-lib-bom:1.1.0")
 
     api project(':openapi-validation-api')
     implementation project(':openapi-validation-core')
