@@ -21,6 +21,7 @@ dependencies {
 
     testFixturesApi platform(SpringBootPlugin.BOM_COORDINATES)
     testFixturesApi 'org.springframework.boot:spring-boot-starter-test'
+    testFixturesApi 'org.springframework.boot:spring-boot-webmvc-test'
     // For openapi generated code
     testFixturesApi 'org.springframework.boot:spring-boot-starter-validation'
     testFixturesApi(libs.openapi.tools.jacksonDatabindNullable)
