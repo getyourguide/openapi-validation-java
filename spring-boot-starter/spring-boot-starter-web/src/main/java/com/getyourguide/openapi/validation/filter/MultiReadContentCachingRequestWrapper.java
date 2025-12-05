@@ -11,10 +11,6 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 
 public class MultiReadContentCachingRequestWrapper extends ContentCachingRequestWrapper {
 
-    public MultiReadContentCachingRequestWrapper(HttpServletRequest request) {
-        super(request);
-    }
-
     public MultiReadContentCachingRequestWrapper(HttpServletRequest request, int contentCacheLimit) {
         super(request, contentCacheLimit);
     }

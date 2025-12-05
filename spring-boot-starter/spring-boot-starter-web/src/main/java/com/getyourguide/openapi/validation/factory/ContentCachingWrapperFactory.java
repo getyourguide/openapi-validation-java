@@ -13,7 +13,7 @@ public class ContentCachingWrapperFactory {
             return (MultiReadContentCachingRequestWrapper) request;
         }
 
-        return new MultiReadContentCachingRequestWrapper(request);
+        return new MultiReadContentCachingRequestWrapper(request, 0 /* no limit */);
     }
 
     public ContentCachingResponseWrapper buildContentCachingResponseWrapper(HttpServletResponse response) {
