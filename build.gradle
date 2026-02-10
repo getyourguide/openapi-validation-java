@@ -64,6 +64,14 @@ subprojects {
         annotationProcessor(libs.lombok)
         testCompileOnly(libs.lombok)
         testAnnotationProcessor(libs.lombok)
+
+        // Security: override transitive netty-codec-http to fix CVE-2025-67735 (CRLF injection)
+        constraints {
+            implementation('io.netty:netty-codec-http') {
+                version { require libs.versions.netty.get() }
+                because 'CVE-2025-67735: CRLF injection in HttpRequestEncoder'
+            }
+        }
     }
 
     checkstyle {

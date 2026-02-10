@@ -11,6 +11,7 @@ lombok = "1.18.42"
 commons-codec = "1.20.0"
 find-bugs = "3.0.2"
 gradle-nexus-publish-plugin = "2.0.0"
+netty = "4.2.8.Final"
 datadog-statsd = "4.4.5"
 # Verify
 checkstyle = "8.44"
