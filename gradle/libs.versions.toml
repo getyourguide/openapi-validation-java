@@ -7,6 +7,8 @@ openapi-tools = "0.2.8"
 swagger = "2.2.40"
 swagger-request-validator = "2.46.0"
 jakarta-validation = "3.1.1"
+jakarta-mail = "2.1.5"
+angus-mail = "2.0.3"
 lombok = "1.18.42"
 commons-codec = "1.20.0"
 find-bugs = "3.0.2"
@@ -26,6 +28,8 @@ openapi-tools-jacksonDatabindNullable = { group = "org.openapitools", name = "ja
 swagger-annotations = { group = "io.swagger.core.v3", name = "swagger-annotations", version.ref = "swagger" }
 swagger-request-validator-core = { group = "com.atlassian.oai", name = "swagger-request-validator-core", version.ref = "swagger-request-validator" }
 jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validation-api", version.ref = "jakarta-validation" }
+jakarta-mail-api = { group = "jakarta.mail", name = "jakarta.mail-api", version.ref = "jakarta-mail" }
+angus-mail = { group = "org.eclipse.angus", name = "jakarta.mail", version.ref = "angus-mail" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 datadog-statsdclient = { group = "com.datadoghq", name = "java-dogstatsd-client", version.ref = "datadog-statsd" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
@@ -36,7 +40,6 @@ mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter",
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform" }
-javax-mail = { module = "com.sun.mail:javax.mail", version = "1.6.2" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
