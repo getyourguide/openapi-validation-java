@@ -1,6 +1,6 @@
 [versions]
 java = "21"
-spring-boot = "4.0.0"
+spring-boot = "4.0.2"
 spring-dependency-management = "1.1.7"
 openapi-generator = "7.17.0"
 openapi-tools = "0.2.8"
@@ -17,9 +17,9 @@ checkstyle = "8.44"
 pmd = "7.14.0"
 jacoco = "0.8.13"
 # Testing
-mockito = "5.20.0"
+mockito = "5.21.0"
 junit-jupiter = "6.0.2"
-junit-platform = "6.0.1"
+junit-platform = "6.0.2"
 
 [libraries]
 openapi-tools-jacksonDatabindNullable = { group = "org.openapitools", name = "jackson-databind-nullable", version.ref = "openapi-tools" }
