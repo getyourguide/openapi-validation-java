@@ -55,6 +55,17 @@ subprojects {
         }
     }
 
+    // Override logback version to fix CVE-2026-1225 (transitive via Spring Boot)
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == 'ch.qos.logback') {
+                useVersion libs.versions.logback.get()
+            }
+        }
+    }
+
+    ext['logback.version'] = libs.versions.logback.get()
+
     apply plugin: 'checkstyle'
     apply plugin: 'pmd'
 

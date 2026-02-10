@@ -1,6 +1,7 @@
 [versions]
 java = "21"
 spring-boot = "4.0.0"
+logback = "1.5.25" # Override Spring Boot managed version to fix CVE-2026-1225 (GHSA-qqpg-mvqg-649v)
 spring-dependency-management = "1.1.7"
 openapi-generator = "7.17.0"
 openapi-tools = "0.2.8"
@@ -29,6 +30,8 @@ jakarta-validation-api = { group = "jakarta.validation", name = "jakarta.validat
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 datadog-statsdclient = { group = "com.datadoghq", name = "java-dogstatsd-client", version.ref = "datadog-statsd" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
 find-bugs = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "find-bugs" }
 # Testing
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
