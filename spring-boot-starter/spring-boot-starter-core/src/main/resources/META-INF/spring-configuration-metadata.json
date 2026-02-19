@@ -49,6 +49,11 @@
       "name": "openapi.validation.should-fail-on-response-violation",
       "type": "java.lang.Boolean",
       "description": "If set to true the request will fail in case a response violation occurs. Defaults to false."
+    },
+    {
+      "name": "openapi.validation.enable-virtual-threads",
+      "type": "java.lang.Boolean",
+      "description": "If set to true will use virtual threads instead of normal threads for async processing. Defaults to false."
     }
   ]
 }
