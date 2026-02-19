@@ -18,7 +18,7 @@ pmd = "7.14.0"
 jacoco = "0.8.13"
 # Testing
 mockito = "5.21.0"
-junit-jupiter = "6.0.2"
+junit-jupiter = "6.0.3"
 junit-platform = "6.0.3"
 
 [libraries]
