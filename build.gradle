@@ -25,7 +25,8 @@ allprojects {
 subprojects {
     configurations.configureEach {
         resolutionStrategy.eachDependency {
-            if (requested.group == 'tools.jackson.core' && requested.name == 'jackson-core') {
+            if (requested.group == 'tools.jackson.core' && requested.name == 'jackson-core'
+                    && requested.version != null && requested.version < '3.1.1') {
                 useVersion('3.1.1')
                 because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
             }
