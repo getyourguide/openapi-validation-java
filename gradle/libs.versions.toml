@@ -1,10 +1,10 @@
 [versions]
 java = "21"
-spring-boot = "4.0.4"
+spring-boot = "4.0.5"
 spring-dependency-management = "1.1.7"
 openapi-generator = "7.20.0"
 openapi-tools = "0.2.9"
-swagger = "2.2.45"
+swagger = "2.2.46"
 swagger-request-validator = "2.46.1"
 jakarta-validation = "3.1.1"
 lombok = "1.18.44"

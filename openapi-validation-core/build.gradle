@@ -13,6 +13,12 @@ dependencies {
         implementation('org.mozilla:rhino:1.9.0') {
             because 'CVE-2025-66453: Rhino before 1.9.0 has high CPU usage and potential DoS when passing specific numbers to toFixed() function. See https://github.com/mozilla/rhino/security/advisories/GHSA-3w8q-xq97-5j7x'
         }
+        implementation('tools.jackson.core:jackson-core') {
+            version {
+                strictly '[3.1.1,)'
+            }
+            because 'GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 does not consistently enforce maxDocumentLength constraint, allowing DoS attacks. See https://github.com/getyourguide/openapi-validation-java/security/dependabot/41'
+        }
 //        implementation('org.yaml:snakeyaml:1.33') {
 //            because 'Vulnerability in 1.33 is not yet fixed. See: https://bitbucket.org/snakeyaml/snakeyaml/issues/561/cve-2022-1471-vulnerability-in' +
 //                    'https://devhub.checkmarx.com/cve-details/CVE-2022-41854/' +
