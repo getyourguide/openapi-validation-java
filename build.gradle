@@ -23,6 +23,15 @@ allprojects {
 }
 
 subprojects {
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == 'tools.jackson.core' && requested.name == 'jackson-core') {
+                useVersion('3.1.1')
+                because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
+            }
+        }
+    }
+
     if(it.parent.name == 'examples') {
         apply plugin: 'java'
     } else {
