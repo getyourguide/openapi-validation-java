@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.openapi.generator)
 }
 
+ext['jackson-bom.version'] = '3.1.1'
+
 dependencies {
     implementation project(':examples:examples-common')
     implementation project(':spring-boot-starter:spring-boot-starter-webflux')
