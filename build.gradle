@@ -35,6 +35,12 @@ subprojects {
                 useVersion('11.0.21')
                 because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6: Apache Tomcat < 11.0.21 vulnerabilities')
             }
+            if (requested.group == 'io.netty' && requested.name == 'netty-codec-http2'
+                    && requested.version != null
+                    && (requested.version ==~ /^4\.2\.(?:[0-9]|1[0-2])\.Final$/)) {
+                useVersion('4.2.13.Final')
+                because('GHSA-f6hv-jmp6-3vwv: Netty HttpContentDecompressor maxAllocation bypass')
+            }
         }
     }
 
