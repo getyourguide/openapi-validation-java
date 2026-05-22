@@ -31,9 +31,9 @@ subprojects {
                 because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
             }
             if (requested.group == 'org.apache.tomcat.embed' && requested.name == 'tomcat-embed-core'
-                    && requested.version != null && requested.version < '11.0.21') {
-                useVersion('11.0.21')
-                because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6: Apache Tomcat < 11.0.21 vulnerabilities')
+                    && requested.version != null && requested.version < '11.0.22') {
+                useVersion('11.0.22')
+                because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-5m62-pw8w-7w9f: Apache Tomcat < 11.0.22 vulnerabilities')
             }
         }
     }
