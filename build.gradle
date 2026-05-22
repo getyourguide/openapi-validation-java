@@ -30,6 +30,11 @@ subprojects {
                 useVersion('3.1.1')
                 because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
             }
+            if (requested.group == 'io.netty' && requested.name == 'netty-codec-compression'
+                    && requested.version != null && requested.version < '4.2.13.Final') {
+                useVersion('4.2.13.Final')
+                because('GHSA-mj4r-2hfc-f8p6: Netty Codec Compression before 4.2.13.Final is vulnerable to resource exhaustion')
+            }
             if (requested.group == 'org.apache.tomcat.embed' && requested.name == 'tomcat-embed-core'
                     && requested.version != null && requested.version < '11.0.21') {
                 useVersion('11.0.21')

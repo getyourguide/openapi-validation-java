@@ -10,6 +10,12 @@ dependencies {
         implementation(libs.commons.codec) {
             because 'Apache commons-codec before 1.13 is vulnerable to information exposure. See https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/'
         }
+        implementation('io.netty:netty-codec-compression') {
+            version {
+                strictly '4.2.13.Final'
+            }
+            because 'GHSA-mj4r-2hfc-f8p6: Netty Codec Compression before 4.2.13.Final is vulnerable to resource exhaustion. See https://github.com/getyourguide/openapi-validation-java/security/dependabot/59'
+        }
         implementation('org.mozilla:rhino:1.9.0') {
             because 'CVE-2025-66453: Rhino before 1.9.0 has high CPU usage and potential DoS when passing specific numbers to toFixed() function. See https://github.com/mozilla/rhino/security/advisories/GHSA-3w8q-xq97-5j7x'
         }
