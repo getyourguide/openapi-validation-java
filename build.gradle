@@ -35,6 +35,11 @@ subprojects {
                 useVersion('11.0.21')
                 because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6: Apache Tomcat < 11.0.21 vulnerabilities')
             }
+            if (requested.group == 'io.netty' && requested.name == 'netty-codec-http'
+                    && requested.version != null && requested.version < '4.2.13.Final') {
+                useVersion('4.2.13.Final')
+                because('GHSA-m4cv-j2px-7723: Netty HTTP Request Smuggling vulnerability in netty-codec-http < 4.2.13.Final')
+            }
         }
     }
 
