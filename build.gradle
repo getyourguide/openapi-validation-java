@@ -22,6 +22,26 @@ allprojects {
     }
 }
 
+def versionParts = { String version ->
+    version.replace('.Final', '').tokenize('.').collect { it as int }
+}
+
+def isVersionLowerThan = { String version, String minimumVersion ->
+    def currentParts = versionParts(version)
+    def minimumParts = versionParts(minimumVersion)
+    def partsCount = Math.max(currentParts.size(), minimumParts.size())
+
+    for (int index = 0; index < partsCount; index++) {
+        def current = index < currentParts.size() ? currentParts[index] : 0
+        def minimum = index < minimumParts.size() ? minimumParts[index] : 0
+        if (current != minimum) {
+            return current < minimum
+        }
+    }
+
+    false
+}
+
 subprojects {
     configurations.configureEach {
         resolutionStrategy.eachDependency {
@@ -31,7 +51,7 @@ subprojects {
                 because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
             }
             if (requested.group == 'io.netty' && requested.name == 'netty-codec-compression'
-                    && requested.version != null && requested.version < '4.2.13.Final') {
+                    && requested.version != null && isVersionLowerThan(requested.version, '4.2.13.Final')) {
                 useVersion('4.2.13.Final')
                 because('GHSA-mj4r-2hfc-f8p6: Netty Codec Compression before 4.2.13.Final is vulnerable to resource exhaustion')
             }
