@@ -23,6 +23,26 @@ allprojects {
 }
 
 subprojects {
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == 'tools.jackson.core' && requested.name == 'jackson-core'
+                    && requested.version != null && requested.version < '3.1.1') {
+                useVersion('3.1.1')
+                because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
+            }
+            if (requested.group == 'org.apache.tomcat.embed' && requested.name == 'tomcat-embed-core'
+                    && requested.version != null && requested.version < '11.0.22') {
+                useVersion('11.0.22')
+                because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg: Apache Tomcat < 11.0.22 vulnerabilities')
+            }
+            if (requested.group == 'io.netty' && requested.name in ['netty-codec-http', 'netty-codec-http2', 'netty-codec-http3']
+                    && requested.version != null && requested.version < '4.2.13.Final') {
+                useVersion('4.2.13.Final')
+                because('GHSA-38f8-5428-x5cv: HTTP Request Smuggling in io.netty:netty-codec-http via malformed Transfer-Encoding headers')
+            }
+        }
+    }
+
     if(it.parent.name == 'examples') {
         apply plugin: 'java'
     } else {
@@ -59,28 +79,6 @@ subprojects {
     apply plugin: 'pmd'
 
     dependencies {
-        constraints {
-            add('implementation', 'tools.jackson.core:jackson-core') {
-                version {
-                    require '[3.1.1,)'
-                }
-                because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
-            }
-            add('implementation', 'org.apache.tomcat.embed:tomcat-embed-core') {
-                version {
-                    require '[11.0.22,)'
-                }
-                because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg: Apache Tomcat < 11.0.22 vulnerabilities')
-            }
-            add('implementation', 'io.netty:netty-codec-http') {
-                version {
-                    require '[4.2.13.Final,)'
-                    prefer '4.2.14.Final'
-                }
-                because('GHSA-38f8-5428-x5cv: HTTP Request Smuggling in io.netty:netty-codec-http via malformed Transfer-Encoding headers')
-            }
-        }
-
         // Lombok annotations to reduce boilerplate code
         compileOnly(libs.lombok)
         annotationProcessor(libs.lombok)
