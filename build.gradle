@@ -35,7 +35,7 @@ subprojects {
                 useVersion('11.0.22')
                 because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg: Apache Tomcat < 11.0.22 vulnerabilities')
             }
-            if (requested.group == 'io.netty' && requested.name in ['netty-codec-http', 'netty-codec-http2', 'netty-codec-http3']
+            if (requested.group == 'io.netty'
                     && requested.version != null && requested.version < '4.2.13.Final') {
                 useVersion('4.2.13.Final')
                 because('GHSA-38f8-5428-x5cv: HTTP Request Smuggling in io.netty:netty-codec-http via malformed Transfer-Encoding headers')
