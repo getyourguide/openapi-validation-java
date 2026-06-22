@@ -1,6 +1,6 @@
 service:
   name: openapi-validation-java
-  owner: chk
+  owner: uspr
   type: Library
   level: best effort
   main_language: Java
