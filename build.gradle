@@ -25,10 +25,23 @@ allprojects {
 subprojects {
     configurations.configureEach {
         resolutionStrategy.eachDependency {
-            if (requested.group == 'tools.jackson.core' && requested.name == 'jackson-core'
-                    && requested.version != null && requested.version < '3.1.1') {
-                useVersion('3.1.1')
-                because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass')
+            if (requested.group == 'tools.jackson.core'
+                    && requested.version != null && requested.version < '3.1.4') {
+                useVersion('3.1.4')
+                because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass; ' +
+                        'GHSA-j3rv-43j4-c7qm / GHSA-rmj7-2vxq-3g9f / GHSA-hgj6-7826-r7m5 / GHSA-5jmj-h7xm-6q6v / ' +
+                        'GHSA-rcqc-6cw3-h962 / GHSA-9fxm-vc8v-hj55 / GHSA-5hh8-q8hv-fr38: jackson-databind 3.x deserialization vulnerabilities')
+            }
+            if (requested.group == 'com.fasterxml.jackson.core' && requested.name == 'jackson-databind'
+                    && requested.version != null && requested.version < '2.21.5') {
+                useVersion('2.21.5')
+                because('GHSA-j3rv-43j4-c7qm / GHSA-rmj7-2vxq-3g9f / GHSA-hgj6-7826-r7m5 / GHSA-5jmj-h7xm-6q6v / ' +
+                        'GHSA-rcqc-6cw3-h962 / GHSA-9fxm-vc8v-hj55 / GHSA-5hh8-q8hv-fr38: jackson-databind 2.x deserialization vulnerabilities')
+            }
+            if (requested.group == 'ch.qos.logback'
+                    && requested.version != null && requested.version < '1.5.34') {
+                useVersion('1.5.34')
+                because('GHSA-p47f-322f-whfh / GHSA-jhq6-gfmj-v8fx: logback-core deserialization of untrusted data / object injection')
             }
             if (requested.group == 'org.apache.tomcat.embed' && requested.name == 'tomcat-embed-core'
                     && requested.version != null && requested.version < '11.0.22') {
@@ -36,9 +49,13 @@ subprojects {
                 because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg: Apache Tomcat < 11.0.22 vulnerabilities')
             }
             if (requested.group == 'io.netty'
-                    && requested.version != null && requested.version < '4.2.13.Final') {
-                useVersion('4.2.13.Final')
-                because('GHSA-38f8-5428-x5cv: HTTP Request Smuggling in io.netty:netty-codec-http via malformed Transfer-Encoding headers')
+                    && requested.version != null && requested.version < '4.2.15.Final') {
+                useVersion('4.2.15.Final')
+                because('GHSA-38f8-5428-x5cv: HTTP Request Smuggling in io.netty:netty-codec-http via malformed Transfer-Encoding headers; ' +
+                        'GHSA-3qp7-7mw8-wx86 / GHSA-c2rx-5r8w-8xr2 / GHSA-cmm3-54f8-px4j / GHSA-x4gw-5cx5-pgmh / GHSA-676x-f7gg-47vc / ' +
+                        'GHSA-5pvg-856g-cp85 / GHSA-4grm-h2qv-h6w6 / GHSA-c653-97m9-rcg9 / GHSA-563q-j3cm-6jxm / GHSA-hvcg-qmg6-jm4c / ' +
+                        'GHSA-cq4q-cv5g-r8q5 / GHSA-c2gf-v879-257j / GHSA-5x3r-wrvg-rp6q / GHSA-xmv7-r254-6q78 / GHSA-w573-9ffj-6ff9: ' +
+                        'multiple Netty vulnerabilities fixed in 4.2.15.Final')
             }
         }
     }
