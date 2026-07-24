@@ -15,7 +15,7 @@ dependencies {
         }
         implementation('tools.jackson.core:jackson-core') {
             version {
-                strictly '[3.1.1,)'
+                strictly '[3.1.4,)'
             }
             because 'GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 does not consistently enforce maxDocumentLength constraint, allowing DoS attacks. See https://github.com/getyourguide/openapi-validation-java/security/dependabot/41'
         }
