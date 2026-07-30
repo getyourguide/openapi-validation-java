@@ -49,15 +49,39 @@ subprojects {
                 because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg: Apache Tomcat < 11.0.22 vulnerabilities')
             }
             if (requested.group == 'io.netty'
-                    && requested.version != null && requested.version < '4.2.15.Final') {
-                useVersion('4.2.15.Final')
+                    && requested.version != null && requested.version < '4.2.16.Final') {
+                useVersion('4.2.16.Final')
                 because('GHSA-38f8-5428-x5cv: HTTP Request Smuggling in io.netty:netty-codec-http via malformed Transfer-Encoding headers; ' +
                         'GHSA-3qp7-7mw8-wx86 / GHSA-c2rx-5r8w-8xr2 / GHSA-cmm3-54f8-px4j / GHSA-x4gw-5cx5-pgmh / GHSA-676x-f7gg-47vc / ' +
                         'GHSA-5pvg-856g-cp85 / GHSA-4grm-h2qv-h6w6 / GHSA-c653-97m9-rcg9 / GHSA-563q-j3cm-6jxm / GHSA-hvcg-qmg6-jm4c / ' +
                         'GHSA-cq4q-cv5g-r8q5 / GHSA-c2gf-v879-257j / GHSA-5x3r-wrvg-rp6q / GHSA-xmv7-r254-6q78 / GHSA-w573-9ffj-6ff9: ' +
-                        'multiple Netty vulnerabilities fixed in 4.2.15.Final')
+                        'multiple Netty vulnerabilities fixed in 4.2.15.Final; ' +
+                        'GHSA-6cqp-g7gg-8hr5: Security Control Bypass via CORS Short-Circuit Failure fixed in 4.2.16.Final')
             }
         }
+    }
+
+    tasks.register('verifyNettyVersion') {
+        group = 'verification'
+        description = 'Fails the build if any io.netty dependency resolves below the enforced minimum version (GHSA-6cqp-g7gg-8hr5).'
+        def minNettyVersion = '4.2.16.Final'
+        doLast {
+            def offending = []
+            configurations.matching { it.canBeResolved }.each { config ->
+                config.resolvedConfiguration.lenientConfiguration.allModuleDependencies.each { dep ->
+                    if (dep.moduleGroup == 'io.netty' && dep.moduleVersion < minNettyVersion) {
+                        offending << "${config.name}: ${dep.moduleGroup}:${dep.moduleName}:${dep.moduleVersion}"
+                    }
+                }
+            }
+            if (!offending.isEmpty()) {
+                throw new GradleException("Found io.netty dependencies resolved below ${minNettyVersion}:\n" + offending.join('\n'))
+            }
+        }
+    }
+
+    tasks.withType(Task).matching { it.name == 'check' }.all { checkTask ->
+        checkTask.dependsOn tasks.named('verifyNettyVersion')
     }
 
     if(it.parent.name == 'examples') {
