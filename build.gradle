@@ -61,6 +61,29 @@ subprojects {
         }
     }
 
+    tasks.register('verifyNettyVersion') {
+        group = 'verification'
+        description = 'Fails the build if any io.netty dependency resolves below the enforced minimum version (GHSA-6cqp-g7gg-8hr5).'
+        def minNettyVersion = '4.2.16.Final'
+        doLast {
+            def offending = []
+            configurations.matching { it.canBeResolved }.each { config ->
+                config.resolvedConfiguration.lenientConfiguration.allModuleDependencies.each { dep ->
+                    if (dep.moduleGroup == 'io.netty' && dep.moduleVersion < minNettyVersion) {
+                        offending << "${config.name}: ${dep.moduleGroup}:${dep.moduleName}:${dep.moduleVersion}"
+                    }
+                }
+            }
+            if (!offending.isEmpty()) {
+                throw new GradleException("Found io.netty dependencies resolved below ${minNettyVersion}:\n" + offending.join('\n'))
+            }
+        }
+    }
+
+    tasks.withType(Task).matching { it.name == 'check' }.all { checkTask ->
+        checkTask.dependsOn tasks.named('verifyNettyVersion')
+    }
+
     if(it.parent.name == 'examples') {
         apply plugin: 'java'
     } else {
