@@ -58,6 +58,16 @@ subprojects {
                         'GHSA-mvh2-crg5-v77c: multiple Netty vulnerabilities, including SPDY zlib header block continues decoded expansion ' +
                         'after maxHeaderSize truncation, fixed in 4.2.16.Final')
             }
+            if (requested.group == 'org.springframework' && requested.name == 'spring-webmvc'
+                    && requested.version != null && requested.version < '7.0.8') {
+                useVersion('7.0.8')
+                because('GHSA-h3qp-gqrc-q736: Open Redirect vulnerability in Spring Framework (Spring MVC), fixed in 7.0.8')
+            }
+            if (requested.group == 'org.springframework' && requested.name == 'spring-webflux'
+                    && requested.version != null && requested.version < '7.0.8') {
+                useVersion('7.0.8')
+                because('GHSA-h3qp-gqrc-q736: Open Redirect vulnerability in Spring Framework (Spring WebFlux), fixed in 7.0.8')
+            }
         }
     }
 
