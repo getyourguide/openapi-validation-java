@@ -1,6 +1,7 @@
 [versions]
 java = "21"
-spring-boot = "4.0.6"
+# 4.0.7 manages Spring Framework 7.0.8, fixing GHSA-72pg-x5f8-j25j (path traversal via versioned static resources) in spring-webmvc/spring-webflux
+spring-boot = "4.0.7"
 spring-dependency-management = "1.1.7"
 openapi-generator = "7.21.0"
 openapi-tools = "0.2.9"
