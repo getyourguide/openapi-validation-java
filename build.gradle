@@ -26,11 +26,11 @@ subprojects {
     configurations.configureEach {
         resolutionStrategy.eachDependency {
             if (requested.group == 'tools.jackson.core'
-                    && requested.version != null && requested.version < '3.1.4') {
-                useVersion('3.1.4')
+                    && requested.version != null && requested.version < '3.1.5') {
+                useVersion('3.1.5')
                 because('GHSA-2m67-wjpj-xhg9: Jackson Core 3.0.0-3.1.0 maxDocumentLength bypass; ' +
                         'GHSA-j3rv-43j4-c7qm / GHSA-rmj7-2vxq-3g9f / GHSA-hgj6-7826-r7m5 / GHSA-5jmj-h7xm-6q6v / ' +
-                        'GHSA-rcqc-6cw3-h962 / GHSA-9fxm-vc8v-hj55 / GHSA-5hh8-q8hv-fr38: jackson-databind 3.x deserialization vulnerabilities')
+                        'GHSA-rcqc-6cw3-h962 / GHSA-9fxm-vc8v-hj55 / GHSA-5hh8-q8hv-fr38 / GHSA-5gvw-p9qm-jgwh: jackson-databind 3.x deserialization vulnerabilities')
             }
             if (requested.group == 'com.fasterxml.jackson.core' && requested.name == 'jackson-databind'
                     && requested.version != null && requested.version < '2.21.5') {
