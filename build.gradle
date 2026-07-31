@@ -23,6 +23,8 @@ allprojects {
 }
 
 subprojects {
+    def springExpressionMinVersion = '7.0.8'
+
     configurations.configureEach {
         resolutionStrategy.eachDependency {
             if (requested.group == 'tools.jackson.core'
@@ -59,10 +61,10 @@ subprojects {
                         'after maxHeaderSize truncation, fixed in 4.2.16.Final')
             }
             if (requested.group == 'org.springframework' && requested.name == 'spring-expression'
-                    && requested.version != null && requested.version < '7.0.8') {
-                useVersion('7.0.8')
+                    && requested.version != null && requested.version < springExpressionMinVersion) {
+                useVersion(springExpressionMinVersion)
                 because('GHSA-r5w3-xv2f-j59q: Spring Expression Language (SpEL) Algorithmic Denial of Service ' +
-                        'via crafted expressions causing excessive resource consumption, fixed in 7.0.8')
+                        'via crafted expressions causing excessive resource consumption, fixed in ' + springExpressionMinVersion)
             }
         }
     }
@@ -132,8 +134,8 @@ subprojects {
                     if (dep instanceof org.gradle.api.artifacts.result.ResolvedDependencyResult) {
                         def id = dep.selected.moduleVersion
                         if (id != null && id.group == 'org.springframework' && id.name == 'spring-expression'
-                                && id.version < '7.0.8') {
-                            throw new GradleException("org.springframework:spring-expression resolved to ${id.version} in configuration ${config.name}, but must be >= 7.0.8 (GHSA-r5w3-xv2f-j59q)")
+                                && id.version < springExpressionMinVersion) {
+                            throw new GradleException("org.springframework:spring-expression resolved to ${id.version} in configuration ${config.name}, but must be >= ${springExpressionMinVersion} (GHSA-r5w3-xv2f-j59q)")
                         }
                     }
                 }
@@ -141,5 +143,6 @@ subprojects {
         }
     }
 
+    tasks.named('test') { dependsOn tasks.named('verifySpringExpressionVersion') }
     tasks.named('check') { dependsOn tasks.named('verifySpringExpressionVersion') }
 }
