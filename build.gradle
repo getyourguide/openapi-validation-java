@@ -124,4 +124,22 @@ subprojects {
         consoleOutput = true
         ruleSets = ["$rootDir/ruleset.xml"]
     }
+
+    tasks.register('verifySpringExpressionVersion') {
+        doLast {
+            configurations.findAll { it.canBeResolved }.each { config ->
+                config.incoming.resolutionResult.allDependencies.each { dep ->
+                    if (dep instanceof org.gradle.api.artifacts.result.ResolvedDependencyResult) {
+                        def id = dep.selected.moduleVersion
+                        if (id != null && id.group == 'org.springframework' && id.name == 'spring-expression'
+                                && id.version < '7.0.8') {
+                            throw new GradleException("org.springframework:spring-expression resolved to ${id.version} in configuration ${config.name}, but must be >= 7.0.8 (GHSA-r5w3-xv2f-j59q)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.named('check') { dependsOn tasks.named('verifySpringExpressionVersion') }
 }
