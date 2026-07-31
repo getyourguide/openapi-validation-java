@@ -58,6 +58,11 @@ subprojects {
                         'GHSA-mvh2-crg5-v77c: multiple Netty vulnerabilities, including SPDY zlib header block continues decoded expansion ' +
                         'after maxHeaderSize truncation, fixed in 4.2.16.Final')
             }
+            if (requested.group == 'org.springframework' && requested.name == 'spring-expression'
+                    && requested.version != null && requested.version < '7.0.8') {
+                useVersion('7.0.8')
+                because('GHSA-9f52-rjqv-25qv: Spring Framework Arbitrary Method Invocation in SpEL Expressions')
+            }
         }
     }
 
