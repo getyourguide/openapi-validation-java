@@ -63,6 +63,11 @@ subprojects {
                 useVersion('7.0.8')
                 because('GHSA-659m-px2c-25wj: Denial of Service in spring-core via AntPathMatcher, fixed in 7.0.8')
             }
+            if (requested.group == 'org.springframework' && requested.name == 'spring-expression'
+                    && requested.version != null && requested.version < '7.0.8') {
+                useVersion('7.0.8')
+                because('GHSA-9f52-rjqv-25qv: Spring Framework Arbitrary Method Invocation in SpEL Expressions')
+            }
         }
     }
 
