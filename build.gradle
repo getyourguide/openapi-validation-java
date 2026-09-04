@@ -63,6 +63,11 @@ subprojects {
                 useVersion('7.0.8')
                 because('GHSA-659m-px2c-25wj: Denial of Service in spring-core via AntPathMatcher, fixed in 7.0.8')
             }
+            if (requested.group == 'org.apache.logging.log4j'
+                    && requested.version != null && requested.version < '2.25.5') {
+                useVersion('2.25.5')
+                because('GHSA-qv9r-c865-cp47: improper encoding of non-finite floating-point values during MapMessage JSON serialization, fixed in 2.25.5')
+            }
         }
     }
 
