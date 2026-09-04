@@ -44,9 +44,9 @@ subprojects {
                 because('GHSA-p47f-322f-whfh / GHSA-jhq6-gfmj-v8fx: logback-core deserialization of untrusted data / object injection')
             }
             if (requested.group == 'org.apache.tomcat.embed' && requested.name == 'tomcat-embed-core'
-                    && requested.version != null && requested.version < '11.0.22') {
-                useVersion('11.0.22')
-                because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg: Apache Tomcat < 11.0.22 vulnerabilities')
+                    && requested.version != null && requested.version < '11.0.25') {
+                useVersion('11.0.25')
+                because('GHSA-rv64-5gf8-9qq8 / GHSA-x4m4-345f-5h5g / GHSA-24j9-x2wg-9qv6 / GHSA-gx5v-xp9w-j4cg / GHSA-gcx9-497g-6cp6: Apache Tomcat < 11.0.25 vulnerabilities')
             }
             if (requested.group == 'io.netty'
                     && requested.version != null && requested.version < '4.2.17.Final') {
