@@ -68,6 +68,11 @@ subprojects {
                 useVersion('2.25.5')
                 because('GHSA-qv9r-c865-cp47: improper encoding of non-finite floating-point values during MapMessage JSON serialization, fixed in 2.25.5')
             }
+            if (requested.group == 'org.springframework' && requested.name == 'spring-expression'
+                    && requested.version != null && requested.version < '7.0.8') {
+                useVersion('7.0.8')
+                because('GHSA-wxpp-56q6-5pcg: Spring Framework Denial of Service via Unbounded Cache in SpEL')
+            }
         }
     }
 
