@@ -59,6 +59,27 @@ public class InternalViolationExclusionsTest {
     }
 
     @Test
+    public void whenAmbiguousOneOfViolationsAreIgnoredThenViolationExcluded() {
+        violationExclusions = new InternalViolationExclusions(customViolationExclusions, true);
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(OpenApiViolation.builder()
+            .rule("validation.response.body.schema.oneOf")
+            .message("[Path '/v1/endpoint'] Instance failed to match exactly one schema (matched 2 out of 4)").build());
+    }
+
+    @Test
+    public void whenAmbiguousOneOfViolationsAreNotIgnoredThenViolationNotExcluded() {
+        violationExclusions = new InternalViolationExclusions(customViolationExclusions, false);
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationNotExcluded(OpenApiViolation.builder()
+            .rule("validation.response.body.schema.oneOf")
+            .message("[Path '/v1/endpoint'] Instance failed to match exactly one schema (matched 2 out of 4)")
+            .build());
+    }
+
+    @Test
     public void whenInstanceFailedToMatchExactlyOneWithOneOf24ThenViolationExcluded() {
         when(customViolationExclusions.isExcluded(any())).thenReturn(false);
 

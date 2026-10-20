@@ -4,12 +4,23 @@ import com.getyourguide.openapi.validation.api.Rules;
 import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class InternalViolationExclusions {
 
     private final ViolationExclusions customViolationExclusions;
+    private final boolean ignoreAmbiguousOneOfViolations;
+
+    public InternalViolationExclusions(ViolationExclusions customViolationExclusions) {
+        this(customViolationExclusions, true);
+    }
+
+    public InternalViolationExclusions(
+        ViolationExclusions customViolationExclusions,
+        boolean ignoreAmbiguousOneOfViolations
+    ) {
+        this.customViolationExclusions = customViolationExclusions;
+        this.ignoreAmbiguousOneOfViolations = ignoreAmbiguousOneOfViolations;
+    }
 
     public boolean isExcluded(OpenApiViolation violation) {
         return falsePositive404(violation)
@@ -17,7 +28,7 @@ public class InternalViolationExclusions {
             || falsePositive406(violation)
             || falsePositiveRequestWith4xxResponse(violation)
             || customViolationExclusions.isExcluded(violation)
-            || oneOfMatchesMoreThanOneSchema(violation)
+            || (ignoreAmbiguousOneOfViolations && oneOfMatchesMoreThanOneSchema(violation))
             || isConcurrentModificationExceptionInLibrary(violation)
             || isUnhandledUncheckedExecutionExceptionInLibrary(violation);
     }
