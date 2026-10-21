@@ -1,5 +1,6 @@
 package com.getyourguide.openapi.validation.factory;
 
+import com.getyourguide.openapi.validation.filter.EventStreamAwareContentCachingResponseWrapper;
 import com.getyourguide.openapi.validation.filter.MultiReadContentCachingRequestWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +23,7 @@ public class ContentCachingWrapperFactory {
             return cachingResponse;
         }
 
-        return new ContentCachingResponseWrapper(response);
+        return new EventStreamAwareContentCachingResponseWrapper(response);
     }
 
     @Nullable
