@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.lang.NonNull;
@@ -45,7 +46,7 @@ public class BodyCachingServerHttpResponseDecorator extends ServerHttpResponseDe
             return super.writeWith(body);
         }
 
-        var buffer = Mono.from(body).doOnNext(dataBuffer -> {
+        var buffer = DataBufferUtils.join(body).doOnNext(dataBuffer -> {
             cachedBody = dataBuffer.toString(StandardCharsets.UTF_8);
             if (onBodyCachedListener != null) {
                 onBodyCachedListener.run();
