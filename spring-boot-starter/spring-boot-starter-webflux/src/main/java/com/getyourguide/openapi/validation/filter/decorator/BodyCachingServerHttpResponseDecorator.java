@@ -47,9 +47,14 @@ public class BodyCachingServerHttpResponseDecorator extends ServerHttpResponseDe
         }
 
         var buffer = DataBufferUtils.join(body).doOnNext(dataBuffer -> {
-            cachedBody = dataBuffer.toString(StandardCharsets.UTF_8);
-            if (onBodyCachedListener != null) {
-                onBodyCachedListener.run();
+            try {
+                cachedBody = dataBuffer.toString(StandardCharsets.UTF_8);
+                if (onBodyCachedListener != null) {
+                    onBodyCachedListener.run();
+                }
+            } catch (RuntimeException exception) {
+                DataBufferUtils.release(dataBuffer);
+                throw exception;
             }
         });
         return super.writeWith(buffer);
