@@ -29,6 +29,7 @@ public class InternalViolationExclusionsTest {
         checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 404));
         checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 400));
         checkViolationNotExcluded(buildSimpleViolation(Direction.REQUEST, 200));
+        checkViolationNotExcluded(buildSimpleViolation(Direction.REQUEST, 204));
         checkViolationNotExcluded(buildSimpleViolation(Direction.REQUEST, null));
         checkViolationNotExcluded(buildSimpleViolation(Direction.RESPONSE, 200));
     }
@@ -178,6 +179,30 @@ public class InternalViolationExclusionsTest {
             .responseStatus(406)
             .message("")
             .build());
+    }
+
+    @Test
+    public void when204ResponseCodeWithAcceptNotAllowedViolationThenViolationExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationExcluded(buildAcceptNotAllowedViolation(204));
+    }
+
+    @Test
+    public void whenNon204ResponseCodeWithAcceptNotAllowedViolationThenViolationNotExcluded() {
+        when(customViolationExclusions.isExcluded(any())).thenReturn(false);
+
+        checkViolationNotExcluded(buildAcceptNotAllowedViolation(200));
+    }
+
+    private static OpenApiViolation buildAcceptNotAllowedViolation(int responseStatus) {
+        return OpenApiViolation.builder()
+            .direction(Direction.REQUEST)
+            .rule("validation.request.accept.notAllowed")
+            .responseStatus(responseStatus)
+            .message("Request Accept header '[application/json]' does not match any defined response types. "
+                + "Must be one of: [application/problem+json].")
+            .build();
     }
 
     @Test

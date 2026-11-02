@@ -23,7 +23,8 @@ public class InternalViolationExclusions {
     }
 
     public boolean isExcluded(OpenApiViolation violation) {
-        return falsePositive404(violation)
+        return falsePositive204(violation)
+            || falsePositive404(violation)
             || falsePositive405(violation)
             || falsePositive406(violation)
             || falsePositiveRequestWith4xxResponse(violation)
@@ -40,6 +41,11 @@ public class InternalViolationExclusions {
             )
             && violation.getMessage()
             .matches(".*Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d+\\).*");
+    }
+
+    private boolean falsePositive204(OpenApiViolation violation) {
+        return violation.getResponseStatus().orElse(0) == 204
+            && Rules.Request.ACCEPT_NOT_ALLOWED.equals(violation.getRule());
     }
 
     private boolean falsePositive404(OpenApiViolation violation) {
