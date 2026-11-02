@@ -1,6 +1,7 @@
 package com.getyourguide.openapi.validation.api.selector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.getyourguide.openapi.validation.api.exclusions.ExcludedHeader;
 import com.getyourguide.openapi.validation.api.model.RequestMetaData;
@@ -9,9 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.Test;
 
 class DefaultTrafficSelectorTest {
+    private static final int SAMPLE_SIZE = 10000;
+    private static final double ACCEPTABLE_SAMPLE_RATE_DEVIATION = 0.02;
+
     private final TrafficSelector trafficSelector = new DefaultTrafficSelector(
         1.0,
         null,
@@ -68,5 +74,33 @@ class DefaultTrafficSelectorTest {
         var newMap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
         newMap.putAll(map);
         return newMap;
+    }
+
+    @Test
+    public void testSampleRateIsApproximatelyCorrectForReciprocalValues() {
+        List.of(0.1, 0.25, 0.5).forEach(this::assertSampleRateIsApproximatelyCorrect);
+    }
+
+    @Test
+    public void testSampleRateIsApproximatelyCorrectForNonReciprocalValues() {
+        List.of(0.3, 0.8).forEach(this::assertSampleRateIsApproximatelyCorrect);
+    }
+
+    private void assertSampleRateIsApproximatelyCorrect(double sampleRate) {
+        var sampleRateTrafficSelector = new DefaultTrafficSelector(sampleRate, null, null);
+        var request = new RequestMetaData(
+            "GET",
+            URI.create("https://api.example.com/v1/path"),
+            Map.of("Content-Type", "application/json")
+        );
+        var validatedRequestCount = IntStream.range(0, SAMPLE_SIZE)
+            .filter(ignored -> sampleRateTrafficSelector.shouldRequestBeValidated(request))
+            .count();
+        var actualSampleRate = (double) validatedRequestCount / SAMPLE_SIZE;
+
+        assertTrue(
+            Math.abs(actualSampleRate - sampleRate) < ACCEPTABLE_SAMPLE_RATE_DEVIATION,
+            "Expected a sample rate close to " + sampleRate + ", but was " + actualSampleRate
+        );
     }
 }
