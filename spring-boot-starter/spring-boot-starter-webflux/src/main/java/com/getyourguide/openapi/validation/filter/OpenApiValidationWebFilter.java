@@ -84,8 +84,7 @@ public class OpenApiValidationWebFilter implements WebFilter {
         AlreadyDidValidation alreadyDidValidation
     ) {
         if (!trafficSelector.shouldFailOnRequestViolation(requestMetaData)
-            || !request.getHeaders().containsHeader("Content-Type")
-            || !request.getHeaders().containsHeader("Content-Length")) {
+            || !request.getHeaders().containsHeader("Content-Type")) {
             return Mono.just(alreadyDidValidation);
         }
 
