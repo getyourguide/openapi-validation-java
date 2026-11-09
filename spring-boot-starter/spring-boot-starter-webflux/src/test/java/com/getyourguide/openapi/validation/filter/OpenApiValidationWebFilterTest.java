@@ -149,6 +149,54 @@ class OpenApiValidationWebFilterTest {
     }
 
     @Test
+    public void testShouldFailOnRequestViolationWithViolationAndWithoutContentLength() {
+        var mockData = mockSetup(MockConfiguration.builder()
+            .shouldFailOnRequestViolation(true)
+            .hasContentLength(false)
+            .build());
+        when(validator.validateRequestObject(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY)))
+            .thenReturn(List.of(mock(OpenApiViolation.class)));
+
+        StepVerifier.create(webFilter.filter(mockData.exchange, mockData.chain))
+            .expectErrorMatches(throwable -> throwable instanceof ResponseStatusException)
+            .verify();
+
+        verifyChainNotCalled(mockData.chain);
+        verifyRequestValidatedSync(mockData);
+        verifyNoResponseValidation();
+    }
+
+    @Test
+    public void testShouldValidateValidRequestSynchronouslyWithoutContentLengthWhenStrictModeIsEnabled() {
+        var mockData = mockSetup(MockConfiguration.builder()
+            .shouldFailOnRequestViolation(true)
+            .hasContentLength(false)
+            .build());
+
+        StepVerifier.create(webFilter.filter(mockData.exchange, mockData.chain)).expectComplete().verify();
+
+        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyRequestValidatedSync(mockData);
+        verifyResponseValidatedAsync(mockData);
+    }
+
+    @Test
+    public void testShouldNotPerformStrictBodyValidationWhenRequestHasNoBody() {
+        var mockData = mockSetup(MockConfiguration.builder()
+            .shouldFailOnRequestViolation(true)
+            .requestBody(null)
+            .hasContentType(false)
+            .hasContentLength(false)
+            .build());
+
+        StepVerifier.create(webFilter.filter(mockData.exchange, mockData.chain)).expectComplete().verify();
+
+        verifyChainCalled(mockData.chain, mockData.mutatedExchange);
+        verifyRequestNotValidatedSynchronously(mockData);
+        verifyResponseValidatedAsync(mockData);
+    }
+
+    @Test
     public void testShouldFailOnResponseViolationWithViolation() {
         var mockData = mockSetup(MockConfiguration.builder().shouldFailOnResponseViolation(true).build());
         when(
@@ -191,6 +239,10 @@ class OpenApiValidationWebFilterTest {
 
     private void verifyRequestValidatedSync(MockSetupData mockData) {
         verify(validator).validateRequestObject(eq(mockData.requestMetaData), any(), eq(REQUEST_BODY));
+    }
+
+    private void verifyRequestNotValidatedSynchronously(MockSetupData mockData) {
+        verify(validator, never()).validateRequestObject(eq(mockData.requestMetaData), any(), any());
     }
 
     private void verifyResponseValidatedAsync(MockSetupData mockData) {
@@ -239,14 +291,16 @@ class OpenApiValidationWebFilterTest {
         var decoratedRequest = mock(BodyCachingServerHttpRequestDecorator.class);
         when(decoratorBuilder.buildBodyCachingServerHttpRequestDecorator(request, requestMetaData))
             .thenReturn(decoratedRequest);
-        when(decoratedRequest.getHeaders()).thenReturn(buildHeadersForBody(configuration.requestBody));
+        when(decoratedRequest.getHeaders()).thenReturn(buildHeadersForBody(
+            configuration.requestBody, configuration.hasContentType, configuration.hasContentLength));
         when(decoratedRequest.getCachedBody()).thenReturn(configuration.requestBody);
-        when(decoratedRequest.consumeRequestBody()).thenReturn(Mono.just(configuration.requestBody));
+        when(decoratedRequest.consumeRequestBody()).thenReturn(Mono.justOrEmpty(configuration.requestBody));
 
         var decoratedResponse = mock(BodyCachingServerHttpResponseDecorator.class);
         when(decoratorBuilder.buildBodyCachingServerHttpResponseDecorator(response, requestMetaData))
             .thenReturn(decoratedResponse);
-        when(decoratedResponse.getHeaders()).thenReturn(buildHeadersForBody(configuration.responseBody));
+        when(decoratedResponse.getHeaders()).thenReturn(buildHeadersForBody(
+            configuration.responseBody, true, true));
         when(decoratedResponse.getCachedBody()).thenReturn(configuration.responseBody);
         if (configuration.responseBody != null) {
             doAnswer(invocation -> {
@@ -258,10 +312,12 @@ class OpenApiValidationWebFilterTest {
         when(metaDataFactory.buildResponseMetaData(decoratedResponse)).thenReturn(responseMetaData);
     }
 
-    private static HttpHeaders buildHeadersForBody(String body) {
+    private static HttpHeaders buildHeadersForBody(String body, boolean hasContentType, boolean hasContentLength) {
         var headers = new HttpHeaders();
-        if (body != null) {
+        if (body != null && hasContentType) {
             headers.put(HttpHeaders.CONTENT_TYPE, List.of("application/json"));
+        }
+        if (body != null && hasContentLength) {
             headers.put(HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(body.length())));
         }
         return headers;
@@ -335,6 +391,10 @@ class OpenApiValidationWebFilterTest {
         private String requestBody = REQUEST_BODY;
         @Builder.Default
         private String responseBody = RESPONSE_BODY;
+        @Builder.Default
+        private boolean hasContentType = true;
+        @Builder.Default
+        private boolean hasContentLength = true;
     }
 
     @Builder
