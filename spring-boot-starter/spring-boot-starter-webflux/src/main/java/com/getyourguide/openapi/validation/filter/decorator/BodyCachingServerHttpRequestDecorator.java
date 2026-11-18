@@ -12,7 +12,6 @@ import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.lang.NonNull;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.SignalType;
 
 public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDecorator {
     private final TrafficSelector trafficSelector;
@@ -63,10 +62,11 @@ public class BodyCachingServerHttpRequestDecorator extends ServerHttpRequestDeco
                 }
                 cachedBody += dataBuffer.toString(StandardCharsets.UTF_8);
             })
-            .doFinally(signalType -> {
-                if (signalType == SignalType.ON_COMPLETE) {
-                    bodyCached = true;
+            .doOnComplete(() -> {
+                if (cachedBody == null) {
+                    cachedBody = "";
                 }
+                bodyCached = true;
             });
     }
 }
