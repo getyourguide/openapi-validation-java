@@ -25,6 +25,7 @@ dependencies {
     // For openapi generated code
     testFixturesApi 'org.springframework.boot:spring-boot-starter-validation'
     testFixturesApi(libs.openapi.tools.jacksonDatabindNullable)
+    testFixturesApi 'com.fasterxml.jackson.core:jackson-annotations'
     testFixturesApi(libs.jakarta.validation.api)
     testFixturesApi(libs.swagger.annotations)
     testFixturesApi 'org.apache.tomcat.embed:tomcat-embed-core' // For jakarta.servlet.ServletContext

@@ -45,7 +45,7 @@ public class DefaultTrafficSelector implements TrafficSelector {
 
     private boolean isRandomlySelectedBySampleRate() {
         return sampleRate > 0
-            && (sampleRate >= 1 || ThreadLocalRandom.current().nextInt((int) (1 / sampleRate)) == 0);
+            && (sampleRate >= 1 || ThreadLocalRandom.current().nextDouble() < sampleRate);
     }
 
     @Override

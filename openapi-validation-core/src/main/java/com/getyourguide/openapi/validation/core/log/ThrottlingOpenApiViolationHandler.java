@@ -2,17 +2,17 @@ package com.getyourguide.openapi.validation.core.log;
 
 import com.getyourguide.openapi.validation.api.log.OpenApiViolationHandler;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.joda.time.DateTime;
 
 @AllArgsConstructor
 public class ThrottlingOpenApiViolationHandler implements OpenApiViolationHandler {
     private final OpenApiViolationHandler delegate;
     private final int waitSeconds;
-    private final Map<String, DateTime> loggedMessages = new ConcurrentHashMap<>();
+    private final Map<String, Instant> loggedMessages = new ConcurrentHashMap<>();
 
     @Override
     public void onOpenApiViolation(OpenApiViolation violation) {
@@ -25,13 +25,13 @@ public class ThrottlingOpenApiViolationHandler implements OpenApiViolationHandle
     }
 
     private void registerLoggedMessage(OpenApiViolation openApiViolation) {
-        loggedMessages.put(buildKey(openApiViolation), DateTime.now());
+        loggedMessages.put(buildKey(openApiViolation), Instant.now());
     }
 
     private boolean isThrottled(OpenApiViolation openApiViolation) {
         var key = buildKey(openApiViolation);
         var lastLoggedTime = loggedMessages.get(key);
-        return lastLoggedTime != null && lastLoggedTime.plusSeconds(waitSeconds).isAfterNow();
+        return lastLoggedTime != null && lastLoggedTime.plusSeconds(waitSeconds).isAfter(Instant.now());
     }
 
     @NonNull

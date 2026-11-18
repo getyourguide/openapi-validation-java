@@ -4,20 +4,32 @@ import com.getyourguide.openapi.validation.api.Rules;
 import com.getyourguide.openapi.validation.api.exclusions.ViolationExclusions;
 import com.getyourguide.openapi.validation.api.model.Direction;
 import com.getyourguide.openapi.validation.api.model.OpenApiViolation;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class InternalViolationExclusions {
 
     private final ViolationExclusions customViolationExclusions;
+    private final boolean ignoreAmbiguousOneOfViolations;
+
+    public InternalViolationExclusions(ViolationExclusions customViolationExclusions) {
+        this(customViolationExclusions, true);
+    }
+
+    public InternalViolationExclusions(
+        ViolationExclusions customViolationExclusions,
+        boolean ignoreAmbiguousOneOfViolations
+    ) {
+        this.customViolationExclusions = customViolationExclusions;
+        this.ignoreAmbiguousOneOfViolations = ignoreAmbiguousOneOfViolations;
+    }
 
     public boolean isExcluded(OpenApiViolation violation) {
-        return falsePositive404(violation)
+        return falsePositive204(violation)
+            || falsePositive404(violation)
             || falsePositive405(violation)
             || falsePositive406(violation)
             || falsePositiveRequestWith4xxResponse(violation)
             || customViolationExclusions.isExcluded(violation)
-            || oneOfMatchesMoreThanOneSchema(violation)
+            || (ignoreAmbiguousOneOfViolations && oneOfMatchesMoreThanOneSchema(violation))
             || isConcurrentModificationExceptionInLibrary(violation)
             || isUnhandledUncheckedExecutionExceptionInLibrary(violation);
     }
@@ -29,6 +41,11 @@ public class InternalViolationExclusions {
             )
             && violation.getMessage()
             .matches(".*Instance failed to match exactly one schema \\(matched [1-9][0-9]* out of \\d+\\).*");
+    }
+
+    private boolean falsePositive204(OpenApiViolation violation) {
+        return violation.getResponseStatus().orElse(0) == 204
+            && Rules.Request.ACCEPT_NOT_ALLOWED.equals(violation.getRule());
     }
 
     private boolean falsePositive404(OpenApiViolation violation) {
